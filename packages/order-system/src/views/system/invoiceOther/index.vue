@@ -5,13 +5,13 @@
 				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" />
 			</el-form-item>
 			<el-form-item label="开票方公司名称" prop="Supplier">
-				<el-input v-model="queryParams.Supplier" placeholder="请输入开票方公司名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.Supplier" placeholder="请输入开票方公司名称" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'Supplier')" />
 			</el-form-item>
 			<el-form-item label="对方名称" prop="mixCompanyName">
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'invoiceCompanyName')" />
 			</el-form-item>
 			<el-form-item label="开票状态" prop="isInvoiced">
 				<el-select v-model="invoiceStatus" placeholder="请选择开票状态" clearable @change="handleInvoiceStatusChange" style="width: 150px">
@@ -285,6 +285,7 @@
 									query-info="companyName"
 									query-label="公司名称"
 									:query-name="queryCompanyName"
+									:sanitize-company-name-paste="true"
 									@update:queryName="handleUpdateCompanyName"
 									@commitBack="handleCommitBackCompany"
 								>
@@ -323,6 +324,7 @@
 									query-info="companyName"
 									query-label="公司名称"
 									:query-name="queryCompanyCustomerName"
+									:sanitize-company-name-paste="true"
 									@update:queryName="handleUpdateCompanyCustomerName"
 									@commitBack="handleCommitBackCompanyCustomer"
 								>
@@ -345,7 +347,7 @@
 							<el-input disabled v-model="form.customerPointAmount" placeholder="自动计算收票方票点金额" />
 						</el-form-item>
 						<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
+							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
 						</el-form-item>
 						<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
 							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
@@ -429,11 +431,13 @@ import { getInvoiceOther, updateInvoiceOther } from '../../../api/system/invoice
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 import { normalizeInvoiceOtherDateRange } from '@/views/system/invoiceOther/invoiceOther.query';
+import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
+import { createCompanyNameValidatorRule } from '@/utils/companyName';
 
 export default {
 	name: 'InvoiceOther',
 	components: { CheckFiles, UploadFilesButton, SearchOption },
-	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
+	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog, invoiceCompanyNameMixin],
 	data() {
 		const validateAmount = (rule, value, callback) => {
 			if (value === '' || value === null || value === undefined) {
@@ -517,21 +521,24 @@ export default {
 						required: true,
 						message: '请输入开票方公司名称',
 						trigger: 'blur'
-					}
+					},
+					createCompanyNameValidatorRule('开票方公司名称')
 				],
 				customer: [
 					{
 						required: true,
 						message: '请输入收票方公司名称',
 						trigger: 'blur'
-					}
+					},
+					createCompanyNameValidatorRule('收票方公司名称')
 				],
 				invoiceCompanyName: [
 					{
 						required: true,
 						message: '请输入票据单位名称',
 						trigger: 'blur'
-					}
+					},
+					createCompanyNameValidatorRule('票据单位名称')
 				],
 				customerTicketPoint: [
 					{
@@ -688,11 +695,11 @@ export default {
 			this.queryCompanyName = val;
 		},
 		handleCommitBackCompany(val) {
-			this.form.Supplier = val.companyName;
+			this.form.Supplier = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.SupplierID = val.id;
 		},
 		handleCommitBackCompanyCustomer(val) {
-			this.form.customer = val.companyName;
+			this.form.customer = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.CustomerID = val.id;
 		},
 		handleUpdateCompanyCustomerName(val) {
@@ -867,6 +874,15 @@ export default {
 			this.title = '修改商家直接给客户开发票';
 		},
 		submitForm() {
+			if (
+				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [
+					{ key: 'Supplier', label: '开票方公司名称' },
+					{ key: 'customer', label: '收票方公司名称' },
+					{ key: 'invoiceCompanyName', label: '票据单位名称' }
+				])
+			) {
+				return;
+			}
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					// 保存当前附件ID用于错误回滚

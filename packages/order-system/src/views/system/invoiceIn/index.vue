@@ -268,7 +268,7 @@
 							<el-input disabled v-model="form.companyName" placeholder="请选择" />
 						</el-col>
 						<el-col :span="2">
-							<SearchOption :limit-info="{ companyType: type }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+							<SearchOption :limit-info="{ companyType: type }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" :sanitize-company-name-paste="true" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 								<template #table-columns>
 									<el-table-column :label="type" align="center" prop="companyName" />
 									<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -281,7 +281,7 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
+					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
 				</el-form-item>
 				<el-form-item label="票点" prop="ticketPoint">
 					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
@@ -342,11 +342,13 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import InvoiceOptionPanel from '@/views/dashboard/components/common/InvoiceOptionPanel.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
+import { createCompanyNameValidatorRule } from '@/utils/companyName';
 
 export default {
 	name: 'InvoiceIn',
 	components: { CheckFiles, UploadFilesButton, CheckOrder, ApplyPayment, SearchOption, InvoiceOptionPanel },
-	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
+	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog, invoiceCompanyNameMixin],
 	data() {
 		return {
 			// 遮罩层
@@ -420,14 +422,16 @@ export default {
 						required: true,
 						message: '请输入对方公司名称',
 						trigger: 'blur'
-					}
+					},
+					createCompanyNameValidatorRule('对方公司名称')
 				],
 				invoiceCompanyName: [
 					{
 						required: true,
 						message: '请输入票据单位名称',
 						trigger: 'blur'
-					}
+					},
+					createCompanyNameValidatorRule('票据单位名称')
 				],
 				ticketPoint: [{ required: true, message: '请输入票点', trigger: 'blur' }],
 				ticketPointAmount: [
@@ -588,7 +592,7 @@ export default {
 			this.companyName = val;
 		},
 		handleCommitBackCompany(val) {
-			this.form.companyName = val.companyName;
+			this.form.companyName = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.companyID = val.id;
 			this.form.companyType = val.companyType;
 		},
@@ -773,6 +777,14 @@ export default {
 
 		/** 提交按钮 */
 		submitForm() {
+			if (
+				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [
+					{ key: 'companyName', label: '对方公司名称' },
+					{ key: 'invoiceCompanyName', label: '票据单位名称' }
+				])
+			) {
+				return;
+			}
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					// 获取附件上传参数

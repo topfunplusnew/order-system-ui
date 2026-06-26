@@ -5,10 +5,10 @@
 				<el-date-picker v-model="queryParams.dateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" style="width: 240px"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="供应商/客户" prop="searchCompamyName">
-				<el-input v-model="queryParams.searchCompamyName" placeholder="请输入供应商/客户" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.searchCompamyName" placeholder="请输入供应商/客户" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'searchCompamyName')" />
 			</el-form-item>
 			<el-form-item label="开票单位" prop="searchInvoiceCompanyName">
-				<el-input v-model="queryParams.searchInvoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.searchInvoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'searchInvoiceCompanyName')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -113,13 +113,13 @@
 					<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
 				</el-form-item>
 				<el-form-item label="对方公司名称" prop="companyName">
-					<el-input v-model="form.companyName" placeholder="请输入对方公司名称" />
+					<el-input v-model="form.companyName" placeholder="请输入对方公司名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'companyName')" />
 				</el-form-item>
 				<el-form-item label="对方公司ID" prop="companyID">
 					<el-input v-model="form.companyID" placeholder="请输入对方公司ID" />
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
+					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
 				</el-form-item>
 				<el-form-item label="票点" prop="ticketPoint">
 					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
@@ -162,11 +162,13 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { add, number } from 'mathjs';
 import reLength from '../../dashboard/mixins/reLength';
+import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
+import { createCompanyNameValidatorRule } from '@/utils/companyName';
 
 export default {
 	name: 'AllInvoice',
 	components: {},
-	mixins: [mixin_printHTML, reLength],
+	mixins: [mixin_printHTML, reLength, invoiceCompanyNameMixin],
 	data() {
 		// 获取当日日期字符串
 		const today = parseTime(new Date(), '{y}-{m}-{d}');
@@ -217,7 +219,10 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
-			rules: {},
+			rules: {
+				companyName: [createCompanyNameValidatorRule('对方公司名称')],
+				invoiceCompanyName: [createCompanyNameValidatorRule('票据单位名称')]
+			},
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
 				{ key: 1, label: `我方主体`, visible: true },
@@ -367,6 +372,14 @@ export default {
 		// },
 		/** 提交按钮 */
 		submitForm() {
+			if (
+				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [
+					{ key: 'companyName', label: '对方公司名称' },
+					{ key: 'invoiceCompanyName', label: '票据单位名称' }
+				])
+			) {
+				return;
+			}
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {

@@ -5,13 +5,13 @@
 				<el-date-picker v-model="dateRange" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" range-separator="至" value-format="yyyy-MM-dd" unlink-panels style="width: 240px" />
 			</el-form-item>
 			<el-form-item label="供应商公司名称" prop="Supplier">
-				<el-input v-model="queryParams.Supplier" placeholder="请输入供应商公司名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.Supplier" placeholder="请输入供应商公司名称" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'Supplier')" />
 			</el-form-item>
 			<el-form-item label="对方名称" prop="mixCompanyName">
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票单位" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'invoiceCompanyName')" />
 			</el-form-item>
 			<el-form-item label="开票状态" prop="isInvoiced">
 				<el-select v-model="invoiceStatus" placeholder="请选择开票状态" clearable @change="handleInvoiceStatusChange" style="width: 150px">
@@ -308,7 +308,7 @@
 								<el-input disabled v-model="form.Supplier" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption :limit-info="{ companyType: '供应商' }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="queryCompanyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+								<SearchOption :limit-info="{ companyType: '供应商' }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="queryCompanyName" :sanitize-company-name-paste="true" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 									<template #table-columns>
 										<el-table-column label="供应商" align="center" prop="companyName" />
 										<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -336,7 +336,7 @@
 								<el-input disabled v-model="form.customer" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption :limit-info="{ companyType: '客户' }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="queryCompanyCustomerName" @update:queryName="handleUpdateCompanyCustomerName" @commitBack="handleCommitBackCompanyCustomer">
+								<SearchOption :limit-info="{ companyType: '客户' }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="queryCompanyCustomerName" :sanitize-company-name-paste="true" @update:queryName="handleUpdateCompanyCustomerName" @commitBack="handleCommitBackCompanyCustomer">
 									<template #table-columns>
 										<el-table-column label="客户" align="center" prop="companyName" />
 										<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -348,7 +348,7 @@
 							</el-col>
 						</el-form-item>
 						<el-form-item label="客户开票名称" prop="invoiceCompanyName">
-							<el-input v-model="form.invoiceCompanyName" placeholder="请输入客户开票名称" />
+							<el-input v-model="form.invoiceCompanyName" placeholder="请输入客户开票名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
 						</el-form-item>
 						<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
 							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
@@ -451,11 +451,13 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 import { normalizeCustomerPointAmountForSubmit } from './invoicehave.submit';
+import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
+import { createCompanyNameValidatorRule } from '@/utils/companyName';
 
 export default {
 	name: 'InvoiceOtherHave',
 	components: { CheckFiles, UploadFilesButton, OrderInfos, SearchOption },
-	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
+	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog, invoiceCompanyNameMixin],
 	data() {
 		// 金额格式验证（最多两位小数）
 		const validateAmount = (rule, value, callback) => {
@@ -563,21 +565,24 @@ export default {
 						required: true,
 						message: '请输入供应商公司名称',
 						trigger: 'blur'
-					}
+					},
+					createCompanyNameValidatorRule('供应商公司名称')
 				],
 				customer: [
 					{
 						required: true,
 						message: '请输入客户名称',
 						trigger: 'blur'
-					}
+					},
+					createCompanyNameValidatorRule('客户名称')
 				],
 				invoiceCompanyName: [
 					{
 						required: true,
 						message: '请输入客户开票名称',
 						trigger: 'blur'
-					}
+					},
+					createCompanyNameValidatorRule('客户开票名称')
 				]
 			},
 			columns: [
@@ -716,11 +721,11 @@ export default {
 			this.queryCompanyName = val;
 		},
 		handleCommitBackCompany(val) {
-			this.form.Supplier = val.companyName;
+			this.form.Supplier = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.SupplierID = val.id;
 		},
 		handleCommitBackCompanyCustomer(val) {
-			this.form.customer = val.companyName;
+			this.form.customer = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.CustomerID = val.id;
 		},
 		handleUpdateCompanyCustomerName(val) {
@@ -943,6 +948,15 @@ export default {
 		/** 提交按钮 */
 		submitForm() {
 			console.log('提交表单开始', this.form);
+			if (
+				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [
+					{ key: 'Supplier', label: '供应商公司名称' },
+					{ key: 'customer', label: '客户名称' },
+					{ key: 'invoiceCompanyName', label: '客户开票名称' }
+				])
+			) {
+				return;
+			}
 			this.$refs['form'].validate(valid => {
 				console.log('表单验证结果:', valid);
 				if (valid) {
