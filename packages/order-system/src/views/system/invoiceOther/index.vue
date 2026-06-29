@@ -11,7 +11,7 @@
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'invoiceCompanyName')" />
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票状态" prop="isInvoiced">
 				<el-select v-model="invoiceStatus" placeholder="请选择开票状态" clearable @change="handleInvoiceStatusChange" style="width: 150px">
@@ -345,8 +345,8 @@
 							<el-input disabled v-model="form.customerPointAmount" placeholder="自动计算收票方票点金额" />
 						</el-form-item>
 						<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-							<!-- 2026-06-25 票点管理：票据单位名称粘贴自动去除空格/括号，保存时不允许其他标点 -->
-							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
+							<!-- 2026-06-25 票点管理：仅手动填写票据单位名称时粘贴去除空格/括号，系统选择的供应商/客户不限制 -->
+							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleManualInvoiceCompanyNamePaste($event, 'invoiceCompanyName')" />
 						</el-form-item>
 						<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
 							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
@@ -430,9 +430,8 @@ import { getInvoiceOther, updateInvoiceOther } from '../../../api/system/invoice
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 import { normalizeInvoiceOtherDateRange } from '@/views/system/invoiceOther/invoiceOther.query';
-// 2026-06-25 票点管理：票据单位名称粘贴自动去除空格/括号，保存时不允许其他标点
+// 2026-06-25 票点管理：仅手动填写的票据单位名称粘贴时去除空格/括号，系统选择的供应商/客户不限制
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
-import { createInvoiceCompanyNameValidatorRule } from '@/utils/invoiceCompanyName';
 
 export default {
 	name: 'InvoiceOther',
@@ -535,9 +534,7 @@ export default {
 						required: true,
 						message: '请输入票据单位名称',
 						trigger: 'blur'
-					},
-					// 2026-06-25 保存时不允许票据单位名称含其他标点
-					createInvoiceCompanyNameValidatorRule('票据单位名称')
+					}
 				],
 				customerTicketPoint: [
 					{
@@ -873,12 +870,6 @@ export default {
 			this.title = '修改商家直接给客户开发票';
 		},
 		submitForm() {
-			// 2026-06-25 提交前校验并规范化票据单位名称
-			if (
-				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [{ key: 'invoiceCompanyName', label: '票据单位名称' }])
-			) {
-				return;
-			}
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					// 保存当前附件ID用于错误回滚

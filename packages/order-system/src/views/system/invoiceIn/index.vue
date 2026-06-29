@@ -281,8 +281,8 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-					<!-- 2026-06-25 票点管理：票据单位名称粘贴自动去除空格/括号，保存时不允许其他标点 -->
-					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
+					<!-- 2026-06-25 票点管理：仅手动填写票据单位名称时粘贴去除空格/括号，系统选择的供应商/客户不限制 -->
+					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleManualInvoiceCompanyNamePaste($event, 'invoiceCompanyName')" />
 				</el-form-item>
 				<el-form-item label="票点" prop="ticketPoint">
 					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
@@ -343,9 +343,8 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import InvoiceOptionPanel from '@/views/dashboard/components/common/InvoiceOptionPanel.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-// 2026-06-25 票点管理：票据单位名称粘贴自动去除空格/括号，保存时不允许其他标点
+// 2026-06-25 票点管理：仅手动填写的票据单位名称粘贴时去除空格/括号，系统选择的供应商/客户不限制
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
-import { createInvoiceCompanyNameValidatorRule } from '@/utils/invoiceCompanyName';
 
 export default {
 	name: 'InvoiceIn',
@@ -431,9 +430,7 @@ export default {
 						required: true,
 						message: '请输入票据单位名称',
 						trigger: 'blur'
-					},
-					// 2026-06-25 保存时不允许票据单位名称含其他标点
-					createInvoiceCompanyNameValidatorRule('票据单位名称')
+					}
 				],
 				ticketPoint: [{ required: true, message: '请输入票点', trigger: 'blur' }],
 				ticketPointAmount: [
@@ -779,12 +776,6 @@ export default {
 
 		/** 提交按钮 */
 		submitForm() {
-			// 2026-06-25 提交前校验并规范化票据单位名称
-			if (
-				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [{ key: 'invoiceCompanyName', label: '票据单位名称' }])
-			) {
-				return;
-			}
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					// 获取附件上传参数

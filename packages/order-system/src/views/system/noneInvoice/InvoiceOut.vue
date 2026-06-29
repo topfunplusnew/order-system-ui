@@ -11,7 +11,7 @@
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'invoiceCompanyName')" />
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="是否已开发票" prop="isInvoiced">
 				<el-select v-model="invoiceStatus" placeholder="请选择" clearable @change="handleInvoiceStatusChange">
@@ -270,8 +270,8 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-					<!-- 2026-06-25 票点管理：票据单位名称粘贴自动去除空格/括号，保存时不允许其他标点 -->
-					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
+					<!-- 2026-06-25 票点管理：仅手动填写票据单位名称时粘贴去除空格/括号，系统选择的供应商/客户不限制 -->
+					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleManualInvoiceCompanyNamePaste($event, 'invoiceCompanyName')" />
 				</el-form-item>
 				<el-form-item label="票点" prop="ticketPoint">
 					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
@@ -365,9 +365,8 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
-// 2026-06-25 票点管理：票据单位名称粘贴自动去除空格/括号，保存时不允许其他标点
+// 2026-06-25 票点管理：仅手动填写的票据单位名称粘贴时去除空格/括号，系统选择的供应商/客户不限制
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
-import { createInvoiceCompanyNameValidatorRule } from '@/utils/invoiceCompanyName';
 
 export default {
 	name: 'NoneInvoiceOut',
@@ -472,9 +471,7 @@ export default {
 						required: true,
 						message: '请输入票据单位名称',
 						trigger: 'blur'
-					},
-					// 2026-06-25 保存时不允许票据单位名称含其他标点
-					createInvoiceCompanyNameValidatorRule('票据单位名称')
+					}
 				],
 				ticketPoint: [{ required: true, message: '请输入票点', trigger: 'blur' }],
 				ticketPointAmount: [
@@ -865,12 +862,6 @@ export default {
 		},
 		/** 提交按钮 */
 		submitForm() {
-			// 2026-06-25 提交前校验并规范化票据单位名称
-			if (
-				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [{ key: 'invoiceCompanyName', label: '票据单位名称' }])
-			) {
-				return;
-			}
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					// 创建提交数据的副本，排除不应该提交的数据

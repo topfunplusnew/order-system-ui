@@ -11,7 +11,7 @@
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票单位" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'invoiceCompanyName')" />
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票状态" prop="isInvoiced">
 				<el-select v-model="invoiceStatus" placeholder="请选择开票状态" clearable @change="handleInvoiceStatusChange" style="width: 150px">
@@ -348,8 +348,8 @@
 							</el-col>
 						</el-form-item>
 						<el-form-item label="客户开票名称" prop="invoiceCompanyName">
-							<!-- 2026-06-25 票点管理：客户开票名称粘贴自动去除空格/括号，保存时不允许其他标点 -->
-							<el-input v-model="form.invoiceCompanyName" placeholder="请输入客户开票名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
+							<!-- 2026-06-25 票点管理：仅手动填写客户开票名称时粘贴去除空格/括号，系统选择的供应商/客户不限制 -->
+							<el-input v-model="form.invoiceCompanyName" placeholder="请输入客户开票名称" @paste.native="handleManualInvoiceCompanyNamePaste($event, 'invoiceCompanyName')" />
 						</el-form-item>
 						<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
 							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
@@ -452,9 +452,8 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 import { normalizeCustomerPointAmountForSubmit } from './invoicehave.submit';
-// 2026-06-25 票点管理：票据单位名称粘贴自动去除空格/括号，保存时不允许其他标点
+// 2026-06-25 票点管理：仅手动填写的票据单位名称粘贴时去除空格/括号，系统选择的供应商/客户不限制
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
-import { createInvoiceCompanyNameValidatorRule } from '@/utils/invoiceCompanyName';
 
 export default {
 	name: 'InvoiceOtherHave',
@@ -581,9 +580,7 @@ export default {
 						required: true,
 						message: '请输入客户开票名称',
 						trigger: 'blur'
-					},
-					// 2026-06-25 保存时不允许客户开票名称含其他标点
-					createInvoiceCompanyNameValidatorRule('客户开票名称')
+					}
 				]
 			},
 			columns: [
@@ -949,12 +946,6 @@ export default {
 		/** 提交按钮 */
 		submitForm() {
 			console.log('提交表单开始', this.form);
-			// 2026-06-25 提交前校验并规范化客户开票名称
-			if (
-				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [{ key: 'invoiceCompanyName', label: '客户开票名称' }])
-			) {
-				return;
-			}
 			this.$refs['form'].validate(valid => {
 				console.log('表单验证结果:', valid);
 				if (valid) {

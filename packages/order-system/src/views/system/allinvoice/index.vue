@@ -8,8 +8,7 @@
 				<el-input v-model="queryParams.searchCompamyName" placeholder="请输入供应商/客户" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票单位" prop="searchInvoiceCompanyName">
-				<!-- 2026-06-25 票点管理：搜索框粘贴开票单位名称自动去除空格/括号 -->
-				<el-input v-model="queryParams.searchInvoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'searchInvoiceCompanyName')" />
+				<el-input v-model="queryParams.searchInvoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -120,8 +119,8 @@
 					<el-input v-model="form.companyID" placeholder="请输入对方公司ID" />
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-					<!-- 2026-06-25 票点管理：票据单位名称粘贴自动去除空格/括号，保存时不允许其他标点 -->
-					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
+					<!-- 2026-06-25 票点管理：仅手动填写票据单位名称时粘贴去除空格/括号，系统选择的供应商/客户不限制 -->
+					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleManualInvoiceCompanyNamePaste($event, 'invoiceCompanyName')" />
 				</el-form-item>
 				<el-form-item label="票点" prop="ticketPoint">
 					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
@@ -164,9 +163,8 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { add, number } from 'mathjs';
 import reLength from '../../dashboard/mixins/reLength';
-// 2026-06-25 票点管理：票据单位名称粘贴自动去除空格/括号，保存时不允许其他标点
+// 2026-06-25 票点管理：仅手动填写的票据单位名称粘贴时去除空格/括号，系统选择的供应商/客户不限制
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
-import { createInvoiceCompanyNameValidatorRule } from '@/utils/invoiceCompanyName';
 
 export default {
 	name: 'AllInvoice',
@@ -222,10 +220,7 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
-			// 2026-06-25 保存时不允许票据单位名称含其他标点
-			rules: {
-				invoiceCompanyName: [createInvoiceCompanyNameValidatorRule('票据单位名称')]
-			},
+			rules: {},
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
 				{ key: 1, label: `我方主体`, visible: true },
@@ -375,12 +370,6 @@ export default {
 		// },
 		/** 提交按钮 */
 		submitForm() {
-			// 2026-06-25 提交前校验并规范化票据单位名称
-			if (
-				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [{ key: 'invoiceCompanyName', label: '票据单位名称' }])
-			) {
-				return;
-			}
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
