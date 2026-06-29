@@ -21,8 +21,6 @@
 <!--特别注意 针对某些特殊情况 可以补充字段-->
 <script>
 import { mixin_search_option } from '../views/dashboard/mixins/search_option/serch_option';
-// 2026-06-25 票点管理：公司名称粘贴时自动去除空格和括号
-import { sanitizeCompanyNamePasted } from '@/utils/companyName';
 import _ from 'lodash';
 
 export default {
@@ -102,11 +100,6 @@ export default {
 			default: () => {
 				return null;
 			}
-		},
-		// 2026-06-25 票点管理：开启后粘贴公司名称自动去除空格和括号
-		sanitizeCompanyNamePaste: {
-			type: Boolean,
-			default: false
 		}
 	},
 	data() {
@@ -435,18 +428,6 @@ export default {
 		// 获取表单项聚焦状态
 		isFieldFocused(fieldKey) {
 			return this.focusedFields[fieldKey] || false;
-		},
-		/**
-		 * 2026-06-25 票点管理：粘贴公司名称时自动去除空格和括号
-		 * @param {ClipboardEvent} event - 粘贴事件
-		 */
-		handleCompanyNamePaste(event) {
-			if (!this.sanitizeCompanyNamePaste) return;
-			event.preventDefault();
-			const clipboardData = event.clipboardData || window.clipboardData;
-			const pastedText = clipboardData ? clipboardData.getData('text') : '';
-			this.query = sanitizeCompanyNamePasted(pastedText);
-			this.updateInputWidth();
 		}
 	}
 };
@@ -469,8 +450,7 @@ export default {
 							<div class="input-wrapper" @mouseenter="handleFieldFocus('query')" @mouseleave="handleFieldBlur('query')">
 								<!-- 隐藏的测量元素，用于获取文本实际宽度 -->
 								<span ref="widthMeasure" class="width-measure">{{ spanText }}</span>
-								<!-- 2026-06-25 票点管理：粘贴公司名称自动去除空格/括号 -->
-								<el-input v-model="query" type="text" placeholder="请输入" size="mini" @input="updateInputWidth" @paste.native="handleCompanyNamePaste" @focus="handleFieldFocus('query')" @blur="handleFieldBlur('query')" @keyup.enter.native.prevent="handleSearchInfo" :style="{ width: inputWidth }"></el-input>
+								<el-input v-model="query" type="text" placeholder="请输入" size="mini" @input="updateInputWidth" @focus="handleFieldFocus('query')" @blur="handleFieldBlur('query')" @keyup.enter.native.prevent="handleSearchInfo" :style="{ width: inputWidth }"></el-input>
 								<el-button v-show="isFieldFocused('query')" type="text" icon="el-icon-close" size="mini" class="clear-form-btn" @click="clearQueryInput"></el-button>
 							</div>
 						</el-form-item>
