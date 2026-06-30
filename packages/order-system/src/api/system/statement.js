@@ -562,3 +562,43 @@ export function getTargetDates(backupDate) {
 		method: 'get'
 	});
 }
+
+/**
+ * 查询收款报表
+ * @param {Object} query
+ * @param {string} [query.startTime] - 开始日期
+ * @param {string} [query.endTime] - 结束日期
+ * @param {string} [query.selfAccountName] - 我方户名
+ * @param {string} [query.otherCompanyName] - 对方公司名称
+ * @param {string} [query.otherAccountName] - 对方户名
+ * @param {number} [query.pageNum] - 页码
+ * @param {number} [query.pageSize] - 每页条数
+ * @returns {Promise}
+ */
+export function getReceiveReport(query) {
+	return request({
+		url: '/statistics/receiveReport',
+		method: 'get',
+		params: query
+	});
+}
+
+/**
+ * 查询付款报表
+ * @param {Object} query
+ * @param {string} [query.startTime] - 开始日期
+ * @param {string} [query.endTime] - 结束日期
+ * @param {string} [query.selfAccountName] - 我方户名
+ * @param {string} [query.otherCompanyName] - 对方公司名称
+ * @param {string} [query.otherAccountName] - 对方户名
+ * @param {number} [query.pageNum] - 页码
+ * @param {number} [query.pageSize] - 每页条数
+ * @returns {Promise}
+ */
+export function getPaymentReport(query) {
+	return request({
+		url: '/statistics/paymentReport',
+		method: 'get',
+		params: query
+	});
+}
