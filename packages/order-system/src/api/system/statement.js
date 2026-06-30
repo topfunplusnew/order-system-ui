@@ -369,6 +369,20 @@ export function getTodayFreightSummary(query) {
 }
 
 /**
+ * 资金（银行）当日发生业务统计表
+ * @param {Object} query
+ * @param {string} query.endTime - 结束日期 yyyy-MM-dd
+ * @returns {Promise<{rows: Array, total: number}>}
+ */
+export function getTodayBankAccountChangeSummary(query) {
+	return request({
+		url: '/statistics/todaybankaccountchangesummary',
+		method: 'get',
+		params: query
+	});
+}
+
+/**
  * 银行卡资金变动情况
  * @param {Object} query
  * @returns
