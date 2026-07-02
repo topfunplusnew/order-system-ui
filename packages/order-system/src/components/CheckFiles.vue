@@ -33,7 +33,7 @@ export default {
 		imgList() {
 			const imageTypes = ['.jpeg', '.jpg', '.png', '.svg', '.gif', '.bmp', '.webp'];
 			console.log('this.checkFileList', this.checkFileList);
-			return this.checkFileList.filter(item => item && item.filePath && imageTypes.includes(`.${(item.fileSuffix || '').toLowerCase()}`)).map(item => item.filePath);
+			return this.checkFileList.filter(item => item && item.filePath && imageTypes.includes(`.${(item.fileSuffix || '').toLowerCase()}`));
 		}
 	},
 	watch: {
@@ -45,8 +45,27 @@ export default {
 		}
 	},
 	methods: {
-		showImgSrc(p) {
-			return process.env.VUE_APP_BASE_API + p;
+		/**
+		 * 生成图片缓存版本号，用于 URL 查询参数防止浏览器缓存
+		 * @param {Object} attachment - 附件对象
+		 * @returns {string}
+		 */
+		getImgCacheVersion(attachment) {
+			if (!attachment) return '';
+			const { id, updateTime, createTime } = attachment;
+			return [id, updateTime || createTime].filter(v => v !== null && v !== undefined && v !== '').join('_');
+		},
+		/**
+		 * 拼接图片完整地址，附带版本号参数
+		 * @param {string} filePath - 文件路径
+		 * @param {string} [version=''] - 缓存版本号
+		 * @returns {string}
+		 */
+		showImgSrc(filePath, version = '') {
+			const baseUrl = process.env.VUE_APP_BASE_API + filePath;
+			if (!version) return baseUrl;
+			const connector = baseUrl.includes('?') ? '&' : '?';
+			return `${baseUrl}${connector}v=${encodeURIComponent(version)}`;
 		},
 		showImgAlt(p) {
 			const src = this.showImgSrc(p);
@@ -179,7 +198,7 @@ export default {
 				<div class="img-list">
 					<!-- 只渲染checkFileList中的图片 -->
 					<div class="img-wrapper">
-						<img v-for="(item, index) in imgList" :key="index" :src="showImgSrc(item)" :alt="showImgAlt(item)" class="preview-img" />
+						<img v-for="(item, index) in imgList" :key="item.id || index" :src="showImgSrc(item.filePath, getImgCacheVersion(item))" :alt="showImgAlt(item.filePath)" class="preview-img" />
 					</div>
 				</div>
 			</div>
