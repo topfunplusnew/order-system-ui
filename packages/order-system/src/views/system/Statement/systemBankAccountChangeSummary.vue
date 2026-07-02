@@ -53,17 +53,6 @@
 			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="本日余额" align="center" prop="currentBalance" />
 		</el-table>
 		<el-row style="font-weight: bold; font-size: 16px; margin: 10px 30px">数据量总数: {{ total }}</el-row>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间" :visible.sync="dialogVisible" width="30%">
-			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
-				<el-form-item label="日期" prop="endTime">
-					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
-				</el-form-item>
-			</el-form>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="dialogVisible = false">取消</el-button>
-				<el-button type="primary" @click="handleSubmitTime">导出</el-button>
-			</span>
-		</el-dialog>
 	</div>
 </template>
 
@@ -94,8 +83,7 @@ export default {
 				{ key: 6, label: '本日收入', visible: true },
 				{ key: 7, label: '本日支出', visible: true },
 				{ key: 8, label: '本日余额', visible: true }
-			],
-			dialogVisible: false
+			]
 		};
 	},
 	created() {
@@ -187,9 +175,13 @@ export default {
 			this.getList();
 		},
 		/**
-		 * 确认导出
+		 * 按顶部所选日期直接导出
 		 */
-		handleSubmitTime() {
+		handleExport() {
+			if (!this.queryParams.endTime) {
+				this.$message.warning('请先选择日期');
+				return;
+			}
 			this.download(
 				'statistics/export/todaybankaccountchangesummary',
 				{
@@ -197,13 +189,6 @@ export default {
 				},
 				`资金（银行）当日发生业务统计表_${parseTime(new Date().getTime())}.xlsx`
 			);
-			this.dialogVisible = false;
-		},
-		/**
-		 * 打开导出弹窗
-		 */
-		handleExport() {
-			this.dialogVisible = true;
 		}
 	}
 };
