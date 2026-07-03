@@ -38,14 +38,14 @@
 				}
 			"
 		>
-			<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="序号" align="center" prop="index" />
+			<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="序号" align="center" prop="serialNumber" />
 			<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="date">
 				<template slot-scope="">
 					{{ queryParams.endTime }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="己方公司" align="center" prop="displayName" />
-			<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="开户名称" align="center" prop="acountsName" />
+			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="己方公司" align="center" prop="selfCompany" />
+			<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="开户名称" align="center" prop="accountOpenName" />
 			<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="银行账号" align="center" prop="bankNo" />
 			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="上日余额" align="center" prop="previousBalance" />
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="本日收入" align="center" prop="totalIncome" />
@@ -130,8 +130,9 @@ export default {
 			const currentBalance = row.currentBalance ?? row.dailyBalance;
 			return {
 				...row,
-				displayName: row.displayName || '-',
-				acountsName: row.acountsName || '-',
+				serialNumber: row.serialNumber ?? '-',
+				selfCompany: row.selfCompany || '-',
+				accountOpenName: row.accountOpenName || '-',
 				bankNo: row.bankNo || '-',
 				previousBalance,
 				totalIncome,
