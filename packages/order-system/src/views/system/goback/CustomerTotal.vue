@@ -93,6 +93,14 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
+			<el-table-column prop="previousMonthShipmentTrips" label="上月发货车次" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.previousMonthShipmentTrips == null ? 0 : scope.row.previousMonthShipmentTrips }}</div>
+						<span>{{ scope.row.previousMonthShipmentTrips == null ? 0 : scope.row.previousMonthShipmentTrips }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column prop="currentMonthShipmentTrips" label="截至今日本月发货车次" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -203,11 +211,13 @@ export default {
 		 */
 		buildExportSummaryRow(headers) {
 			const totalBalance = _.reduce(this.tableData || [], (sum, row) => add(sum, row.moneyAmount || 0), 0);
-			const totalTrips = _.reduce(this.tableData || [], (sum, row) => add(sum, row.currentMonthShipmentTrips ?? 0), 0);
+			const totalPreviousMonthTrips = _.reduce(this.tableData || [], (sum, row) => add(sum, row.previousMonthShipmentTrips ?? 0), 0);
+			const totalCurrentMonthTrips = _.reduce(this.tableData || [], (sum, row) => add(sum, row.currentMonthShipmentTrips ?? 0), 0);
 			return headers.map(header => {
 				if (header === '日期') return '合计';
 				if (header === '余额') return formatBalance(Number(totalBalance));
-				if (header === '截至今日本月发货车次') return Number(totalTrips);
+				if (header === '上月发货车次') return Number(totalPreviousMonthTrips);
+				if (header === '截至今日本月发货车次') return Number(totalCurrentMonthTrips);
 				return '';
 			});
 		},
