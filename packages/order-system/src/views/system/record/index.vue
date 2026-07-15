@@ -1214,6 +1214,9 @@ export default {
 		},
 		//type为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
 		handleDisplayType(row, type) {
+			if (this.isDeletedMode && row.accountType) {
+				return row.accountType;
+			}
 			if (row.selfBankCardType && row.otherBankCardType) {
 				if (row.selfBankCardType !== row.otherBankCardType) {
 					return '银承互转';
