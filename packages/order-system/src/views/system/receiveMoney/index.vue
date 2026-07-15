@@ -51,13 +51,13 @@
 								<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 							</el-col>
 							<el-col :span="1.5">
-								<el-button v-hasPermi="['system:receivemoney:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+								<el-button v-if="!isDeletedMode" v-hasPermi="['system:receivemoney:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
 							</el-col>
 							<el-col :span="1.5">
-								<el-button v-hasPermi="['system:receivemoney:import']" size="mini" @click="handleImportData">导入模板</el-button>
+								<el-button v-if="!isDeletedMode" v-hasPermi="['system:receivemoney:import']" size="mini" @click="handleImportData">导入模板</el-button>
 							</el-col>
 							<el-col :span="1.5" style="margin-left: 15px">
-								<el-button v-hasPermi="['system:receivemoney:add']" type="danger" size="mini" @click="handleAdd">新增收款信息</el-button>
+								<el-button v-if="!isDeletedMode" v-hasPermi="['system:receivemoney:add']" type="danger" size="mini" @click="handleAdd">新增收款信息</el-button>
 							</el-col>
 						</el-row>
 					</div>
@@ -111,21 +111,21 @@
 							<el-table-column v-if="columns[13].visible" label="银行卡流水编号" align="center" prop="transactionHistory" show-overflow-tooltip />
 							<el-table-column v-if="columns[14] && columns[14].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
 							<el-table-column v-if="columns[15] && columns[15].visible" label="新增时间" align="center" prop="addtime" width="170" show-overflow-tooltip />
-							<el-table-column v-if="columns[16] && columns[16].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
+							<el-table-column v-if="columns[16] && columns[16].visible" :label="deletedColumnLabel('最后修改时间')" align="center" prop="updateTime" width="170" show-overflow-tooltip />
 							<el-table-column v-if="columns[17] && columns[17].visible" label="新增人" align="center" prop="userName" width="120" show-overflow-tooltip />
-							<el-table-column v-if="columns[18] && columns[18].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
+							<el-table-column v-if="columns[18] && columns[18].visible" :label="deletedColumnLabel('最后修改人')" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
 							<VirtualColumn label="银行卡流水附件" align="center" prop="attachmentList" vfixed="right">
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 										<div slot="content" @click.stop>
-											<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
+											<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
 										</div>
 										<!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
-										<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
+										<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
 									</el-tooltip>
 								</template>
 							</VirtualColumn>
-							<VirtualColumn label="操作" align="center" class-name="small-padding fixed-width" vfixed="right" width="150">
+							<VirtualColumn v-if="!isDeletedMode" label="操作" align="center" class-name="small-padding fixed-width" vfixed="right" width="150">
 								<template slot-scope="scope">
 									<el-dropdown @command="command => handleCommand(command, scope.row)">
 										<el-button type="primary" size="mini" @click="setCompanyTypeActiveRow(scope.row)">
@@ -371,10 +371,23 @@ import { getBankAcceptance } from '@/api/system/bankAcceptance';
 import { parseTime } from '@/utils/ruoyi';
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
 import VirtualScroll, { VirtualColumn } from 'el-table-virtual-scroll';
+import { buildDeletedQueryParams, getDeletedColumnLabel, isDeletedPageRoute } from '@/utils/deletedPage';
 
 export default {
 	name: 'ReceiveMoney',
+	props: {
+		deletedMode: {
+			type: Boolean,
+			default: false
+		}
+	},
 	computed: {
+		isDeletedMode() {
+			return this.deletedMode || isDeletedPageRoute(this.$route);
+		},
+		deletedColumnLabel() {
+			return label => getDeletedColumnLabel(label, this.isDeletedMode);
+		},
 		PAYMENT_TARGET_TYPE() {
 			return PAYMENT_TARGET_TYPE;
 		},
@@ -919,7 +932,7 @@ export default {
 				params.receiveType = params.receiveType.join('-');
 			}
 
-			listReceiveMoney(params)
+			listReceiveMoney(this.isDeletedMode ? buildDeletedQueryParams(params) : params)
 				.then(response => {
 					this.receiveMoneyList = response.rows;
 					this.total = response.total;
@@ -1384,7 +1397,9 @@ export default {
 				params.endTime = null;
 			}
 			params.receiveType = this.queryParams.receiveType?.join('-');
-			this.download('system/receiveMoney/export', params, `收款信息_${new Date().getTime()}.xlsx`);
+			const exportParams = this.isDeletedMode ? buildDeletedQueryParams(params) : params;
+			const filePrefix = this.isDeletedMode ? '已删除收款信息' : '收款信息';
+			this.download('system/receiveMoney/export', exportParams, `${filePrefix}_${new Date().getTime()}.xlsx`);
 		},
 		// 下载导入模板
 		handleDownloadTemplate() {

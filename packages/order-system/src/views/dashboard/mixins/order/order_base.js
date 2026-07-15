@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { listGoodsOrder } from '../../../../api/system/goodsOrder';
+import { buildDeletedQueryParams } from '@/utils/deletedPage';
 
 const ORDER_UPDATE_ALERT_THRESHOLD = 24 * 60 * 60 * 1000;
 
@@ -89,7 +90,7 @@ export var mixin_order_base = {
 			}
 
 			// 统一的查询处理逻辑
-			listGoodsOrder(query)
+			listGoodsOrder(this.isDeletedMode ? buildDeletedQueryParams(query) : query)
 				.then(response => {
 					// 先对原始数据排序，避免虚拟滚动和表格排序冲突
 					// // 按订单日期降序排序（最新的在前）

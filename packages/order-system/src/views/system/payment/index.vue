@@ -61,14 +61,14 @@
 							<el-col :span="1.5">
 								<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 							</el-col>
-							<el-col :span="1.5">
+							<el-col v-if="!isDeletedMode" :span="1.5">
 								<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
 							</el-col>
-							<el-col :span="1.5">
+							<el-col v-if="!isDeletedMode" :span="1.5">
 								<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleImportData">导入模板</el-button>
 							</el-col>
 							<!--      解开了新增付款信息-->
-							<el-col :span="1.5" style="margin-left: 15px">
+							<el-col v-if="!isDeletedMode" :span="1.5" style="margin-left: 15px">
 								<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
 							</el-col>
 						</el-row>
@@ -229,9 +229,9 @@
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 										<div slot="content" @click.stop>
-											<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
+											<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
 										</div>
-										<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
+										<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
 									</el-tooltip>
 								</template>
 							</el-table-column>
@@ -249,9 +249,9 @@
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 										<div slot="content" @click.stop>
-											<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="transactionHistoryAttachmentList" />
+											<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="transactionHistoryAttachmentList" />
 										</div>
-										<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="transactionHistoryAttachmentList" />
+										<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="transactionHistoryAttachmentList" />
 									</el-tooltip>
 								</template>
 							</VirtualColumn>
@@ -264,17 +264,25 @@
 								</template>
 							</el-table-column>
 							<el-table-column v-if="columns[18] && columns[18].visible" label="新增时间" align="center" prop="addtime" width="170" show-overflow-tooltip />
-							<el-table-column v-if="columns[19] && columns[19].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
+							<el-table-column v-if="columns[19] && columns[19].visible" :label="deletedColumnLabel('最后修改时间')" align="center" prop="updateTime" width="170" show-overflow-tooltip />
 							<el-table-column v-if="columns[20] && columns[20].visible" label="新增人" align="center" prop="userName" width="120" show-overflow-tooltip />
-							<el-table-column v-if="columns[21] && columns[21].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
+							<el-table-column v-if="columns[21] && columns[21].visible" :label="deletedColumnLabel('最后修改人')" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
 							<VirtualColumn label="复核状态" align="center" class-name="small-padding fixed-width" width="80" vfixed="right">
 								<template slot-scope="scope">
 									<el-tooltip :content="hasAuditPermission ? '点击切换复核状态' : '您没有复核权限'" placement="top">
-										<el-switch v-model="scope.row.auditState" :disabled="!hasAuditPermission" :active-value="'1'" :inactive-value="'0'" active-color="#13ce66" inactive-color="#ff4949" @change="value => hasAuditPermission && handlePaymentAudit(scope.row, value)" />
+										<el-switch
+											v-model="scope.row.auditState"
+											:disabled="isDeletedMode || !hasAuditPermission"
+											:active-value="'1'"
+											:inactive-value="'0'"
+											active-color="#13ce66"
+											inactive-color="#ff4949"
+											@change="value => !isDeletedMode && hasAuditPermission && handlePaymentAudit(scope.row, value)"
+										/>
 									</el-tooltip>
 								</template>
 							</VirtualColumn>
-							<VirtualColumn label="操作" align="center" class-name="small-padding fixed-width" width="120" vfixed="right">
+							<VirtualColumn v-if="!isDeletedMode" label="操作" align="center" class-name="small-padding fixed-width" width="120" vfixed="right">
 								<template slot-scope="scope">
 									<el-dropdown @command="command => handleCommand(command, scope.row)">
 										<el-button type="primary" size="mini" @click="setCompanyTypeActiveRow(scope.row)">
@@ -590,9 +598,16 @@ import { fix } from '../../../api/tool/format';
 import { getCompany } from '../../../api/system/company';
 import fixedDirective from '@/directive/module/fixed';
 import VirtualScroll, { VirtualColumn } from 'el-table-virtual-scroll';
+import { buildDeletedQueryParams, getDeletedColumnLabel, isDeletedPageRoute } from '@/utils/deletedPage';
 
 export default {
 	name: 'Payment',
+	props: {
+		deletedMode: {
+			type: Boolean,
+			default: false
+		}
+	},
 	components: {
 		VirtualScroll,
 		VirtualColumn,
@@ -848,6 +863,12 @@ export default {
 		};
 	},
 	computed: {
+		isDeletedMode() {
+			return this.deletedMode || isDeletedPageRoute(this.$route);
+		},
+		deletedColumnLabel() {
+			return label => getDeletedColumnLabel(label, this.isDeletedMode);
+		},
 		PAYMENT_TARGET_TYPE() {
 			return PAYMENT_TARGET_TYPE;
 		},
@@ -1343,16 +1364,15 @@ export default {
 				payTypeString = this.queryParams.payType.join('-');
 			}
 			// 查询
-			return listPayment(
-				addDateRange(
-					{
-						...this.queryParams,
-						payType: payTypeString
-					},
-					this.dateRange,
-					'payment'
-				)
-			).then(response => {
+			const params = addDateRange(
+				{
+					...this.queryParams,
+					payType: payTypeString
+				},
+				this.dateRange,
+				'payment'
+			);
+			return listPayment(this.isDeletedMode ? buildDeletedQueryParams(params) : params).then(response => {
 				// 规范化 auditState：后端已复核为字符串 '1'，未复核为 null，这里统一为 '1' 或 '0'
 				const rows = Array.isArray(response.rows) ? response.rows : [];
 				rows.forEach(r => {
@@ -1936,14 +1956,11 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			this.download(
-				'system/payment/export',
-				{
-					...this.queryParams,
-					payType: this.queryParams.payType?.join('-')
-				},
-				`付款信息_${new Date().getTime()}.xlsx`
-			);
+			const params = {
+				...this.queryParams,
+				payType: this.queryParams.payType?.join('-')
+			};
+			this.download('system/payment/export', this.isDeletedMode ? buildDeletedQueryParams(params) : params, `${this.isDeletedMode ? '已删除付款信息' : '付款信息'}_${new Date().getTime()}.xlsx`);
 		},
 		// 下载导入模板
 		handleDownloadTemplate() {

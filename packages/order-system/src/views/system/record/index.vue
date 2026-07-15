@@ -42,10 +42,10 @@
 		<el-row>
 			<right-toolbar :columns="columns" @queryTable="getList" @column-change="onColumnChange" @column-refresh="handleColumnRefresh" table-name="views-system-record-index-columns">
 				<template #left>
-					<el-col :span="1.5">
+					<el-col v-if="!isDeletedMode" :span="1.5">
 						<el-button v-hasPermi="['system:record:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
 					</el-col>
-					<el-col :span="1.5">
+					<el-col v-if="!isDeletedMode" :span="1.5">
 						<el-button v-hasPermi="['system:record:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 					</el-col>
 				</template>
@@ -79,7 +79,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column type="selection" width="55" align="center" />
+			<el-table-column v-if="!isDeletedMode" type="selection" width="55" align="center" />
 			<el-table-column v-if="columns[17].visible" label="账户类型" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -229,23 +229,23 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[18] && columns[18].visible" label="新增时间" align="center" prop="addtime" width="170" show-overflow-tooltip />
-			<el-table-column v-if="columns[19] && columns[19].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
+			<el-table-column v-if="columns[19] && columns[19].visible" :label="deletedColumnLabel('最后修改时间')" align="center" prop="updateTime" width="170" show-overflow-tooltip />
 			<el-table-column v-if="columns[20] && columns[20].visible" label="新增人" align="center" prop="userName" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[21] && columns[21].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[21] && columns[21].visible" :label="deletedColumnLabel('最后修改人')" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
 			<!-- 附件列 -->
 			<el-table-column label="附件" align="center" prop="attachment">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 						<div slot="content" @click.stop>
 							<div v-if="Array.isArray(scope.row.attachmentList)">
-								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
+								<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" :flag="'attachment'" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
 							</div>
 							<div v-else>
 								<el-tag type="danger">加载错误</el-tag>
 							</div>
 						</div>
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
+							<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" :flag="'attachment'" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
@@ -254,7 +254,7 @@
 				</template>
 			</el-table-column>
 			<!-- 操作列 -->
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+			<el-table-column v-if="!isDeletedMode" label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
@@ -806,8 +806,15 @@ import { CASH_TYPE } from './constrant';
 import { mixin_record_fill } from './recordFill';
 import { mixin_record_auto_save } from './record_auto_save';
 import { mapActions, mapGetters } from 'vuex';
+import { buildDeletedQueryParams, getDeletedColumnLabel, isDeletedPageRoute } from '@/utils/deletedPage';
 export default {
 	name: 'Record',
+	props: {
+		deletedMode: {
+			type: Boolean,
+			default: false
+		}
+	},
 	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
 	mixins: [
 		// 公共打印混入
@@ -972,6 +979,12 @@ export default {
 	},
 	// 计算属性
 	computed: {
+		isDeletedMode() {
+			return this.deletedMode || isDeletedPageRoute(this.$route);
+		},
+		deletedColumnLabel() {
+			return label => getDeletedColumnLabel(label, this.isDeletedMode);
+		},
 		PayType() {
 			return PayType;
 		},
@@ -1201,6 +1214,14 @@ export default {
 		},
 		//type为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
 		handleDisplayType(row, type) {
+			if (row.selfBankCardType && row.otherBankCardType) {
+				if (row.selfBankCardType !== row.otherBankCardType) {
+					return '银承互转';
+				}
+				if (row.selfBankCardType === BankAcceptanceType.ACCEPTANCE) return '承兑';
+				if (row.selfBankCardType === BankAcceptanceType.BANK_CASH) return '银行活期存款';
+				return row.selfBankCardType;
+			}
 			if (type === CASH_TYPE.TRANSFER) {
 				if (row.selfBankCardType !== row.otherBankCardType) {
 					return '银承互转';
@@ -1363,7 +1384,8 @@ export default {
 			if (this.queryAccountType != null && this.queryAccountType !== '') {
 				this.queryParams.params['queryAccountType'] = this.queryAccountType;
 			}
-			listRecord(this.queryParams).then(response => {
+			const params = this.isDeletedMode ? buildDeletedQueryParams(this.queryParams) : this.queryParams;
+			listRecord(params).then(response => {
 				this.recordList = response.rows;
 				this.total = response.total;
 				this.loading = false;
@@ -1807,13 +1829,8 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			this.download(
-				'system/record/export',
-				{
-					...this.queryParams
-				},
-				`现金记账_${new Date().getTime()}.xlsx`
-			);
+			const params = this.isDeletedMode ? buildDeletedQueryParams(this.queryParams) : this.queryParams;
+			this.download('system/record/export', params, `${this.isDeletedMode ? '已删除冲抵款' : '现金记账'}_${new Date().getTime()}.xlsx`);
 		},
 		// 关闭表单时清除localStorage和sessionStorage中的承兑信息填写状态
 		clearAcceptanceFillStatus() {

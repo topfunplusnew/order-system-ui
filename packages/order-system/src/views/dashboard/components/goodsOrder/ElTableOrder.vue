@@ -32,6 +32,7 @@ import { debounce, map, throttle } from 'lodash';
 import VirtualScroll, { VirtualColumn } from 'el-table-virtual-scroll';
 import { requestAnimationFrame } from 'vue-count-to/src/requestAnimationFrame';
 import { download } from '@/utils/request';
+import { buildDeletedQueryParams, isDeletedPageRoute } from '@/utils/deletedPage';
 
 export default {
 	name: 'ElTableOrder',
@@ -69,9 +70,16 @@ export default {
 				{ idx: 23, label: '收到条附件', prop: 'receiveProof' },
 				{ idx: 24, label: '可否编辑', prop: 'isedit', width: 112 },
 				{ idx: 26, label: '出厂含税', prop: 'supplierTaxIncluded', width: 112 },
-				{ idx: 27, label: '审核人', prop: 'checkUserName', width: 112 }
+				{ idx: 27, label: '审核人', prop: 'checkUserName', width: 112 },
+				...(this.isDeletedMode
+					? [
+							{ idx: 28, label: '删除时间', prop: 'updateTime', width: 170 },
+							{ idx: 29, label: '删除人', prop: 'updateByUserName', width: 120 }
+					  ]
+					: [])
 			];
 
+			const actionCols = this.isDeletedMode ? [] : [{ idx: 'orderActions', label: '订单操作', width: 250, align: 'center' }];
 			return [
 				{ idx: 'index', label: '序号', width: 50, align: 'center' },
 				{ idx: 'rowActions', label: '行操作', width: 100, align: 'center' },
@@ -79,18 +87,23 @@ export default {
 					const colConfig = this.columns.find(c => c.key === col.idx);
 					return colConfig && colConfig.visible;
 				}),
-				{ idx: 'orderActions', label: '订单操作', width: 250, align: 'center' }
+				...actionCols
 			];
 		},
 		/** 列显隐签名，变更时强制重建 virtual-scroll 以同步 VirtualColumn */
 		virtualTableColumnsKey() {
 			return map(this.columns, col => (col.visible ? 1 : 0)).join('');
+		},
+		isDeletedMode() {
+			return this.deletedMode || isDeletedPageRoute(this.$route);
+		},
+		deletedLabel() {
+			return this.isAdjustOrder ? '已删除调整单' : '已删除订单';
 		}
 	},
 	components: {
 		StateTag,
 		OrderHistoryCheck,
-		OrderHistoryList,
 		CheckFiles,
 		QuerySearchBar,
 		VirtualScroll,
@@ -126,6 +139,10 @@ export default {
 	props: {
 		// 是否为调整单
 		isAdjustOrder: {
+			type: Boolean,
+			default: false
+		},
+		deletedMode: {
 			type: Boolean,
 			default: false
 		}
@@ -179,7 +196,13 @@ export default {
 				{ key: 23, label: '收到条附件', visible: true },
 				{ key: 24, label: '可否编辑', visible: true },
 				{ key: 26, label: '出厂含税', visible: true },
-				{ key: 27, label: '审核人', visible: true }
+				{ key: 27, label: '审核人', visible: true },
+				...(this.deletedMode || isDeletedPageRoute(this.$route)
+					? [
+							{ key: 28, label: '删除时间', visible: true },
+							{ key: 29, label: '删除人', visible: true }
+					  ]
+					: [])
 			],
 			// 性能优化相关：缓存 DOM 尺寸信息，避免频繁访问
 			cachedScrollInfo: {
@@ -806,6 +829,10 @@ export default {
 		// 处理下拉菜单  使用的是事件委托
 		handleCommand(command, row) {
 			this.trackOrderActionRow(row);
+			if (this.isDeletedMode && !['checkOrderItemInfo'].includes(command)) {
+				this.$message.warning('已删除页面仅支持查看');
+				return;
+			}
 			// 根据不同操作委派不同的方法
 			switch (command) {
 				// 查看订单
@@ -906,15 +933,12 @@ export default {
 		},
 		// 订单目录导出改为后端接口，参数与列表查询保持一致
 		handleExport() {
-			const baseName = this.isAdjustOrder ? '调整单' : '订单';
-			this.download(
-				'system/goodsOrder/exportDirectory',
-				{
-					...this.queryParams,
-					isAdjust: this.isAdjustOrder ? -1 : 0
-				},
-				`${baseName}目录_${new Date().getTime()}.xlsx`
-			);
+			const baseName = this.isDeletedMode ? this.deletedLabel : this.isAdjustOrder ? '调整单' : '订单';
+			const params = {
+				...this.queryParams,
+				isAdjust: this.isAdjustOrder ? -1 : 0
+			};
+			this.download('system/goodsOrder/exportDirectory', this.isDeletedMode ? buildDeletedQueryParams(params) : params, `${baseName}目录_${new Date().getTime()}.xlsx`);
 		},
 
 		/**
@@ -950,10 +974,12 @@ export default {
 		 */
 		formatCellValue(row, colKey) {
 			switch (colKey) {
-				case 0: // ID
+				case 0: {
+					// ID
 					if (row.id === null || row.id === undefined || row.id === '') return '';
 					const idNum = Number(row.id);
 					return isNaN(idNum) ? row.id : idNum;
+				}
 				case 1: // 日期
 					return row.orderDate ? parseTime(row.orderDate, '{y}-{m}-{d}') : '';
 				case 2: // 客户
@@ -1115,16 +1141,13 @@ export default {
 		},
 		// 订单列表 不分页的导出
 		handleExportNoPage() {
-			const baseName = this.isAdjustOrder ? '调整单' : '订单';
-			this.download(
-				'system/goodsOrder/export',
-				{
-					...this.queryParams,
-					isAdjust: this.isAdjustOrder ? -1 : 0,
-					noPage: true
-				},
-				`${baseName}列表_${new Date().getTime()}.xlsx`
-			);
+			const baseName = this.isDeletedMode ? this.deletedLabel : this.isAdjustOrder ? '调整单' : '订单';
+			const params = {
+				...this.queryParams,
+				isAdjust: this.isAdjustOrder ? -1 : 0,
+				noPage: true
+			};
+			this.download('system/goodsOrder/export', this.isDeletedMode ? buildDeletedQueryParams(params) : params, `${baseName}列表_${new Date().getTime()}.xlsx`);
 		},
 		// 表头拖动结束后更新虚拟滚动表头布局
 		onHeaderDragend() {
@@ -1328,13 +1351,13 @@ export default {
 				<template #left>
 					<div style="padding: 10px">
 						<el-row :gutter="10">
-							<el-col v-if="!isAdjustOrder" :span="1.5">
+							<el-col v-if="!isAdjustOrder && !isDeletedMode" :span="1.5">
 								<el-button v-hasPermi="['system:goodsorder:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
 							</el-col>
-							<el-col v-if="!isAdjustOrder" :span="1.5">
+							<el-col v-if="!isAdjustOrder && !isDeletedMode" :span="1.5">
 								<el-button v-hasPermi="['system:goodsorder:import']" size="mini" @click="handleImportData">导入模板</el-button>
 							</el-col>
-							<el-col v-if="!isAdjustOrder" :span="1.5">
+							<el-col v-if="!isAdjustOrder && !isDeletedMode" :span="1.5">
 								<el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini" @click="handleAdd">添加订单信息</el-button>
 							</el-col>
 						</el-row>
@@ -1389,7 +1412,7 @@ export default {
 									<span v-once>查看</span>
 									<i class="el-icon-arrow-down el-icon--right" />
 								</el-button>
-								<el-dropdown-menu slot="dropdown">
+								<el-dropdown-menu v-if="!isDeletedMode" slot="dropdown">
 									<!-- 修改 -->
 									<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate" :disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)">
 										<span :title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''">修改</span>
@@ -1483,11 +1506,16 @@ export default {
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<el-row v-if="scope.row.checkState === '已审核'">
-										<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native.stop="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
+										<StateTag
+											:state-title="scope.row.checkState"
+											:state-mapper="{ 2: '已审核' }"
+											@click.native.stop="!isDeletedMode && hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
+											:style="{ cursor: !isDeletedMode && hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
+										/>
 									</el-row>
 									<el-row v-else>
 										<!-- 只有财务和超级管理员可以审核 -->
-										<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click.stop="handleCheck(scope.row)">
+										<el-button v-if="!isDeletedMode && hasPermission(['finance', 'admin'])" type="text" size="mini" @click.stop="handleCheck(scope.row)">
 											<span>审核</span>
 										</el-button>
 										<!-- 其他用户显示状态文本 -->
@@ -1496,12 +1524,17 @@ export default {
 								</div>
 								<el-row v-if="scope.row.checkState === '已审核'">
 									<!-- 只有财务和超级管理员可以取消审核 -->
-									<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
+									<StateTag
+										:state-title="scope.row.checkState"
+										:state-mapper="{ 2: '已审核' }"
+										@click.native="!isDeletedMode && hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
+										:style="{ cursor: !isDeletedMode && hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
+									/>
 								</el-row>
 								<el-row v-else>
 									<el-row>
 										<!-- 只有财务和超级管理员可以审核 -->
-										<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">
+										<el-button v-if="!isDeletedMode && hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">
 											<span v-once>审核</span>
 										</el-button>
 										<!-- 其他用户显示状态文本 -->
@@ -1680,14 +1713,14 @@ export default {
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<div v-if="Array.isArray(scope.row.attachmentList)">
-										<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+										<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" :flag="'path'" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 									</div>
 									<div v-else>
 										<el-tag type="danger">加载错误</el-tag>
 									</div>
 								</div>
 								<div v-if="Array.isArray(scope.row.attachmentList)">
-									<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+									<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" :flag="'path'" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 								</div>
 								<div v-else>
 									<el-tag type="danger" v-once>加载错误</el-tag>
@@ -1701,14 +1734,14 @@ export default {
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<div v-if="Array.isArray(scope.row.attachmentList)">
-										<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+										<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" :flag="'receiveProof'" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 									</div>
 									<div v-else>
 										<el-tag type="danger">加载错误</el-tag>
 									</div>
 								</div>
 								<div v-if="Array.isArray(scope.row.attachmentList)">
-									<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+									<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" :flag="'receiveProof'" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 								</div>
 								<div v-else>
 									<el-tag type="danger" v-once>加载错误</el-tag>
@@ -1753,8 +1786,10 @@ export default {
 							</el-tooltip>
 						</template>
 					</VirtualColumn>
+					<VirtualColumn v-if="isDeletedMode && columns[28].visible" show-overflow-tooltip label="删除时间" align="center" prop="updateTime" width="170" />
+					<VirtualColumn v-if="isDeletedMode && columns[29].visible" show-overflow-tooltip label="删除人" align="center" prop="updateByUserName" width="120" />
 					<!--      右侧操作栏-->
-					<VirtualColumn vfixed="right" show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="250">
+					<VirtualColumn v-if="!isDeletedMode" vfixed="right" show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="250">
 						<template slot-scope="scope">
 							<div>
 								<el-button size="mini" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
@@ -1812,7 +1847,7 @@ export default {
 								<span v-once>查看</span>
 								<i class="el-icon-arrow-down el-icon--right" />
 							</el-button>
-							<el-dropdown-menu slot="dropdown">
+							<el-dropdown-menu v-if="!isDeletedMode" slot="dropdown">
 								<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate" :disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)">
 									<span :title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''">修改</span>
 								</el-dropdown-item>
@@ -1849,10 +1884,15 @@ export default {
 					<!-- 审核 -->
 					<template v-else-if="col.idx === 5">
 						<el-row v-if="scope.row.checkState === '已审核'">
-							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native.stop="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
+							<StateTag
+								:state-title="scope.row.checkState"
+								:state-mapper="{ 2: '已审核' }"
+								@click.native.stop="!isDeletedMode && hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
+								:style="{ cursor: !isDeletedMode && hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
+							/>
 						</el-row>
 						<el-row v-else>
-							<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click.stop="handleCheck(scope.row)">
+							<el-button v-if="!isDeletedMode && hasPermission(['finance', 'admin'])" type="text" size="mini" @click.stop="handleCheck(scope.row)">
 								<span>审核</span>
 							</el-button>
 							<span v-else style="color: #909399; font-size: 12px">待审核</span>
@@ -1861,14 +1901,14 @@ export default {
 					<!-- 出库单 -->
 					<template v-else-if="col.idx === 22">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+							<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" :flag="'path'" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 						</div>
 						<el-tag v-else type="danger">加载错误</el-tag>
 					</template>
 					<!-- 收到条附件 -->
 					<template v-else-if="col.idx === 23">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+							<CheckFiles :attachmentList="scope.row.attachmentList" :is-upload="!isDeletedMode" :flag="'receiveProof'" @needToUpdate="value => !isDeletedMode && handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 						</div>
 						<el-tag v-else type="danger">加载错误</el-tag>
 					</template>
@@ -2004,7 +2044,7 @@ export default {
 						</el-tag>
 					</div>
 					<div class="action-right">
-						<el-button type="primary" size="medium" @click="handleAddCustomerInvoice" class="add-invoice-btn">
+						<el-button v-if="!isDeletedMode" type="primary" size="medium" @click="handleAddCustomerInvoice" class="add-invoice-btn">
 							<i class="el-icon-plus"></i>
 							新增开票
 						</el-button>
@@ -2015,7 +2055,7 @@ export default {
 				<div class="invoice-table-container">
 					<el-table v-loading="customerInvoiceListLoading" :data="customerInvoiceList" border stripe class="invoice-table compact-table" size="small" :header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }" :row-class-name="getInvoiceRowClassName">
 						<el-table-column prop="orderDate" label="日期" align="center">
-							<template #default="scope">
+							<template #default>
 								<div class="date-cell">
 									<i class="el-icon-date"></i>
 									{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
@@ -2024,7 +2064,7 @@ export default {
 						</el-table-column>
 
 						<el-table-column prop="companyName" label="客户名称" align="center">
-							<template #default="scope">
+							<template #default>
 								<div class="company-cell">
 									<i class="el-icon-office-building"></i>
 									{{ scope.row.companyName }}
@@ -2033,7 +2073,7 @@ export default {
 						</el-table-column>
 
 						<el-table-column prop="allPayments" label="需开票金额" align="center">
-							<template #default="scope">
+							<template #default>
 								<div class="amount-cell need-amount">
 									<span class="currency-symbol">¥</span>
 									{{ Number(currentOrderInfo ? currentOrderInfo.allPayments : 0).toLocaleString() }}
@@ -2118,7 +2158,7 @@ export default {
 								<el-tag type="warning" size="small" style="margin-left: 10px">{{ group.invoices.length }} 条记录</el-tag>
 							</div>
 							<div class="supplier-actions">
-								<el-button type="primary" size="small" @click="handleAddSupplierInvoice(group)">
+								<el-button v-if="!isDeletedMode" type="primary" size="small" @click="handleAddSupplierInvoice(group)">
 									<i class="el-icon-plus"></i>
 									新增开票
 								</el-button>
@@ -2129,7 +2169,7 @@ export default {
 						<div class="supplier-table-container">
 							<el-table :data="group.invoices" border stripe size="small" class="supplier-invoice-table" :header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }">
 								<el-table-column prop="orderDate" label="日期" align="center">
-									<template #default="scope">
+									<template #default>
 										<div class="date-cell">
 											<i class="el-icon-date"></i>
 											{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
@@ -2138,7 +2178,7 @@ export default {
 								</el-table-column>
 
 								<el-table-column prop="companyName" label="供应商名称" align="center">
-									<template #default="scope">
+									<template #default>
 										<div class="company-cell">
 											<i class="el-icon-office-building"></i>
 											{{ scope.row.companyName }}
@@ -2147,7 +2187,7 @@ export default {
 								</el-table-column>
 
 								<el-table-column label="需开票金额" align="center">
-									<template #default="scope">
+									<template #default>
 										<div class="amount-cell need-amount">
 											<span class="currency-symbol">¥</span>
 											{{ Number(group.needInvoiceAmount).toLocaleString() }}
