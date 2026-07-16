@@ -1,5 +1,5 @@
 <script>
-import { delGoodsOrder, getGoodsOrder, updateGoodsOrder, importOrderData } from '@/api/system/goodsOrder';
+import { delGoodsOrder, getDeletedGoodsOrder, getGoodsOrder, updateGoodsOrder, importOrderData } from '@/api/system/goodsOrder';
 import { listInvoiceOut } from '@/api/system/invoiceOut';
 import { listInvoiceIn } from '@/api/system/invoiceIn';
 import CheckFiles from '@/components/CheckFiles.vue';
@@ -522,8 +522,9 @@ export default {
 		checkOrderItemInfo(row) {
 			this.trackOrderActionRow(row);
 			const id = row.id;
+			const getOrderDetail = this.isDeletedMode ? getDeletedGoodsOrder : getGoodsOrder;
 			// 读取订单信息
-			getGoodsOrder(id)
+			getOrderDetail(id)
 				.then(res => {
 					if (!res || !res.data) {
 						this.$message.error('获取订单信息失败');

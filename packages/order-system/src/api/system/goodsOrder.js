@@ -29,6 +29,14 @@ export function getGoodsOrder(id) {
 	});
 }
 
+// 查询已逻辑删除的订单/调整单详情
+export function getDeletedGoodsOrder(id) {
+	return request({
+		url: '/system/goodsOrder/deleted/' + id,
+		method: 'get'
+	});
+}
+
 // 查询订单的所有发货单
 export function getSameDayOrders(id) {
 	return request({
