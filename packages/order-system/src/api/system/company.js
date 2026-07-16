@@ -44,6 +44,17 @@ export function getCompany(id, params) {
 	});
 }
 
+// 查询客户、供应商修改历史
+export function getCompanyHistory(id, companyType) {
+	return request({
+		url: '/system/company/history/' + id,
+		method: 'get',
+		params: {
+			companyType
+		}
+	});
+}
+
 // 新增客户、供应商信息
 export function addCompany(data) {
 	return request({

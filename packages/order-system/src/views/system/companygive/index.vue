@@ -54,16 +54,19 @@
 			<el-table-column v-if="columns[4].visible" label="老板电话" align="center" prop="leaderTel" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="电话" align="center" prop="relationTel" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="280">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="jumpBankNo(scope.row)">银行卡号</el-button>
 					<el-button v-hasPermi="['system:company:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
 					<el-button v-hasPermi="['system:company:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button size="mini" type="text" @click="handleViewEditHistory(scope.row)">修改记录</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+
+		<CompanyEditHistoryDialog :visible.sync="historyDialogVisible" :company-id="historyCompanyId" :company-type="companyType" />
 
 		<!-- 添加或修改供应商、供应商信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%" append-to-body>
@@ -247,13 +250,14 @@ import { addCompany, checkCustomerIsExit, checkSupplierIsExit, delCompany, getCo
 import { excludeParams } from '@/api/tool/exclude';
 import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
 import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue';
+import CompanyEditHistoryDialog from '@/views/dashboard/components/company/CompanyEditHistoryDialog.vue';
 import { checkCarsIsExit } from '@/api/system/cars';
 import { PUBLIC_DICT_TYPE } from '../../../api/tool/enums';
 import _ from 'lodash';
 
 export default {
 	name: 'CompanyGive',
-	components: { AddBankAccounts },
+	components: { AddBankAccounts, CompanyEditHistoryDialog },
 	data() {
 		return {
 			// 遮罩层
@@ -274,6 +278,8 @@ export default {
 			title: '',
 			// 是否显示弹出层
 			open: false,
+			historyDialogVisible: false,
+			historyCompanyId: null,
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
@@ -417,6 +423,9 @@ export default {
 	computed: {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
+		},
+		companyType() {
+			return PUBLIC_DICT_TYPE.SUPPLIER;
 		}
 	},
 	// 展示与隐藏
@@ -740,30 +749,64 @@ export default {
 			this.open = true;
 			this.title = '添加供应商信息';
 		},
+
+		handleViewEditHistory(row) {
+			this.historyCompanyId = row.id;
+			this.historyDialogVisible = true;
+		},
+
+		openCompanyEditForm(companyData) {
+			this.form = JSON.parse(JSON.stringify(companyData));
+			this.open = true;
+			this.title = '修改供应商信息';
+		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
 			this.reset();
 			const id = row.id || this.ids;
-			getCompany(id, '供应商').then(response => {
-				this.form = response.data;
-				this.open = true;
-				this.title = '修改供应商信息';
-			});
+			getCompany(id, PUBLIC_DICT_TYPE.SUPPLIER)
+				.then(response => {
+					const companyData = response.data;
+					if (!companyData) {
+						this.$message.error('获取供应商信息失败');
+						return;
+					}
+					if (companyData.shouldTrackEditReason === true) {
+						this.$prompt('请输入修改原因', '提示', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							inputType: 'textarea',
+							inputPlaceholder: '请输入修改原因',
+							inputValidator: value => (!value || value.trim() === '' ? '修改原因不能为空' : true)
+						})
+							.then(({ value }) => {
+								this.openCompanyEditForm({ ...companyData, editReason: value.trim() });
+							})
+							.catch(() => {
+								this.$message.info('已取消修改');
+							});
+						return;
+					}
+					this.openCompanyEditForm(companyData);
+				})
+				.catch(() => {
+					this.$message.error('获取供应商信息失败');
+				});
 		},
 		/** 提交按钮 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					const data = excludeParams({ ...this.form }, this.$exclude);
+					delete data.shouldTrackEditReason;
+					data.companyType = PUBLIC_DICT_TYPE.SUPPLIER;
 					if (this.form.id != null) {
-						this.form.delFlag = null;
-						this.form.addtime = null;
-						this.form.updateTime = null;
-						this.form.userId = null;
 						checkSupplierIsExit(this.form.companyName, this.form.id).then(res => {
 							if (res.data) {
-								updateCompany(this.form).then(() => {
+								updateCompany(data).then(() => {
 									this.$modal.msgSuccess('修改成功');
 									this.open = false;
+									this.reset();
 									this.getList();
 								});
 							} else {
@@ -771,17 +814,13 @@ export default {
 							}
 						});
 					} else {
-						this.form.delFlag = null;
-						this.form.addtime = null;
-						this.form.updateTime = null;
-						this.form.userId = null;
 						// 校验供应商是否已经存在
 						checkSupplierIsExit(this.form.companyName, null).then(res => {
 							if (!res.data) {
 								this.$message.error('供应商已存在,不允许新增!');
 								return;
 							}
-							addCompany(this.form).then(() => {
+							addCompany(data).then(() => {
 								this.$modal.msgSuccess('新增成功');
 								this.open = false;
 								this.getList();
