@@ -20,10 +20,10 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8 fund-report__toolbar">
-			<el-col :span="12">
-				<h3>{{ reportConfig.title }}</h3>
-			</el-col>
 			<right-toolbar :columns="columns" @queryTable="getList" :table-name="reportConfig.tableName">
+				<template #left>
+					<h3>{{ reportConfig.title }}</h3>
+				</template>
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
@@ -146,11 +146,17 @@ export default {
 }
 
 .fund-report__toolbar {
-	display: flex;
-	align-items: center;
+	margin-right: 0 !important;
+	margin-left: 0 !important;
 }
 
-.fund-report__toolbar h3 {
+.fund-report__toolbar ::v-deep .toolbar-container {
+	box-sizing: border-box;
+	min-height: 54px;
+	padding: 8px 12px;
+}
+
+.fund-report__toolbar ::v-deep h3 {
 	margin: 0;
 	font-size: 16px;
 	line-height: 28px;
