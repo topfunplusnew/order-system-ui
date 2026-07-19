@@ -15,9 +15,8 @@ export function normalizeInvoiceOtherDateRange(dateRange) {
 		return normalizedRange;
 	}
 
-	const startDate = startTime.slice(0, 10);
 	const endDate = endTime.slice(0, 10);
-	if (startDate === endDate && endTime.slice(11) === '00:00:00') {
+	if (endTime.slice(11) === '00:00:00') {
 		normalizedRange[1] = `${endDate} 23:59:59`;
 	}
 

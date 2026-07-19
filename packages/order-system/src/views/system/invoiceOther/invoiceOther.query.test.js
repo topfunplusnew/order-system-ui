@@ -11,7 +11,7 @@ describe('invoiceOther query helpers', () => {
 		expect(source).toEqual(['2026-04-20 00:00:00', '2026-04-20 00:00:00']);
 	});
 
-	test('keeps cross-day ranges unchanged', () => {
-		expect(normalizeInvoiceOtherDateRange(['2026-04-20 00:00:00', '2026-04-21 00:00:00'])).toEqual(['2026-04-20 00:00:00', '2026-04-21 00:00:00']);
+	test('expands cross-day range end to the end of the selected day', () => {
+		expect(normalizeInvoiceOtherDateRange(['2026-07-01 00:00:00', '2026-07-30 00:00:00'])).toEqual(['2026-07-01 00:00:00', '2026-07-30 23:59:59']);
 	});
 });
