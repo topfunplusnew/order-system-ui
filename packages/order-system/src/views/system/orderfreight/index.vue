@@ -112,7 +112,15 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[2].visible" label="运费来源" align="center" prop="sourceType" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="客户" align="center" prop="customer" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[3].visible" label="订单日期" align="center" prop="documentDate" width="120" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ getOrderFreightDocumentDate(scope.row) }}</div>
+						<span>{{ getOrderFreightDocumentDate(scope.row) }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="客户" align="center" prop="customer" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.customer }}</div>
@@ -120,7 +128,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="车牌号/柜号" align="center" prop="carNo" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[5].visible" label="车牌号/柜号" align="center" prop="carNo" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.carNo }}</div>
@@ -128,7 +136,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="运费类型" align="center" prop="freightType" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[6].visible" label="运费类型" align="center" prop="freightType" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.freightType }}</div>
@@ -136,7 +144,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="车队" align="center" prop="fleet" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[7].visible" label="车队" align="center" prop="fleet" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.fleet }}</div>
@@ -144,7 +152,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="海运公司" align="center" prop="driverName" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[8].visible" label="海运公司" align="center" prop="driverName" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.driverName }}</div>
@@ -152,7 +160,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[8].visible" label="金额" align="center" prop="moneyAmount" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" label="金额" align="center" prop="moneyAmount" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.moneyAmount }}</div>
@@ -160,7 +168,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="对方户名" align="center" prop="otherAcountsName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[10].visible" label="对方户名" align="center" prop="otherAcountsName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.otherAcountsName }}</div>
@@ -168,7 +176,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="对方账号" align="center" prop="otherBankNo" width="180" show-overflow-tooltip>
+			<el-table-column v-if="columns[11].visible" label="对方账号" align="center" prop="otherBankNo" width="180" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.otherBankNo }}</div>
@@ -176,7 +184,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="我方户名" align="center" prop="selfAcountsName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[12].visible" label="我方户名" align="center" prop="selfAcountsName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.selfAcountsName }}</div>
@@ -184,7 +192,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
+			<el-table-column v-if="columns[13].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.selfBankNo }}</div>
@@ -192,7 +200,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[13].visible" label="付款人" align="center" prop="payUserName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[14].visible" label="付款人" align="center" prop="payUserName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.payUserName }}</div>
@@ -200,7 +208,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[14].visible" label="申请日期" align="center" prop="applyDate" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[15].visible" label="申请日期" align="center" prop="applyDate" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.applyDate }}</div>
@@ -208,7 +216,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[15].visible" label="申请人" align="center" prop="applyUserName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[16].visible" label="申请人" align="center" prop="applyUserName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.applyUserName }}</div>
@@ -216,7 +224,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[16].visible" label="备注" align="center" prop="comments" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[17].visible" label="备注" align="center" prop="comments" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.comments }}</div>
@@ -468,7 +476,7 @@ import InfoDialog from '../../../components/InfoDialog.vue';
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
 import { PaymentState, PAYMENT_STATE } from '../../../api/tool/enums';
 import CheckOrderInfo from '../../dashboard/components/orderfreight/CheckOrderInfo.vue';
-import { mixin_order_freight_fill } from './orderFreightFill';
+import { mixin_order_freight_fill, getOrderFreightDocumentDate } from './orderFreightFill';
 import { FREIGHT_TYPE, mixin_freight_payment } from '@/views/dashboard/mixins/freight/freight_payment';
 import { fix_2 } from '../../../api/tool/format';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
@@ -547,20 +555,21 @@ export default {
 				{ key: 0, label: `支付状态`, visible: true },
 				{ key: 1, label: `付款日期`, visible: true },
 				{ key: 2, label: `运费来源`, visible: true },
-				{ key: 3, label: `客户`, visible: true },
-				{ key: 4, label: `车牌号/柜号`, visible: true },
-				{ key: 5, label: `运费类型`, visible: true },
-				{ key: 6, label: `车队`, visible: true },
-				{ key: 7, label: `海运公司`, visible: true },
-				{ key: 8, label: `金额`, visible: true },
-				{ key: 9, label: `对方户名`, visible: true },
-				{ key: 10, label: `对方账号`, visible: true },
-				{ key: 11, label: `我方户名`, visible: true },
-				{ key: 12, label: `我方账号`, visible: true },
-				{ key: 13, label: `付款人`, visible: true },
-				{ key: 14, label: `申请日期`, visible: true },
-				{ key: 15, label: `申请人`, visible: true },
-				{ key: 16, label: `备注`, visible: true }
+				{ key: 3, label: `订单日期`, visible: true },
+				{ key: 4, label: `客户`, visible: true },
+				{ key: 5, label: `车牌号/柜号`, visible: true },
+				{ key: 6, label: `运费类型`, visible: true },
+				{ key: 7, label: `车队`, visible: true },
+				{ key: 8, label: `海运公司`, visible: true },
+				{ key: 9, label: `金额`, visible: true },
+				{ key: 10, label: `对方户名`, visible: true },
+				{ key: 11, label: `对方账号`, visible: true },
+				{ key: 12, label: `我方户名`, visible: true },
+				{ key: 13, label: `我方账号`, visible: true },
+				{ key: 14, label: `付款人`, visible: true },
+				{ key: 15, label: `申请日期`, visible: true },
+				{ key: 16, label: `申请人`, visible: true },
+				{ key: 17, label: `备注`, visible: true }
 			],
 			bankInputDisabled: false,
 			tID: null,
@@ -761,6 +770,7 @@ export default {
 		// 如果有 freightId 或 otherBankNo，保留它们，不清除
 	},
 	methods: {
+		getOrderFreightDocumentDate,
 		/**
 		 * 将运费行主键规范为与用户配置一致的字符串，空值返回 null
 		 * @param {*} value 行 id
