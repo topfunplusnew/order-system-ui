@@ -1,3 +1,28 @@
+<!--
+	运费支付列表“订单日期”字段维护说明
+
+	1. 数据来源
+	   后端的 GET /system/orderFreight/list 列表接口和 GET /system/orderFreight/{id} 详情接口，
+	   会根据运费来源返回关联业务对象：订单来源返回 goodsOrder，库存来源返回 inventoryMain。
+
+	2. 日期取值规则
+	   - 存在 goodsOrder 时，订单日期取 goodsOrder.orderDate。
+	   - 不存在 goodsOrder、但存在 inventoryMain 时，订单日期取 inventoryMain.storeDate（库存入库日期）。
+	   - 两个关联对象都不存在，或日期字段为空时，显示“-”，兼容历史数据并避免模板读取空对象报错。
+
+	3. 实现约束
+	   日期提取统一由 orderFreightDocumentDate.js 中的 getOrderFreightDocumentDate 方法负责，
+	   不在 getList、按运费 ID 查询、按银行卡查询等不同请求回调里重复加工数据。
+	   因此无论页面通过分页列表、运费 ID 过滤还是银行卡过滤获得行数据，都会使用同一套日期规则。
+
+	4. 列位置与列显隐
+	   “订单日期”必须紧跟在“运费来源”后面，并同步维护 data() 中的 columns 配置索引，
+	   以保证 RightToolbar 的列显隐顺序与实际表格列顺序一致。后续如果在该位置增删列，请同时调整后续 columns[n] 引用。
+
+	5. 后端字段变更注意事项
+	   如果后端以后将 goodsOrder.orderDate 或 inventoryMain.storeDate 改名，必须优先修改统一提取函数及其测试，
+	   不要只修改模板，否则其他查询入口或历史数据的降级逻辑可能出现不一致。
+-->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="180px">
@@ -112,7 +137,12 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[2].visible" label="运费来源" align="center" prop="sourceType" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="客户" align="center" prop="customer" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[3].visible" label="订单日期" align="center" width="160" show-overflow-tooltip>
+				<template #default="scope">
+					{{ getOrderFreightDocumentDate(scope.row) || '-' }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="客户" align="center" prop="customer" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.customer }}</div>
@@ -120,7 +150,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="车牌号/柜号" align="center" prop="carNo" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[5].visible" label="车牌号/柜号" align="center" prop="carNo" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.carNo }}</div>
@@ -128,7 +158,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="运费类型" align="center" prop="freightType" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[6].visible" label="运费类型" align="center" prop="freightType" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.freightType }}</div>
@@ -136,7 +166,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="车队" align="center" prop="fleet" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[7].visible" label="车队" align="center" prop="fleet" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.fleet }}</div>
@@ -144,7 +174,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="海运公司" align="center" prop="driverName" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[8].visible" label="海运公司" align="center" prop="driverName" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.driverName }}</div>
@@ -152,7 +182,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[8].visible" label="金额" align="center" prop="moneyAmount" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" label="金额" align="center" prop="moneyAmount" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.moneyAmount }}</div>
@@ -160,7 +190,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="对方户名" align="center" prop="otherAcountsName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[10].visible" label="对方户名" align="center" prop="otherAcountsName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.otherAcountsName }}</div>
@@ -168,7 +198,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="对方账号" align="center" prop="otherBankNo" width="180" show-overflow-tooltip>
+			<el-table-column v-if="columns[11].visible" label="对方账号" align="center" prop="otherBankNo" width="180" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.otherBankNo }}</div>
@@ -176,7 +206,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="我方户名" align="center" prop="selfAcountsName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[12].visible" label="我方户名" align="center" prop="selfAcountsName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.selfAcountsName }}</div>
@@ -184,7 +214,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
+			<el-table-column v-if="columns[13].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.selfBankNo }}</div>
@@ -192,7 +222,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[13].visible" label="付款人" align="center" prop="payUserName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[14].visible" label="付款人" align="center" prop="payUserName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.payUserName }}</div>
@@ -200,7 +230,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[14].visible" label="申请日期" align="center" prop="applyDate" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[15].visible" label="申请日期" align="center" prop="applyDate" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.applyDate }}</div>
@@ -208,7 +238,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[15].visible" label="申请人" align="center" prop="applyUserName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[16].visible" label="申请人" align="center" prop="applyUserName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.applyUserName }}</div>
@@ -216,7 +246,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[16].visible" label="备注" align="center" prop="comments" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[17].visible" label="备注" align="center" prop="comments" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.comments }}</div>
@@ -476,6 +506,7 @@ import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { isNull } from '@/main';
 import { batchDeleteUserConfig, getUserConfig, saveUserConfig } from '@/api/user-config';
 import { UserConfigKey } from '@/api/tool/user-config';
+import { getOrderFreightDocumentDate } from './orderFreightDocumentDate';
 
 export default {
 	name: 'OrderFreight',
@@ -547,20 +578,21 @@ export default {
 				{ key: 0, label: `支付状态`, visible: true },
 				{ key: 1, label: `付款日期`, visible: true },
 				{ key: 2, label: `运费来源`, visible: true },
-				{ key: 3, label: `客户`, visible: true },
-				{ key: 4, label: `车牌号/柜号`, visible: true },
-				{ key: 5, label: `运费类型`, visible: true },
-				{ key: 6, label: `车队`, visible: true },
-				{ key: 7, label: `海运公司`, visible: true },
-				{ key: 8, label: `金额`, visible: true },
-				{ key: 9, label: `对方户名`, visible: true },
-				{ key: 10, label: `对方账号`, visible: true },
-				{ key: 11, label: `我方户名`, visible: true },
-				{ key: 12, label: `我方账号`, visible: true },
-				{ key: 13, label: `付款人`, visible: true },
-				{ key: 14, label: `申请日期`, visible: true },
-				{ key: 15, label: `申请人`, visible: true },
-				{ key: 16, label: `备注`, visible: true }
+				{ key: 3, label: `订单日期`, visible: true },
+				{ key: 4, label: `客户`, visible: true },
+				{ key: 5, label: `车牌号/柜号`, visible: true },
+				{ key: 6, label: `运费类型`, visible: true },
+				{ key: 7, label: `车队`, visible: true },
+				{ key: 8, label: `海运公司`, visible: true },
+				{ key: 9, label: `金额`, visible: true },
+				{ key: 10, label: `对方户名`, visible: true },
+				{ key: 11, label: `对方账号`, visible: true },
+				{ key: 12, label: `我方户名`, visible: true },
+				{ key: 13, label: `我方账号`, visible: true },
+				{ key: 14, label: `付款人`, visible: true },
+				{ key: 15, label: `申请日期`, visible: true },
+				{ key: 16, label: `申请人`, visible: true },
+				{ key: 17, label: `备注`, visible: true }
 			],
 			bankInputDisabled: false,
 			tID: null,
@@ -761,6 +793,7 @@ export default {
 		// 如果有 freightId 或 otherBankNo，保留它们，不清除
 	},
 	methods: {
+		getOrderFreightDocumentDate,
 		/**
 		 * 将运费行主键规范为与用户配置一致的字符串，空值返回 null
 		 * @param {*} value 行 id

@@ -2,6 +2,24 @@
 import _ from 'lodash';
 import request from '@/utils/request';
 
+// 收款报表
+export function getReceiveReport(query) {
+	return request({
+		url: '/statistics/receiveReport',
+		method: 'get',
+		params: query
+	});
+}
+
+// 付款报表
+export function getPaymentReport(query) {
+	return request({
+		url: '/statistics/paymentReport',
+		method: 'get',
+		params: query
+	});
+}
+
 // 运费报表
 export function getOrderFreight(query) {
 	return request({
