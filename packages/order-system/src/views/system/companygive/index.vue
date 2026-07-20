@@ -1,3 +1,7 @@
+<!--
+用户需求：供应商信息列表需要根据修改时间是否为 null，控制“修改记录”按钮的禁用状态，不能禁用编辑按钮。
+实际改动：恢复“编辑”按钮原有可用状态；供应商行数据 updateTime 为 null 时禁用“修改记录”按钮。
+-->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
@@ -59,7 +63,7 @@
 					<el-button size="mini" type="text" @click="jumpBankNo(scope.row)">银行卡号</el-button>
 					<el-button v-hasPermi="['system:company:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
 					<el-button v-hasPermi="['system:company:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
-					<el-button size="mini" type="text" @click="handleViewEditHistory(scope.row)">修改记录</el-button>
+					<el-button size="mini" type="text" :disabled="scope.row.updateTime == null" @click="handleViewEditHistory(scope.row)">修改记录</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
