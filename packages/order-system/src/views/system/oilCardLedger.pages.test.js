@@ -1,4 +1,4 @@
-/* 用户需求：在 system/oilCardLedgerMain/index 和 system/oilCardLedgerSub/index 创建两个油卡登记台账页面。实际改动：测试两个入口配置及共享页面的查询、表单、删除和导出对接。 */
+/* 用户需求：主卡和副卡登记台账新增成功后必须关闭弹窗并刷新页面。实际改动：测试共享页面使用有效的成功提示方法，并在提交成功后关闭弹窗、刷新列表。 */
 /* global describe, test, expect */
 import fs from 'fs';
 import path from 'path';
@@ -33,5 +33,9 @@ describe('oil card ledger pages', () => {
 		expect(source).toContain('delOilCardLedger(serializeLedgerIds(ids))');
 		expect(source).toContain("this.download('/system/oilCardLedger/export', exportParams");
 		expect(source).toContain('v-if="cardType === \'主卡\'"');
+		expect(source).toContain("this.$modal.msgSuccess(this.form.id ? '修改成功' : '新增成功');");
+		expect(source).toContain('this.open = false;');
+		expect(source).toContain('this.getList();');
+		expect(source).not.toContain('this.msgSuccess(');
 	});
 });

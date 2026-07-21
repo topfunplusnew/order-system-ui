@@ -1,4 +1,4 @@
-<!-- 用户需求：创建主卡登记与副卡登记页面并完成油卡登记台账全部前端功能。实际改动：新增共享列表、查询、表单、下拉、增删改和导出组件，并按卡类型控制字段与请求。 -->
+<!-- 用户需求：主卡和副卡登记台账新增成功后关闭弹窗并刷新页面。实际改动：将无效的 msgSuccess 调用改为项目可用的 $modal.msgSuccess，确保成功回调继续关闭弹窗、刷新列表，并同步修正删除成功提示。 -->
 <template>
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="110px">
@@ -273,7 +273,7 @@ export default {
 				const request = this.form.id ? updateOilCardLedger(payload) : addOilCardLedger(payload);
 				request
 					.then(() => {
-						this.msgSuccess(this.form.id ? '修改成功' : '新增成功');
+						this.$modal.msgSuccess(this.form.id ? '修改成功' : '新增成功');
 						this.open = false;
 						this.getList();
 					})
@@ -287,7 +287,7 @@ export default {
 			this.$confirm(`是否确认删除选中的${this.pageTitle}记录？`, '提示', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' })
 				.then(() => delOilCardLedger(serializeLedgerIds(ids)))
 				.then(() => {
-					this.msgSuccess('删除成功');
+					this.$modal.msgSuccess('删除成功');
 					this.getList();
 				})
 				.catch(() => {});
