@@ -1,4 +1,4 @@
-/* 用户需求：主卡和副卡登记台账新增成功后必须关闭弹窗并刷新页面。实际改动：测试共享页面使用有效的成功提示方法，并在提交成功后关闭弹窗、刷新列表。 */
+/* 用户需求：主卡和副卡登记表单参考 OilCardConsume 自动计算加油金额。实际改动：测试共享页面在加油量、单价变化时调用统一计算方法，并保留提交成功回调测试。 */
 /* global describe, test, expect */
 import fs from 'fs';
 import path from 'path';
@@ -37,5 +37,7 @@ describe('oil card ledger pages', () => {
 		expect(source).toContain('this.open = false;');
 		expect(source).toContain('this.getList();');
 		expect(source).not.toContain('this.msgSuccess(');
+		expect(source).toContain('@change="calculateRefuelingAmount"');
+		expect(source).toContain('this.form.refuelingAmount = calculateLedgerRefuelingAmount(this.form.refuelingVolume, this.form.unitPrice);');
 	});
 });

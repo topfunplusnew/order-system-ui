@@ -1,4 +1,4 @@
-<!-- 用户需求：主卡和副卡登记台账新增成功后关闭弹窗并刷新页面。实际改动：将无效的 msgSuccess 调用改为项目可用的 $modal.msgSuccess，确保成功回调继续关闭弹窗、刷新列表，并同步修正删除成功提示。 -->
+<!-- 用户需求：主卡和副卡登记表单参考 OilCardConsume，根据加油量和单价自动计算加油金额。实际改动：加油量或单价变化时调用统一计算函数更新两位小数金额，同时保留提交成功后关闭弹窗和刷新列表的逻辑。 -->
 <template>
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="110px">
@@ -107,10 +107,10 @@
 						<el-form-item :label="transferAmountLabel" prop="transferAmount"><el-input-number v-model="form.transferAmount" :min="0" :precision="2" controls-position="right" style="width: 100%" /></el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="加油量（升）" prop="refuelingVolume"><el-input-number v-model="form.refuelingVolume" :min="0" :precision="2" controls-position="right" style="width: 100%" /></el-form-item>
+						<el-form-item label="加油量（升）" prop="refuelingVolume"><el-input-number v-model="form.refuelingVolume" :min="0" :precision="2" controls-position="right" style="width: 100%" @change="calculateRefuelingAmount" /></el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="单价" prop="unitPrice"><el-input-number v-model="form.unitPrice" :min="0" :precision="2" controls-position="right" style="width: 100%" /></el-form-item>
+						<el-form-item label="单价" prop="unitPrice"><el-input-number v-model="form.unitPrice" :min="0" :precision="2" controls-position="right" style="width: 100%" @change="calculateRefuelingAmount" /></el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item :label="refuelingAmountLabel" prop="refuelingAmount"><el-input-number v-model="form.refuelingAmount" :min="0" :precision="2" controls-position="right" style="width: 100%" /></el-form-item>
@@ -135,7 +135,7 @@
 import { addOilCardLedger, delOilCardLedger, getOilCardLedger, listOilCardLedger, updateOilCardLedger } from '@/api/system/oilCardLedger';
 import { listOilCard } from '@/api/system/oilCard';
 import { listVehicles } from '@/api/system/vehicles';
-import { buildLedgerColumns, buildLedgerExportParams, buildLedgerPayload, buildLedgerQuery, getLedgerCellValue, serializeLedgerIds } from './oilCardLedger.config';
+import { buildLedgerColumns, buildLedgerExportParams, buildLedgerPayload, buildLedgerQuery, calculateLedgerRefuelingAmount, getLedgerCellValue, serializeLedgerIds } from './oilCardLedger.config';
 
 const createForm = () => ({
 	id: undefined,
@@ -203,6 +203,9 @@ export default {
 		this.getList();
 	},
 	methods: {
+		calculateRefuelingAmount() {
+			this.form.refuelingAmount = calculateLedgerRefuelingAmount(this.form.refuelingVolume, this.form.unitPrice);
+		},
 		permission(action) {
 			return `${this.permissionPrefix}:${action}`;
 		},

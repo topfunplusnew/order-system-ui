@@ -1,8 +1,15 @@
-/* 用户需求：创建主卡登记与副卡登记页面并严格区分字段和提交规则。实际改动：测试主副卡列配置、查询和导出参数、请求白名单及批量删除序列化。 */
+/* 用户需求：主卡和副卡登记表单参考 OilCardConsume，根据加油量和单价自动计算加油金额。实际改动：测试金额计算的两位小数精度、零值和未填写场景，并保留原有配置测试。 */
 /* global describe, test, expect */
-import { buildLedgerColumns, buildLedgerExportParams, buildLedgerPayload, buildLedgerQuery, serializeLedgerIds } from './oilCardLedger.config';
+import { buildLedgerColumns, buildLedgerExportParams, buildLedgerPayload, buildLedgerQuery, calculateLedgerRefuelingAmount, serializeLedgerIds } from './oilCardLedger.config';
 
 describe('oil card ledger configuration', () => {
+	test('calculates refueling amount from volume and unit price with two decimal places', () => {
+		expect(calculateLedgerRefuelingAmount(12.35, 7.26)).toBe(89.66);
+		expect(calculateLedgerRefuelingAmount(0, 7.26)).toBe(0);
+		expect(calculateLedgerRefuelingAmount(undefined, 7.26)).toBeUndefined();
+		expect(calculateLedgerRefuelingAmount(12.35, null)).toBeUndefined();
+	});
+
 	test('builds documented main-card columns', () => {
 		const columns = buildLedgerColumns('主卡');
 

@@ -1,4 +1,4 @@
-/* 用户需求：创建主卡登记与副卡登记页面并严格区分字段和提交规则。实际改动：集中定义主副卡列、查询导出参数、请求白名单和删除ID序列化逻辑。 */
+/* 用户需求：主卡和副卡登记表单参考 OilCardConsume，根据加油量和单价自动计算加油金额。实际改动：新增统一的加油金额两位小数计算函数，并保留主副卡配置、请求参数和删除序列化逻辑。 */
 const SHARED_COLUMNS = [
 	{ label: '加油卡卡号', prop: 'oilCardNo', path: ['oilCard', 'oilCardNo'], minWidth: 150 },
 	{ label: '使用加油卡时间', prop: 'useDate', minWidth: 170 },
@@ -18,6 +18,13 @@ const PAYLOAD_FIELDS = ['oilCardId', 'useDate', 'vehicleId', 'locationReason', '
 
 const trimValue = value => (typeof value === 'string' ? value.trim() : value);
 const hasValue = value => value !== undefined && value !== null && value !== '';
+
+export function calculateLedgerRefuelingAmount(refuelingVolume, unitPrice) {
+	if (!hasValue(refuelingVolume) || !hasValue(unitPrice)) return undefined;
+	const amount = Number(refuelingVolume) * Number(unitPrice);
+	if (!Number.isFinite(amount)) return undefined;
+	return Math.round((amount + Number.EPSILON) * 100) / 100;
+}
 
 export function buildLedgerColumns(cardType) {
 	const columns = SHARED_COLUMNS.map(column => ({ ...column }));
