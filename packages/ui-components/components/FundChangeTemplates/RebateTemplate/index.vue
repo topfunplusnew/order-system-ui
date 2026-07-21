@@ -1,3 +1,4 @@
+<!-- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。 -->
 <script>
 /**
  * 返利变动详情模板
@@ -9,8 +10,11 @@ import { REBATE_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 import { buildRebateRecordRows, REBATE_SUMMARY_PROPS, sumRebateDiffRows } from '@/utils/fundChange/rebate';
 
+import FundChangeExportButton from '../export/FundChangeExportButton.vue';
+
 export default {
 	name: 'RebateTemplate',
+	components: { FundChangeExportButton },
 	props: {
 		compareData: { type: Array, default: () => [] },
 		moduleName: { type: String, default: '' },
@@ -99,6 +103,7 @@ export default {
 
 <template>
 	<div class="fund-change-template">
+		<FundChangeExportButton :columns="columns" :rows="tableData" :summary-rows="diffSummaryTableData" :module-label="summaryModuleLabel" :summary-only="summaryOnly" />
 		<el-table v-if="!summaryOnly" :data="tableData" border :row-class-name="tableRowClassName" :span-method="recordSpanMethod" show-summary :summary-method="getTableSummary" style="width: 100%">
 			<el-table-column :label="summaryModuleLabel" width="100" fixed class-name="record-col">
 				<template slot-scope="scope">

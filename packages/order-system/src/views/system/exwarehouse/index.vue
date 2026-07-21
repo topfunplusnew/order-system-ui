@@ -1,11 +1,12 @@
+<!-- 用户需求：正常发货出库记录页面的日期搜索改为时间范围搜索。实际改动：将原日期范围升级为可选择时分秒的时间范围，并继续同步到 outDateStart、outDateEnd 查询和导出参数。 -->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="仓库名称" prop="storeHouseName">
 				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="出库日期">
-				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+			<el-form-item label="时间范围">
+				<el-date-picker v-model="dateRange" style="width: 360px" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -325,6 +326,7 @@ import { getInventoryMainByDetailId } from '../../../api/system/detail';
 import { listOrderDetailByOrderNos } from '../../../api/system/orderDetail';
 import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
+import { applyInventoryRecordDateRange } from '@/views/inventoryDetailViews/inventoryRecordDateRange';
 
 export default {
 	name: 'ExWarehouse',
@@ -387,8 +389,7 @@ export default {
 	},
 	watch: {
 		dateRange(val) {
-			this.queryParams.outDateStart = (val && val[0]) || null;
-			this.queryParams.outDateEnd = (val && val[1]) || null;
+			applyInventoryRecordDateRange(this.queryParams, val, 'outDateStart', 'outDateEnd');
 		}
 	},
 	created() {

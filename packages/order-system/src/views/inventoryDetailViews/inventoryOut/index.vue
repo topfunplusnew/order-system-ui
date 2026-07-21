@@ -1,11 +1,9 @@
+<!-- 用户需求：出库记录页面的日期搜索改为时间范围搜索。实际改动：将开始、结束日期两个输入框合并为时分秒范围控件，并直接同步到原 startDate、endDate 查询和导出参数。 -->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="150">
-			<el-form-item label="开始日期" prop="startDate">
-				<el-date-picker v-model="queryParams.startDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择开始日期" clearable />
-			</el-form-item>
-			<el-form-item label="结束日期" prop="endDate">
-				<el-date-picker v-model="queryParams.endDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择结束日期" clearable />
+			<el-form-item label="时间范围">
+				<el-date-picker v-model="dateRange" type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" clearable style="width: 360px" />
 			</el-form-item>
 			<!-- 因为没用，后端要求删除 -->
 			<!-- <el-form-item label="仓库名称" prop="storeHouseName">
@@ -49,6 +47,7 @@
 import _ from 'lodash';
 import { listOutStatistics } from '../../../api/inventory/index';
 import { fix_2 } from '../../../api/tool/format';
+import { applyInventoryRecordDateRange } from '../inventoryRecordDateRange';
 
 export default {
 	name: 'InventoryOut',
@@ -58,6 +57,7 @@ export default {
 			showSearch: true,
 			total: 0,
 			inventoryList: [],
+			dateRange: [],
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
@@ -85,6 +85,11 @@ export default {
 			]
 		};
 	},
+	watch: {
+		dateRange(value) {
+			applyInventoryRecordDateRange(this.queryParams, value, 'startDate', 'endDate');
+		}
+	},
 	created() {
 		this.getList();
 	},
@@ -94,8 +99,8 @@ export default {
 			const params = {
 				pageNum: this.queryParams.pageNum,
 				pageSize: this.queryParams.pageSize,
-				startDate: this.queryParams.startDate ? this.queryParams.startDate + ' 00:00:00' : undefined,
-				endDate: this.queryParams.endDate ? this.queryParams.endDate + ' 23:59:59' : undefined,
+				startDate: this.queryParams.startDate || undefined,
+				endDate: this.queryParams.endDate || undefined,
 				storeHouseName: this.queryParams.storeHouseName,
 				levelName: this.queryParams.levelName,
 				customer: this.queryParams.customer,
@@ -118,6 +123,7 @@ export default {
 			this.getList();
 		},
 		resetQuery() {
+			this.dateRange = [];
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
