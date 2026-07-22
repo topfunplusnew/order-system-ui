@@ -1,6 +1,6 @@
 <!--
-用户需求：供应商信息列表需要根据修改时间是否为 null，控制“修改记录”按钮的禁用状态，不能禁用编辑按钮。
-实际改动：恢复“编辑”按钮原有可用状态；供应商行数据 updateTime 为 null 时禁用“修改记录”按钮。
+用户需求：供应商信息增加“未修改/有修改”搜索条件，并保留修改记录按钮状态逻辑。
+实际改动：新增 modified 布尔下拉查询字段，false 查询未修改、true 查询有修改、清空查询全部；updateTime 为空时仍禁用“修改记录”。
 -->
 <template>
 	<div class="app-container">
@@ -10,6 +10,12 @@
 			</el-form-item>
 			<el-form-item label="联系人" prop="relationName">
 				<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'relationName')" />
+			</el-form-item>
+			<el-form-item label="修改状态" prop="modified">
+				<el-select v-model="queryParams.modified" placeholder="请选择修改状态" clearable style="width: 150px">
+					<el-option label="未修改" :value="false" />
+					<el-option label="有修改" :value="true" />
+				</el-select>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -306,6 +312,7 @@ export default {
 				city: null,
 				county: null,
 				comments: null,
+				modified: null,
 				addtime: null,
 				userId: null,
 				UserName: null,
