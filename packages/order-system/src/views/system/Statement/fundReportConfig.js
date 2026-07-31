@@ -1,3 +1,4 @@
+// 用户需求：收款报表和付款报表的日期改为时间段搜索，并通过 startDate、endDate 以 yyyy-MM-dd 格式传给后端。实际改动：查询模型改用起止日期字段，并提供日期范围同步与完整性校验方法。
 import { getPaymentReport, getReceiveReport } from '@/api/system/statement';
 
 export const FUND_REPORT_COLUMNS = [
@@ -45,13 +46,20 @@ export function createFundReportQuery(date) {
 	return {
 		pageNum: 1,
 		pageSize: 20,
-		date,
+		startDate: date,
+		endDate: date,
 		selfAccountName: '',
 		otherCompanyName: '',
 		otherAccountName: ''
 	};
 }
 
-export function hasRequiredReportDate(query) {
-	return Boolean(query && query.date);
+export function applyFundReportDateRange(queryParams, dateRange) {
+	const hasRange = Array.isArray(dateRange) && dateRange.length === 2;
+	queryParams.startDate = hasRange ? dateRange[0] : null;
+	queryParams.endDate = hasRange ? dateRange[1] : null;
+}
+
+export function hasRequiredReportDateRange(query) {
+	return Boolean(query && query.startDate && query.endDate);
 }

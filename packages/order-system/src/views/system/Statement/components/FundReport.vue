@@ -1,8 +1,9 @@
+<!-- 用户需求：收款报表和付款报表的单日期搜索改为日期范围，并以 yyyy-MM-dd 格式通过 startDate、endDate 传给后端。实际改动：使用 daterange 控件维护起止日期，默认查询当天范围，并同步用于列表查询、重置和导出。 -->
 <template>
 	<div class="app-container fund-report">
 		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="90px" class="fund-report__search">
-			<el-form-item label="日期" prop="date" required>
-				<el-date-picker v-model="queryParams.date" type="date" value-format="yyyy-MM-dd" placeholder="请选择日期" clearable />
+			<el-form-item label="日期范围" required>
+				<el-date-picker v-model="dateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" clearable @change="handleDateRangeChange" />
 			</el-form-item>
 			<el-form-item label="我方户名" prop="selfAccountName">
 				<el-input v-model.trim="queryParams.selfAccountName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
@@ -58,7 +59,7 @@
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
-import { createFundReportQuery, FUND_REPORT_COLUMNS, FUND_REPORT_CONFIG, hasRequiredReportDate } from '../fundReportConfig';
+import { applyFundReportDateRange, createFundReportQuery, FUND_REPORT_COLUMNS, FUND_REPORT_CONFIG, hasRequiredReportDateRange } from '../fundReportConfig';
 
 export default {
 	name: 'FundReport',
@@ -71,11 +72,13 @@ export default {
 		}
 	},
 	data() {
-		const queryParams = createFundReportQuery(parseTime(new Date(), '{y}-{m}-{d}'));
+		const today = parseTime(new Date(), '{y}-{m}-{d}');
+		const queryParams = createFundReportQuery(today);
 		return {
 			loading: false,
 			total: 0,
 			reportList: [],
+			dateRange: [today, today],
 			queryParams,
 			columns: [{ key: 0, label: '序号', visible: true }].concat(FUND_REPORT_COLUMNS.map((column, index) => ({ key: index + 1, label: column.label || '业务类型', visible: true })))
 		};
@@ -93,9 +96,12 @@ export default {
 	},
 	methods: {
 		validateDate() {
-			if (hasRequiredReportDate(this.queryParams)) return true;
-			this.$message.warning('请选择日期');
+			if (hasRequiredReportDateRange(this.queryParams)) return true;
+			this.$message.warning('请选择完整的日期范围');
 			return false;
+		},
+		handleDateRangeChange(value) {
+			applyFundReportDateRange(this.queryParams, value);
 		},
 		getList() {
 			if (!this.validateDate()) return;
@@ -116,7 +122,9 @@ export default {
 			this.getList();
 		},
 		resetQuery() {
-			this.queryParams = createFundReportQuery(parseTime(new Date(), '{y}-{m}-{d}'));
+			const today = parseTime(new Date(), '{y}-{m}-{d}');
+			this.dateRange = [today, today];
+			this.queryParams = createFundReportQuery(today);
 			this.getList();
 		},
 		handleExport() {
@@ -143,6 +151,10 @@ export default {
 .fund-report__search ::v-deep .el-input,
 .fund-report__search ::v-deep .el-date-editor {
 	width: 190px;
+}
+
+.fund-report__search ::v-deep .el-date-editor--daterange {
+	width: 260px;
 }
 
 .fund-report__toolbar {

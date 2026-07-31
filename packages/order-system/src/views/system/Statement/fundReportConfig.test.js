@@ -1,3 +1,4 @@
+// 用户需求：收款报表和付款报表的单日期搜索改为日期范围，并以 yyyy-MM-dd 格式通过 startDate、endDate 传给后端。实际改动：新增日期范围查询参数、必填校验及共享页面控件契约测试。
 import fs from 'fs';
 import path from 'path';
 import { describe, expect, jest, test } from '@jest/globals';
@@ -7,7 +8,7 @@ jest.mock('@/api/system/statement', () => ({
 	getPaymentReport: jest.fn()
 }));
 
-import { createFundReportQuery, FUND_REPORT_COLUMNS, FUND_REPORT_CONFIG, hasRequiredReportDate } from './fundReportConfig';
+import { applyFundReportDateRange, createFundReportQuery, FUND_REPORT_COLUMNS, FUND_REPORT_CONFIG, hasRequiredReportDateRange } from './fundReportConfig';
 
 const expectedFields = [
 	'source',
@@ -55,18 +56,29 @@ describe('fund report configuration', () => {
 		expect(FUND_REPORT_COLUMNS.map(column => column.prop)).toEqual(expectedFields);
 	});
 
-	test('creates page-one filters with today as the required date', () => {
+	test('creates page-one filters with today as the required date range', () => {
 		expect(createFundReportQuery('2026-07-20')).toEqual({
 			pageNum: 1,
 			pageSize: 20,
-			date: '2026-07-20',
+			startDate: '2026-07-20',
+			endDate: '2026-07-20',
 			selfAccountName: '',
 			otherCompanyName: '',
 			otherAccountName: ''
 		});
-		expect(hasRequiredReportDate({ date: '2026-07-20' })).toBe(true);
-		expect(hasRequiredReportDate({ date: '' })).toBe(false);
-		expect(hasRequiredReportDate({})).toBe(false);
+		expect(hasRequiredReportDateRange({ startDate: '2026-07-20', endDate: '2026-07-21' })).toBe(true);
+		expect(hasRequiredReportDateRange({ startDate: '2026-07-20', endDate: '' })).toBe(false);
+		expect(hasRequiredReportDateRange({})).toBe(false);
+	});
+
+	test('maps and clears the selected date range using backend field names', () => {
+		const query = createFundReportQuery('2026-07-20');
+
+		applyFundReportDateRange(query, ['2026-07-01', '2026-07-31']);
+		expect(query).toMatchObject({ startDate: '2026-07-01', endDate: '2026-07-31' });
+
+		applyFundReportDateRange(query, []);
+		expect(query).toMatchObject({ startDate: null, endDate: null });
 	});
 
 	test('uses one shared component and thin route wrappers', () => {
@@ -77,7 +89,11 @@ describe('fund report configuration', () => {
 
 		expect(receiveSource).toContain('<FundReport report-type="receive" />');
 		expect(paymentSource).toContain('<FundReport report-type="payment" />');
-		expect(sharedSource).toContain('hasRequiredReportDate(this.queryParams)');
+		expect(sharedSource).toContain('type="daterange"');
+		expect(sharedSource).toContain('value-format="yyyy-MM-dd"');
+		expect(sharedSource).toContain('v-model="dateRange"');
+		expect(sharedSource).toContain('hasRequiredReportDateRange(this.queryParams)');
+		expect(sharedSource).toContain('applyFundReportDateRange(this.queryParams, value)');
 		expect(sharedSource).toContain('.listApi(this.queryParams)');
 		expect(sharedSource).toContain('this.download(');
 		expect(sharedSource).toContain(':page.sync="queryParams.pageNum"');
