@@ -1,6 +1,6 @@
 ## Context
 
-The source workbook `todo/支取现金台账.xlsx` contains a title row and ten fixed columns: withdrawal date, amount, account name plus last five account digits, withdrawal proof, handler, purpose, other attachment, audit state, auditor, and remark. The backend contract is documented in `todo/支取现金台账前端对接说明.md` and confirmed against the latest Apifox definitions for `支取现金台账Controller`.
+The source workbook `todo/转 、支现金台账.xlsx` contains a title row and ten fixed columns: withdrawal date, amount, account name plus last five account digits, withdrawal proof, handler, purpose, other attachment, audit state, auditor, and remark. The backend contract is documented in `todo/转 、支现金台账前端对接说明.md` and confirmed against the latest Apifox definitions for `转 、支现金台账Controller`.
 
 The page belongs to the existing Vue 2 + Element UI order-system package. The vehicle-dispatch page already establishes the local conventions for attachment display/upload and audit-state interaction.
 

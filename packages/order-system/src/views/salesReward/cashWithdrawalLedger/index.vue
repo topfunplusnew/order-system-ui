@@ -1,4 +1,4 @@
-<!-- 用户需求：基于对接文档、原始 Excel 和 Apifox 接口新增支取现金台账页面，日期精确到日、账户手填，附件与审核参考车辆派出管理。实际改动：实现查询、十列表格、CRUD、双附件分类、审核冻结、批量删除和筛选导出。 -->
+<!-- 用户需求：基于对接文档、原始 Excel 和 Apifox 接口新增转 、支现金台账页面，日期精确到日、账户手填，附件与审核参考车辆派出管理。实际改动：实现查询、十列表格、CRUD、双附件分类、审核冻结、批量删除和筛选导出。 -->
 <template>
 	<div class="app-container cash-withdrawal-ledger">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="92px">
@@ -180,7 +180,7 @@ export default {
 		handleAdd() {
 			this.clearUploaders();
 			this.resetFormData();
-			this.title = '新增支取现金台账';
+			this.title = '新增转 、支现金台账';
 			this.open = true;
 		},
 		handleUpdate(row) {
@@ -191,7 +191,7 @@ export default {
 				if (!response.data) return this.$modal.msgError('未查询到台账详情');
 				this.form = { ...response.data, amount: String(response.data.amount), params: { attachmentIds: mergeCashWithdrawalAttachmentIds(response.data.attachmentList || []) } };
 				this.attachmentGroups = groupCashWithdrawalAttachments(response.data.attachmentList || []);
-				this.title = '修改支取现金台账';
+				this.title = '修改转 、支现金台账';
 				this.open = true;
 			});
 		},
@@ -230,7 +230,7 @@ export default {
 		handleAudit(row, approved) {
 			const action = approved ? '审核' : '取消审核';
 			return this.$modal
-				.confirm(`是否确认${action}该支取现金台账？`)
+				.confirm(`是否确认${action}该转 、支现金台账？`)
 				.then(() => auditCashWithdrawalLedger(row.id, approved))
 				.then(response => {
 					if (response.data) Object.assign(row, response.data);
@@ -245,7 +245,7 @@ export default {
 			if (rows.some(item => item.auditState === '已审核')) return this.$modal.msgWarning('所选记录包含已审核数据，请先取消审核');
 			const ids = serializeCashWithdrawalIds(rows.map(item => item.id));
 			this.$modal
-				.confirm(`是否确认删除编号为“${ids}”的支取现金台账？`)
+				.confirm(`是否确认删除编号为“${ids}”的转 、支现金台账？`)
 				.then(() => delCashWithdrawalLedger(ids))
 				.then(() => {
 					this.$modal.msgSuccess('删除成功');

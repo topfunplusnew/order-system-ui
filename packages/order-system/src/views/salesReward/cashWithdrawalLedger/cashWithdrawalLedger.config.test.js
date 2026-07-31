@@ -1,4 +1,4 @@
-/* 用户需求：支取现金台账日期精确到日、账户手填并按两类附件和审核规则保存。实际改动：先以测试固定查询、金额、载荷、附件和删除规则。 */
+/* 用户需求：转 、支现金台账日期精确到日、账户手填并按两类附件和审核规则保存。实际改动：先以测试固定查询、金额、载荷、附件和删除规则。 */
 /* global describe, test, expect */
 import { buildCashWithdrawalExportParams, buildCashWithdrawalPayload, buildCashWithdrawalQuery, groupCashWithdrawalAttachments, isValidCashWithdrawalAmount, mergeCashWithdrawalAttachmentIds, serializeCashWithdrawalIds } from './cashWithdrawalLedger.config';
 

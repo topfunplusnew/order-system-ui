@@ -1,4 +1,4 @@
-/* 用户需求：对接支取现金台账 Controller 的完整接口。实际改动：先以测试固定列表、详情、新增、修改、附件替换、删除、审核和导出的请求契约。 */
+/* 用户需求：对接转 、支现金台账 Controller 的完整接口。实际改动：先以测试固定列表、详情、新增、修改、附件替换、删除、审核和导出的请求契约。 */
 /* global describe, test, expect, jest, beforeEach */
 import request from '@/utils/request';
 import { addCashWithdrawalLedger, auditCashWithdrawalLedger, delCashWithdrawalLedger, exportCashWithdrawalLedger, getCashWithdrawalLedger, listCashWithdrawalLedger, replaceCashWithdrawalLedgerAttachments, updateCashWithdrawalLedger } from './cashWithdrawalLedger';

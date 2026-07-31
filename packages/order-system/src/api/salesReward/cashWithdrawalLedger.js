@@ -1,4 +1,4 @@
-/* 用户需求：访问 Apifox 中支取现金台账 Controller 的相关接口。实际改动：封装列表、详情、新增、修改、附件完整替换、删除、审核及 XLSX 导出请求。 */
+/* 用户需求：访问 Apifox 中转 、支现金台账 Controller 的相关接口。实际改动：封装列表、详情、新增、修改、附件完整替换、删除、审核及 XLSX 导出请求。 */
 import request from '@/utils/request';
 
 export function listCashWithdrawalLedger(query) {

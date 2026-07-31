@@ -2,7 +2,7 @@
 
 ## Why
 
-The backend and the original cash-withdrawal register template are ready, but the frontend does not yet provide the `销售部奖励制度 / 支取现金台账` page needed to query, maintain, audit, attach evidence to, and export these records.
+The backend and the original cash-withdrawal register template are ready, but the frontend does not yet provide the `销售部奖励制度 / 转 、支现金台账` page needed to query, maintain, audit, attach evidence to, and export these records.
 
 ## What Changes
 
