@@ -1,3 +1,4 @@
+<!-- 用户需求：首页所有金额在原数据小数不超过两位时保留原数据，超过两位时四舍五入。实际改动：统一格式化发货列表、金额合计及利润区域的金额展示，不修改接口和导出原始数据。 -->
 <template>
 	<div class="page-container">
 		<el-row style="margin: 35px 0" :gutter="40">
@@ -98,40 +99,40 @@
 							<el-table-column v-if="columns[4].visible" prop="arrears" label="欠款" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-										<div slot="content">{{ scope.row.arrears }}</div>
-										<span>{{ scope.row.arrears }}</span>
+										<div slot="content">{{ formatHomepageAmount(scope.row.arrears) }}</div>
+										<span>{{ formatHomepageAmount(scope.row.arrears) }}</span>
 									</el-tooltip>
 								</template>
 							</el-table-column>
 							<el-table-column v-if="columns[5].visible" prop="profit" label="含税利润" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-										<div slot="content">{{ scope.row.profit }}</div>
-										<span>{{ scope.row.profit }}</span>
+										<div slot="content">{{ formatHomepageAmount(scope.row.profit) }}</div>
+										<span>{{ formatHomepageAmount(scope.row.profit) }}</span>
 									</el-tooltip>
 								</template>
 							</el-table-column>
 							<el-table-column v-if="columns[6].visible" prop="profitNoTax" label="不含税利润" width="110" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-										<div slot="content">{{ scope.row.profitNoTax }}</div>
-										<span>{{ scope.row.profitNoTax }}</span>
+										<div slot="content">{{ formatHomepageAmount(scope.row.profitNoTax) }}</div>
+										<span>{{ formatHomepageAmount(scope.row.profitNoTax) }}</span>
 									</el-tooltip>
 								</template>
 							</el-table-column>
 							<el-table-column v-if="columns[7].visible" prop="payments" label="总货款" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-										<div slot="content">{{ scope.row.payments }}</div>
-										<span>{{ scope.row.payments }}</span>
+										<div slot="content">{{ formatHomepageAmount(scope.row.payments) }}</div>
+										<span>{{ formatHomepageAmount(scope.row.payments) }}</span>
 									</el-tooltip>
 								</template>
 							</el-table-column>
 							<el-table-column v-if="columns[8].visible" prop="paymentFactory" label="出厂货款" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-										<div slot="content">{{ scope.row.paymentFactory }}</div>
-										<span>{{ scope.row.paymentFactory }}</span>
+										<div slot="content">{{ formatHomepageAmount(scope.row.paymentFactory) }}</div>
+										<span>{{ formatHomepageAmount(scope.row.paymentFactory) }}</span>
 									</el-tooltip>
 								</template>
 							</el-table-column>
@@ -184,8 +185,8 @@
 							<el-table-column v-if="columns[14].visible" prop="freight" label="运费" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-										<div slot="content">{{ scope.row.freight }}</div>
-										<span>{{ scope.row.freight }}</span>
+										<div slot="content">{{ formatHomepageAmount(scope.row.freight) }}</div>
+										<span>{{ formatHomepageAmount(scope.row.freight) }}</span>
 									</el-tooltip>
 								</template>
 							</el-table-column>
@@ -215,12 +216,12 @@
 				</el-row>
 				<el-row>
 					<el-table :empty-text="' '" :data="[]" :show-header="true" class="header-only-table">
-						<el-table-column :label="`￥${moneyAmount}`" align="center">
+						<el-table-column :label="`￥${formatHomepageAmount(moneyAmount)}`" align="center">
 							<el-table-column prop="dailyProfit" label="利润总额">
 								<el-table-column prop="dailyExpense" label="费用合计"></el-table-column>
 							</el-table-column>
-							<el-table-column :label="`￥${dailyProfit && dailyProfit.dailyProfit ? dailyProfit.dailyProfit : 0}`">
-								<el-table-column :label="`￥${dailyExpense || 0}`"></el-table-column>
+							<el-table-column :label="`￥${dailyProfit && dailyProfit.dailyProfit ? formatHomepageAmount(dailyProfit.dailyProfit) : 0}`">
+								<el-table-column :label="`￥${dailyExpense === null ? 0 : formatHomepageAmount(dailyExpense)}`"></el-table-column>
 							</el-table-column>
 						</el-table-column>
 					</el-table>
@@ -268,16 +269,7 @@
 						</a-form-item>
 						<a-form-item>
 							<a-button type="primary" :loading="fileListLoading" @click="handleFileSearch">搜索</a-button>
-							<a-button
-								type="danger"
-								:loading="clearAllExportLoading"
-								:disabled="!fileList.length"
-								v-hasPermi="['system:exportfile:remove']"
-								style="margin-left: 8px"
-								@click="handleClearAllExportFiles"
-							>
-								一键清空
-							</a-button>
+							<a-button type="danger" :loading="clearAllExportLoading" :disabled="!fileList.length" v-hasPermi="['system:exportfile:remove']" style="margin-left: 8px" @click="handleClearAllExportFiles">一键清空</a-button>
 						</a-form-item>
 					</a-form>
 				</div>
@@ -343,6 +335,7 @@ import { batchDeleteExport, deleteExport, downloadFileByName, getAllExportList, 
 import { compact, map } from 'lodash';
 import webSocketManager from '@/utils/websocket';
 import { subtract, add, sum, round, number, log, divide, pow } from 'mathjs';
+import { formatHomepageAmount } from './homepageAmount';
 
 export default {
 	name: 'Index',
@@ -529,6 +522,7 @@ export default {
 		...mapGetters(['downloadProgress', 'downloadMessage'])
 	},
 	methods: {
+		formatHomepageAmount,
 		/**
 		 * 一键下载压缩包文件名：xx年x月x日一键下载数据留档.zip
 		 * @param {string} dateStr - yyyy-MM-dd
@@ -597,7 +591,11 @@ export default {
 					// 计算总和
 					if (values.length > 0) {
 						const total = sum(values);
-						sums[index] = round(total, 2);
+						if (column.property === 'tonnage') {
+							sums[index] = round(total, 2);
+						} else {
+							sums[index] = formatHomepageAmount(total);
+						}
 					} else {
 						sums[index] = '';
 					}
@@ -710,14 +708,14 @@ export default {
 		handleProfitSearch() {
 			this.dailyProfit = [];
 			getDailyProfit(this.queryParamsHome).then(res => {
-				const profit = round(number(res.data.dailyProfit) || 0, 2);
-				const expense = round(number(res.data.dailyExpense) || 0, 2);
+				const profit = res.data.dailyProfit === null || typeof res.data.dailyProfit === 'undefined' ? 0 : res.data.dailyProfit;
+				const expense = res.data.dailyExpense === null || typeof res.data.dailyExpense === 'undefined' ? 0 : res.data.dailyExpense;
 				this.dailyProfit = {
 					dailyProfit: profit,
 					dailyExpense: expense
 				};
 				this.dailyExpense = expense;
-				this.moneyAmount = round(subtract(profit, expense), 2);
+				this.moneyAmount = subtract(number(profit), number(expense));
 			});
 		},
 		getList() {
