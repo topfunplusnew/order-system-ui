@@ -1,3 +1,7 @@
+<!--
+用户需求：修复点击“已开票”后 scope 未定义、开票记录表格没有数据显示的问题。
+实际改动：为客户和供应商名称列补充表格默认插槽的 scope 声明，确保通过 scope.row 正常渲染开票记录。
+-->
 <script>
 import { delGoodsOrder, getDeletedGoodsOrder, getGoodsOrder, updateGoodsOrder, importOrderData } from '@/api/system/goodsOrder';
 import { listInvoiceOut } from '@/api/system/invoiceOut';
@@ -2065,7 +2069,7 @@ export default {
 						</el-table-column>
 
 						<el-table-column prop="companyName" label="客户名称" align="center">
-							<template #default>
+							<template #default="scope">
 								<div class="company-cell">
 									<i class="el-icon-office-building"></i>
 									{{ scope.row.companyName }}
@@ -2179,7 +2183,7 @@ export default {
 								</el-table-column>
 
 								<el-table-column prop="companyName" label="供应商名称" align="center">
-									<template #default>
+									<template #default="scope">
 										<div class="company-cell">
 											<i class="el-icon-office-building"></i>
 											{{ scope.row.companyName }}
