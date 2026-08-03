@@ -1,3 +1,4 @@
+<!-- 用户需求：computedAmount 对齐 calculatePaymentFactory，计量单位为“其他”时不除以 1000000。实际改动：按库存明细的 countingUnit 分支计算，“其他”直接计算，其余单位除以 1000000。 -->
 <!-- 用户需求：正常发货出库记录页面的日期搜索改为时间范围搜索。实际改动：将原日期范围升级为可选择时分秒的时间范围，并继续同步到 outDateStart、outDateEnd 查询和导出参数。 -->
 <template>
 	<div class="app-container">
@@ -401,7 +402,8 @@ export default {
 			const width = (row.sourceInventoryDetail && row.sourceInventoryDetail.width) || 0;
 			const amount = row.outAmount || 0;
 			const price = (row.sourceInventoryDetail && row.sourceInventoryDetail.paymentUnload) || 0;
-			const result = (length / 1000) * (width / 1000) * amount * price;
+			const baseAmount = length * width * amount * price;
+			const result = row.sourceInventoryDetail && row.sourceInventoryDetail.countingUnit === '其他' ? baseAmount : baseAmount / 1000000;
 			return result.toFixed(2);
 		},
 		checkOrderInfo(row) {
