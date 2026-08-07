@@ -1,3 +1,5 @@
+<!-- 需求：修复客户佣金编辑提交时 source 被默认成 null。 -->
+<!-- 实际改动：编辑弹窗同时传递当前列表行和详情接口返回的 source。 -->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
@@ -766,6 +768,7 @@ export default {
 							id: row.id,
 							type: CommissionType.CUSTOMER,
 							orderDetailId: this.orderDetailId,
+							source: row.source || res.data.source,
 							body: commissionData
 						},
 						false

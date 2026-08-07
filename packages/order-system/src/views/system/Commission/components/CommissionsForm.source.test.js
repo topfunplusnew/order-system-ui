@@ -6,8 +6,10 @@ const path = require('path');
 
 const componentPath = path.join(__dirname, 'CommissionsForm.vue');
 const componentSource = fs.readFileSync(componentPath, 'utf8');
+const customerCommissionSource = fs.readFileSync(path.join(__dirname, '..', 'CustomerCommission.vue'), 'utf8');
 
 test('佣金表单应将 source 保留在新增请求表单中', () => {
 	expect(componentSource).toMatch(/source:\s*\{[\s\S]*?default:\s*null/);
 	expect(componentSource).toMatch(/form:\s*\{[\s\S]*?source:\s*this\.source/);
+	expect(customerCommissionSource).toMatch(/orderDetailId:\s*this\.orderDetailId,[\s\S]*?source:\s*row\.source\s*\|\|\s*res\.data\.source/);
 });
