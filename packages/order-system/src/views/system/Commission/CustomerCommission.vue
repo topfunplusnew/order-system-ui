@@ -919,6 +919,7 @@ export default {
 				// 构建批量请求数据
 				const batchData = eligibleRows.map(row => ({
 					type: CommissionType.CUSTOMER,
+					source: row.source,
 					orderDetailId: row.orderDetailId,
 					commissionUnitPrice: number(this.batchForm.commissionUnitPrice || 0),
 					otherPaymentAmount: number(this.batchForm.otherPaymentAmount || 0),
