@@ -1,3 +1,5 @@
+<!-- 需求：厂家佣金的库存来源记录使用 type=2，订单来源记录使用 type=1。 -->
+<!-- 实际改动：新增、编辑和批量填写按 source 区分订单厂家佣金与库存厂家佣金类型。 -->
 <template>
 	<div class="app-container">
 		<!-- 查询表单 -->
@@ -491,6 +493,9 @@ export default {
 		this.getList(); // 页面加载时获取数据
 	},
 	methods: {
+		getCommissionType(row) {
+			return row && row.source === TableName.INVENTORDETAIL ? CommissionType.INVENTORY : CommissionType.SUPPLIER;
+		},
 		// 格式化数字，去除后缀0
 		formatNumberWithoutTrailingZeros(value) {
 			if (value === null || value === undefined || value === '') {
@@ -742,7 +747,7 @@ export default {
 				'新增厂家佣金',
 				'500px',
 				{
-					type: CommissionType.SUPPLIER,
+					type: this.getCommissionType({ source }),
 					orderDetailId: this.orderDetailId,
 					source: source
 				},
@@ -771,7 +776,7 @@ export default {
 						'500px',
 						{
 							id: row.id,
-							type: CommissionType.SUPPLIER,
+							type: this.getCommissionType(row),
 							orderDetailId: this.orderDetailId,
 							body: commissionData
 						},
@@ -928,7 +933,7 @@ export default {
 
 				// 构建批量请求数据
 				const batchData = eligibleRows.map(row => ({
-					type: CommissionType.SUPPLIER,
+					type: this.getCommissionType(row),
 					orderDetailId: row.orderDetailId,
 					commissionUnitPrice: number(this.batchForm.commissionUnitPrice || 0),
 					otherPaymentAmount: number(this.batchForm.otherPaymentAmount || 0),
