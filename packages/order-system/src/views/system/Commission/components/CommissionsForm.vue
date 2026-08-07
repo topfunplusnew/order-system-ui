@@ -1,3 +1,5 @@
+<!-- 需求：修复客户佣金新增时 source 未传入请求体导致“来源表名不能为空”。 -->
+<!-- 实际改动：声明 source 属性，并在表单初始化和重置时保留来源表名。 -->
 <script>
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { addCommission, updateCommission } from '@/api/commission';
@@ -22,6 +24,10 @@ export default {
 			type: Number,
 			default: 0
 		},
+		source: {
+			type: String,
+			default: null
+		},
 		body: {
 			type: Object,
 			default: () => {}
@@ -45,6 +51,7 @@ export default {
 				type: this.type,
 				commissionUnitPrice: '',
 				otherPaymentAmount: '',
+				source: this.source,
 				orderDetailId: this.orderDetailId ? this.orderDetailId : ''
 			},
 			queryOrder: null,
@@ -115,6 +122,7 @@ export default {
 				type: this.type,
 				commissionUnitPrice: '',
 				otherPaymentAmount: '',
+				source: this.source,
 				orderDetailId: this.orderDetailId ? this.orderDetailId : ''
 			};
 		}
