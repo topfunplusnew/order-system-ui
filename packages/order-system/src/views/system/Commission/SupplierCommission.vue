@@ -778,6 +778,7 @@ export default {
 							id: row.id,
 							type: this.getCommissionType(row),
 							orderDetailId: this.orderDetailId,
+							source: row.source || res.data.source,
 							body: commissionData
 						},
 						false

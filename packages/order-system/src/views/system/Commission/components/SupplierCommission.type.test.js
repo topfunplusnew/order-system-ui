@@ -10,4 +10,5 @@ test('厂家佣金应按库存来源切换为库存佣金类型', () => {
 	expect(source).toMatch(/getCommissionType\(row\)[\s\S]*?source === TableName\.INVENTORDETAIL/);
 	expect(source).toMatch(/type: this\.getCommissionType\(row\)/);
 	expect(source).toMatch(/type: this\.getCommissionType\(\{ source \}\)/);
+	expect(source).toMatch(/orderDetailId: this\.orderDetailId,[\s\S]*?source: row\.source \|\| res\.data\.source/);
 });
