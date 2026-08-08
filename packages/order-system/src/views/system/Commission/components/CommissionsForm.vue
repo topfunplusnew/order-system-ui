@@ -66,6 +66,7 @@ export default {
 	},
 	methods: {
 		listGoodsOrder,
+		// 提交
 		handleProcess(that) {
 			return new Promise((resolve, reject) => {
 				this.$refs.commissionForm.validate(valid => {
