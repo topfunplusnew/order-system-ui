@@ -1,9 +1,66 @@
-<!-- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。 -->
+<!--
+	变更记录（每次需求变更在此追加，最新在上；格式：日期 - 改了什么）：
+	- [2026-08-16] 新增"AI 字段地图"注释（字段名/中文列名/数据来源/差额行说明），便于 AI 快速了解展示内容；仅注释，未改业务逻辑。
+	历史：
+	- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。
+-->
 <script>
 /**
- * 二次出库变动详情模板
+ * SecondOutboundTemplate - 二次出库(exwarehouse)资金变动详情模板
  * exwarehouse 表：storeHouseName、outDirection、outDate、sourceInventoryDetail、outAmount
  * 范式：记录(x) 合并 3 行，排除 inventoryDiff，buildDiffFields 填 originalInventoryAmount，diff-summary-table 展示
+ *
+ * ================= AI FIELD MAP（AI 字段地图） =================
+ * 本注释为 AI 阅读设计：锚点固定、字段为表格格式，可用 grep/正则定位。
+ * 修改本组件时，若增删/重命名字段，必须同步更新下方字段表。
+ *
+ * ── DATA ENTRY（数据入口）─────────────────────────────
+ * compareData: Array   /system/backuplog/v3/getByIds 返回 data
+ *   item.originalInfo 修改前主表;  item.changedInfo 修改后主表（exwarehouse 单条记录）
+ *   info.sourceInventoryDetail 关联库存明细（级别/尺寸/卸货价等）
+ * summaryData: Object  后端汇总（见 BOTTOM SUMMARY）
+ * targetDate:  String  日期范围过滤（utils/fundChange/dateScopedRows）
+ *
+ * ── RENDER STRUCTURE（渲染结构）────────────────────────
+ * 1. FundChangeExportButton   导出按钮（明细 + 差额汇总）
+ * 2. el-table 主明细表（summaryOnly=false 时显示）
+ *    固定列① 二次出库  组内首行合并，显示「二次出库(N) + backupTime」
+ *    固定列② 变更      修改前 / 修改后 / 差额（before-row / after-row / diff-row）
+ *    数据列 11 列       = EXWAREHOUSE_COLUMNS 过滤 [inventoryDiff]
+ *    合计行            仅差额行合计: originalInventoryAmount（getTableSummary）
+ * 3. el-table 底部汇总表（diff-summary-table）
+ *    buildBackendSummaryRows(summaryData, 'exwarehouse', prefix)
+ *    展示键: 默认键顺序（有值才展示）→ 见 BOTTOM SUMMARY
+ *
+ * ── COLUMNS（数据列字段表）─────────────────────────────
+ * 格式: prop | 中文列名 | source 来源 | note 备注
+ * source 中 info=主表 originalInfo/changedInfo; detail=info.sourceInventoryDetail
+ *   secondaryStatus         | 二次入库状态   | info.outState===1 ? '已入库' : ''      |
+ *   warehouse               | 仓库名称       | info.storeHouseName                   |
+ *   outboundDirection       | 出库方向       | info.outDirection==='二次加工' ? '二次入库出库' : info.outDirection |
+ *   outboundDate            | 变动日期(出库) | info.outDate                          | 截取前10位
+ *   gradeName               | 产品级别       | detail.levelName                      |
+ *   thickness               | 厚度           | detail.height                         |
+ *   length                  | 长度           | detail.length                         |
+ *   width                   | 宽度           | detail.width                          |
+ *   outboundQuantity        | 出库量         | info.outAmount                        |
+ *   stockPrice              | 存货价         | detail.paymentUnload                  |
+ *   originalInventoryAmount | 原库存金额     | 计算(见下)                             | 差额行回填差额
+ *
+ *   原库存金额计算: 单位'其他'→ stock*price；否则 len/1000 * w/1000 * outAmount * price
+ *   （stock=detail.stockNumber||info.outAmount, price=detail.paymentUnload）
+ *
+ * ── DIFF ROW（差额行 rowType='diff'）────────────────────
+ *   inventoryDiff 不直接展示（已从 columns 过滤），仅体现于差额行回填 originalInventoryAmount 与合计行
+ *   buildDiffFields: invDiff = calculateFieldDiff(calcInventoryAmount(original), calcInventoryAmount(changed))
+ *   calculateFieldDiff(after, before) = after - before ⇒ 差额 = 修改前库存金额 - 修改后库存金额（出库库存减少为正）
+ *
+ * ── BOTTOM SUMMARY（底部汇总表展示键）─────────────────
+ *   默认输出键顺序 DEFAULT_OUTPUT_KEY_ORDER（有值才展示，label 前缀'二次出库'）:
+ *   companyTotalBalance 客户变动差额 | supplierTotalBalance 供应商变动差额 | selfCompanyTotalFunds 银行卡资金变动差额
+ *   remainingInventoryAmount 库存变动差额 | driverUnpaidAmount 运费变动差额 | loanFromCompany 银行卡资金变动差额
+ *   futuresMarginBalance 期货保证金变动差额 | paymentMarginBalance 厂家保证金变动差额
+ *   receiveMarginBalance 保证金变动差额 | loanBalance 借款变动差额
  */
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';

@@ -1,9 +1,62 @@
-<!-- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。 -->
+<!--
+	变更记录（每次需求变更在此追加，最新在上；格式：日期 - 改了什么）：
+	- [2026-08-16] 新增"AI 字段地图"注释（字段名/中文列名/数据来源/差额行说明），便于 AI 快速了解展示内容；仅注释，未改业务逻辑。
+	历史：
+	- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。
+-->
 <script>
 /**
- * 期货保证金变动详情模板
+ * FuturesDepositTemplate - 期货保证金(lendmoney type=期货保证金)资金变动详情模板
  * lendmoney 表 type=期货保证金：moneyAmount、recoverMoneyList[].moneyAmount
  * 范式：记录(x) 合并 3 行，排除 bankCardDiff、futuresDepositDiff，buildDiffFields 填 depositAmount，diff-summary-table 展示
+ *
+ * ================= AI FIELD MAP（AI 字段地图） =================
+ * 本注释为 AI 阅读设计：锚点固定、字段为表格格式，可用 grep/正则定位。
+ * 修改本组件时，若增删/重命名字段，必须同步更新下方字段表。
+ *
+ * ── DATA ENTRY（数据入口）─────────────────────────────
+ * compareData: Array   /system/backuplog/v3/getByIds 返回 data
+ *   item.originalInfo 修改前主表;  item.changedInfo 修改后主表
+ *   item.originalInfo.recoverMoneyList / item.changedInfo.recoverMoneyList 收回/坏账明细数组
+ * summaryData: Object  后端汇总（见 BOTTOM SUMMARY）
+ * targetDate:  String  日期范围过滤（主表 futuresDate，utils/fundChange/dateScopedRows）
+ *
+ * ── RENDER STRUCTURE（渲染结构）────────────────────────
+ * 1. FundChangeExportButton   导出按钮（明细 + 差额汇总）
+ * 2. el-table 主明细表（summaryOnly=false 时显示）
+ *    固定列① 期货保证金  组内首行合并，显示「期货保证金(N) + backupTime」
+ *    固定列② 变更     subLabel: 修改前 / 修改后 / 差额（before-row / after-row / diff-row）
+ *    数据列 16 列    = FUTURES_MARGIN_COLUMNS 过滤 [operation, marginDiff]
+ *    合计行          仅差额行合计: marginAmount / recoverAmount / badDebtTotal / unrecoverAmount
+ * 3. el-table 底部汇总表（diff-summary-table，diffRows.length>0 时显示）
+ *    buildBackendSummaryRows(summaryData, 'lendmoney', prefix, ['futuresMarginBalance'])
+ *    展示键: futuresMarginBalance 期货保证金变动差额
+ *
+ * ── COLUMNS（数据列字段表）─────────────────────────────
+ * 格式: prop | 中文列名 | source 来源 | note 备注
+ * source 中 info=主表 originalInfo/changedInfo; rec=recoverMoneyList 单条明细
+ *   futuresCompany        | 期货保证金公司 | info.futuresMarginCompany ?? info.target ?? info.targetAcountsName ?? info.companyName ?? info.borrowerName |
+ *   companyName           | 公司名称       | info.target ?? info.companyName ?? info.targetAcountsName ?? info.borrowerName |
+ *   objectType            | 对方类型       | info.targetType ?? info.objectType       |
+ *   marginAmount          | 保证金金额     | info.moneyAmount                         |
+ *   recoverAmount         | 收回金额       | sum(rec.moneyAmount 排除 badDebtFlag=1)  |
+ *   badDebtTotal          | 累计坏账       | sum(rec.moneyAmount 仅 badDebtFlag=1)    |
+ *   unrecoverAmount       | 未收回金额     | info.unrecoveredAmount ?? 计算: moneyAmount-recoverAmount-badDebtTotal |
+ *   otherAccountName      | 对方账户       | info.targetAcountsName ?? info.otherAccountName |
+ *   otherAccountNo        | 对方账号       | info.targetBankNo ?? info.otherAccountNo |
+ *   otherBankName         | 对方开户行     | info.targetBankName ?? info.otherBankName |
+ *   selfPayAccountName    | 我方支付账户   | info.selfAcountsName ?? info.selfPayAccountName |
+ *   selfAccountNo         | 我方账号       | info.selfBankNo ?? info.selfAccountNo ?? info.bankNo |
+ *   selfBankName          | 我方开户行     | info.selfBankName                        |
+ *   payTime               | 支付期货保证金时间 | info.futuresDate ?? info.addtime         | 截取前10位
+ *   reason                | 事由           | info.reason                              |
+ *   remark                | 备注           | info.comments ?? info.remark             |
+ *
+ * ── DIFF ROW（差额行 rowType='diff'，均为 修改后-修改前）────
+ *   marginAmount / recoverAmount / badDebtTotal / unrecoverAmount = 对应列 修改后-修改前（回填同名列）
+ *
+ * ── BOTTOM SUMMARY（底部汇总表展示键）─────────────────
+ *   futuresMarginBalance
  */
 import _ from 'lodash';
 import { FUTURES_MARGIN_COLUMNS } from '@/utils/fundChangeExcelColumns';

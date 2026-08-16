@@ -1,9 +1,61 @@
-<!-- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。 -->
+<!--
+	变更记录（每次需求变更在此追加，最新在上；格式：日期 - 改了什么）：
+	- [2026-08-16] 新增"AI 字段地图"注释（字段名/中文列名/数据来源/差额行说明），便于 AI 快速了解展示内容；仅注释，未改业务逻辑。
+	历史：
+	- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。
+-->
 <script>
 /**
- * 收取保证金变动详情模板
+ * ReceiveDepositTemplate - 收取保证金(deposit_money)资金变动详情模板
  * deposit_money 表：moneyAmount、depositRefundList[].moneyAmount
  * 范式：记录(x) 合并 3 行，排除 depositDiff，diff-summary-table 展示
+ *
+ * ================= AI FIELD MAP（AI 字段地图） =================
+ * 本注释为 AI 阅读设计：锚点固定、字段为表格格式，可用 grep/正则定位。
+ * 修改本组件时，若增删/重命名字段，必须同步更新下方字段表。
+ *
+ * ── DATA ENTRY（数据入口）─────────────────────────────
+ * compareData: Array   /system/backuplog/v3/getByIds 返回 data
+ *   item.originalInfo 修改前主表;  item.changedInfo 修改后主表
+ *   item.originalInfo.depositRefundList / item.changedInfo.depositRefundList 退款明细数组
+ * summaryData: Object  后端汇总（见 BOTTOM SUMMARY）
+ * targetDate:  String  日期范围过滤（主表 depositDate + 退款明细日期）
+ *
+ * ── RENDER STRUCTURE（渲染结构）────────────────────────
+ * 1. FundChangeExportButton   导出按钮（明细 + 差额汇总）
+ * 2. el-table 主明细表（summaryOnly=false 时显示）
+ *    固定列① 收取保证金  组内首行合并，显示「收取保证金(N) + backupTime」
+ *    固定列② 变更     subLabel: 修改前 / 修改后 / 差额（before-row / after-row / diff-row）
+ *    数据列 15 列    = DEPOSIT_MONEY_COLUMNS 过滤 [depositDiff]
+ *    合计行          仅差额行合计: depositAmount / unrefundAmount
+ * 3. el-table 底部汇总表（diff-summary-table，diffRows.length>0 时显示）
+ *    buildBackendSummaryRows(summaryData, 'deposit_money', prefix)（未指定键列表）
+ *    展示键: 默认键序中 summaryData 实际存在的键（通常 receiveMarginBalance 保证金变动差额）
+ *
+ * ── COLUMNS（数据列字段表）─────────────────────────────
+ * 格式: prop | 中文列名 | source 来源 | note 备注
+ * source 中 info=主表 originalInfo/changedInfo; refund=depositRefundList 单条明细
+ *   depositCompany        | 保证金公司     | info.depositCompany ?? info.depositType  |
+ *   objectType            | 对象类型       | info.targetType ?? info.companyType ?? info.objectType |
+ *   objectName            | 对象名称       | info.target ?? info.companyName ?? info.objectName |
+ *   depositAmount         | 保证金金额     | info.moneyAmount                         |
+ *   unrefundAmount        | 未退款金额     | 计算: moneyAmount - sum(refund.moneyAmount 排除 badDebtFlag=1) |
+ *   otherAccountName      | 对方账户       | info.targetAccountsName ?? info.otherAccountName |
+ *   otherAccountNo        | 对方账号       | info.targetBankNo ?? info.otherAccountNo |
+ *   otherBankName         | 对方开户行     | info.targetBankName ?? info.otherBankName |
+ *   selfReceiveAccountName | 我方收款账户   | info.selfAccountsName ?? info.selfAccountName ?? info.bankName |
+ *   selfAccountNo         | 我方账号       | info.selfBankNo ?? info.bankNo           |
+ *   selfBankName          | 我方开户行     | info.selfBankName ?? info.bankFullName   |
+ *   receiveTime           | 收取时间       | info.depositDate ?? info.addtime         | 截取前10位
+ *   reason                | 事由           | info.reason ?? info.loanReason           |
+ *   remark                | 备注           | info.comments ?? info.remark             |
+ *   operatorName          | 操作人员       | info.userName ?? info.operatorName ?? info.createBy |
+ *
+ * ── DIFF ROW（差额行 rowType='diff'，均为 修改后-修改前）────
+ *   depositAmount / unrefundAmount = 对应列 修改后-修改前（回填同名列）
+ *
+ * ── BOTTOM SUMMARY（底部汇总表展示键）─────────────────
+ *   默认键序（通常 receiveMarginBalance）
  */
 import _ from 'lodash';
 import { DEPOSIT_MONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';

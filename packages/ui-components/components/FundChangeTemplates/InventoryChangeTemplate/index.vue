@@ -1,9 +1,91 @@
-<!-- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。 -->
+<!--
+	变更记录（每次需求变更在此追加，最新在上；格式：日期 - 改了什么）：
+	- [2026-08-16] 展示字段注释重构为"AI 友好字段地图"格式（固定锚点 + prop|label|source|note 字段表），便于 AI 快速解析；仅注释，未改业务逻辑。
+	历史：
+	- [2026-08-16] 新增"本组件展示字段一览"注释（字段名/中文列名/数据来源/差额行说明）。
+	- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。
+-->
 <script>
 /**
- * 入库管理变动详情模板
- * compareData 为 getByIds 返回的 data 数组
- * originalInfo/changedInfo 含 storeDate、storeHouseName、inventoryDetailList、allLandFreight 等
+ * InventoryChangeTemplate - 入库管理(inventory_main)资金变动详情模板
+ *
+ * ================= AI FIELD MAP（AI 字段地图） =================
+ * 本注释为 AI 阅读设计：锚点固定、字段为表格格式，可用 grep/正则定位。
+ * 修改本组件时，若增删/重命名字段，必须同步更新下方字段表。
+ *
+ * ── DATA ENTRY（数据入口）─────────────────────────────
+ * compareData: Array   /system/backuplog/v3/getByIds 返回 data
+ *   item.originalInfo 修改前主表;  item.changedInfo 修改后主表
+ *   item.originalInfo.inventoryDetailList / item.changedInfo.inventoryDetailList 明细数组
+ * summaryData: Object  后端汇总（见 BOTTOM SUMMARY）
+ * targetDate:  String  日期范围过滤（utils/fundChange/dateScopedRows）
+ *
+ * ── RENDER STRUCTURE（渲染结构）────────────────────────
+ * 1. FundChangeExportButton   导出按钮（明细 + 差额汇总）
+ * 2. el-table 主明细表（summaryOnly=false 时显示）
+ *    固定列① 入库单  组内首行合并，显示「入库单(N) + backupTime」
+ *    固定列② 变更    修改前 / 修改后 / 差额（before-row / after-row / diff-row）
+ *    数据列 42 列    = INVENTORY_MAIN_COLUMNS 过滤 [inventoryDiff, supplierDiff, freightDiff]
+ *    合计行          仅差额行合计: factoryPayment / stockAmount / totalFreight
+ * 3. el-table 底部汇总表（diff-summary-table）
+ *    buildBackendSummaryRows(summaryData, 'inventory_main', prefix, [...])
+ *    展示键: remainingInventoryAmount 剩余库存金额 / supplierTotalBalance 供应商欠款 / driverUnpaidAmount 司机未付运费
+ *
+ * ── COLUMNS（数据列字段表）─────────────────────────────
+ * 格式: prop | 中文列名 | source 来源 | note 备注
+ * source 中 info=主表 originalInfo/changedInfo; detail=inventoryDetailList 单条明细
+ *   status               | 状态           | CONST 固定'已入库'                        |
+ *   inboundTime          | 入库时间       | info.storeDate                           | 截取前10位
+ *   warehouse            | 仓库           | info.storeHouseName                      |
+ *   truckPlate           | 陆运车牌       | info.landCarNo                           |
+ *   seaCabinetNo         | 海运柜号       | info.seaCarNo                            |
+ *   seaCompany           | 海运公司       | info.seaBankName                         |
+ *   supplierName         | 供应商         | detail.supplier                          |
+ *   gradeName            | 级别名称       | detail.levelName                         |
+ *   countingUnit         | 计量单位       | detail.countingUnit                      |
+ *   thickness            | 厚度           | detail.height                            |
+ *   length               | 长度           | detail.length                            |
+ *   width                | 宽度           | detail.width                             |
+ *   piecesPerPack        | 每包片数       | detail.piecesPerPack                     |
+ *   packs                | 包数           | detail.packs                             |
+ *   factoryPieces        | 出厂片数       | detail.actualPieces ?? detail.stockNumber |
+ *   factoryUnitPrice     | 出厂单价       | detail.price                             |
+ *   factoryTaxFlag       | 出厂是否含税   | detail.isIncludeTaxFactory               | '含税'/'不含税'
+ *   sundryCost           | 杂费           | detail.sundryCost                        |
+ *   factoryPayment       | 出厂货款       | sum(detail.paymentFactory)               |
+ *   stockQuantity        | 库存量(片数)   | detail.stockNumber                       |
+ *   unloadPrice          | 卸货价         | detail.paymentUnload                     |
+ *   stockTaxFlag         | 库存是否含税   | detail.isIncludeTaxSale                  | '含税'/'不含税'
+ *   stockAmount          | 库存金额       | detail.payments ?? calcStockAmount()      | 计算: 长*宽*量*卸货价(单位'其他'时 量*价)
+ *   erro                 | 误差           | detail.erro                              |
+ *   tonnage              | 吨位           | detail.tonnage                           |
+ *   landFreightPrice     | 陆运费单价     | detail.landFreightPrice                  |
+ *   additionalFees       | 加费           | detail.additionalFees                    |
+ *   landFreight          | 陆运费         | detail.landFreight                       |
+ *   seaFreight           | 海运费         | detail.seaFreight                        |
+ *   totalFreight         | 总运费         | detail.freight ?? (landFreight+seaFreight) |
+ *   otherCost            | 其他费用       | detail.otherCost                         |
+ *   profit               | 利润           | sum(detail.profit)                       |
+ *   profitNoTax          | 不含税利润     | sum(detail.profitNoTax)                  |
+ *   inputUser            | 录入员         | info.userName                            |
+ *   fleet                | 车队           | info.fleet                               |
+ *   remark               | 备注           | info.comments                            |
+ *   otherInfo            | 其他信息       | info.mainComments                        |
+ *   logisticsProfit      | 物流利润       | sum(detail.logisticsProfit)              |
+ *   customerCommission   | 客户佣金       | sum(detail.customerCommission)           |
+ *   factoryCommission    | 厂家佣金       | sum(detail.factoryCommission)            |
+ *   factoryRebateAmount  | 厂家返利金额   | sum(detail.factoryRebateAmount)          |
+ *   factoryDiscountAmount| 厂家降价金额   | sum(detail.factoryDiscountAmount)        |
+ *
+ * ── DIFF ROW（差额行 rowType='diff'，均为 修改后-修改前）────
+ *   inventoryDiff 库存变动差额 = 库存金额差（即 stockAmount 差额）
+ *   supplierDiff  供应商变动差额 = paymentFactory 差（→ 回填 factoryPayment）
+ *   freightDiff   运费变动差额 = freight 差（→ 回填 totalFreight）
+ *   另回填: stockQuantity = 库存量差; stockAmount = inventoryDiff
+ *   注: inventoryDiff/supplierDiff/freightDiff 不直接展示（已从 columns 过滤），仅体现于差额行回填列与合计行
+ *
+ * ── BOTTOM SUMMARY（底部汇总表展示键）─────────────────
+ *   remainingInventoryAmount | supplierTotalBalance | driverUnpaidAmount
  */
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';

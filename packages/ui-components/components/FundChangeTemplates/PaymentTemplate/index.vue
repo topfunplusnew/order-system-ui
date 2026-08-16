@@ -1,9 +1,65 @@
-<!-- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。 -->
+<!--
+	变更记录（每次需求变更在此追加，最新在上；格式：日期 - 改了什么）：
+	- [2026-08-16] 新增"AI 字段地图"注释（字段名/中文列名/数据来源/差额行说明），便于 AI 快速了解展示内容；仅注释，未改业务逻辑。
+	历史：
+	- 用户需求：FundChangeTemplates 内所有模板增加导出表格数据功能。实际改动：接入共享 FundChangeExportButton，导出当前模板的变更明细与差额汇总数据。
+-->
 <script>
 /**
- * 付款变动详情模板
+ * PaymentTemplate - 付款(payment)资金变动详情模板
  * payment 表：moneyAmount、companyType、landFreight 等
  * 范式：记录(x) 合并 3 行，排除 amountDiff，buildDiffFields 填 amount，diff-summary-table 展示
+ *
+ * ================= AI FIELD MAP（AI 字段地图） =================
+ * 本注释为 AI 阅读设计：锚点固定、字段为表格格式，可用 grep/正则定位。
+ * 修改本组件时，若增删/重命名字段，必须同步更新下方字段表。
+ *
+ * ── DATA ENTRY（数据入口）─────────────────────────────
+ * compareData: Array   /system/backuplog/v3/getByIds 返回 data
+ *   item.originalInfo 修改前主表;  item.changedInfo 修改后主表（payment 单条记录）
+ * summaryData: Object  后端汇总（见 BOTTOM SUMMARY）
+ * targetDate:  String  日期范围过滤（utils/fundChange/dateScopedRows）
+ *
+ * ── RENDER STRUCTURE（渲染结构）────────────────────────
+ * 1. FundChangeExportButton   导出按钮（明细 + 差额汇总）
+ * 2. el-table 主明细表（summaryOnly=false 时显示）
+ *    固定列① 付款  组内首行合并，显示「付款(N) + backupTime」
+ *    固定列② 变更  修改前 / 修改后 / 差额（before-row / after-row / diff-row）
+ *    数据列 13 列   = PAYMENT_COLUMNS 过滤 [amountDiff]
+ *    合计行          仅差额行合计: amount（getTableSummary）
+ * 3. el-table 底部汇总表（diff-summary-table）
+ *    buildBackendSummaryRows(summaryData, 'payment', prefix)
+ *    展示键: 默认键顺序（有值才展示）→ 见 BOTTOM SUMMARY
+ *
+ * ── COLUMNS（数据列字段表）─────────────────────────────
+ * 格式: prop | 中文列名 | source 来源 | note 备注
+ * source 中 info=主表 originalInfo/changedInfo（pickFirstValue 依次取首个非空值）
+ *   status               | 状态           | info.paymentState                         | 默认'已付款'
+ *   paymentDate          | 日期           | info.fundsDate/payTime/changedTargetTime/addtime | 截取前19位
+ *   paymentType          | 支付类型       | info.payType                              | 默认'-'
+ *   companyName          | 对方公司       | info.companyName                          | 默认'-'
+ *   companyType          | 对方公司类型   | info.companyType                          | 默认''
+ *   amount               | 金额           | info.moneyAmount                          | 差额行回填差额
+ *   selfAccountName      | 己方户名       | info.selfAccountsName/selfAcountsName/selfAccountName/bankName |
+ *   selfAccountNo        | 己方账号       | info.selfBankNo/bankNo                    |
+ *   selfBankName         | 己方开户行     | info.selfBankName/bankFullName            |
+ *   otherAccountName     | 对方户名       | info.otherAccountsName/otherAcountsName/otherAccountName |
+ *   otherAccountNo       | 对方账号       | info.otherBankNo/otherAccountNo           |
+ *   otherBankName        | 对方开户行     | info.otherBankName                        |
+ *   remark               | 备注           | info.comments/remark                      |
+ *
+ * ── DIFF ROW（差额行 rowType='diff'）────────────────────
+ *   amountDiff 不直接展示（已从 columns 过滤），仅体现于差额行回填 amount 与合计行
+ *   buildDiffFields: amount = calculateFieldDiff(original.moneyAmount, changed.moneyAmount)
+ *   注意: calculateFieldDiff(after, before) = after - before，此处实为 修改前 - 修改后；
+ *        组件内旧注释写"修改后-修改前"，与实际传参顺序不符，本地图以代码为准
+ *
+ * ── BOTTOM SUMMARY（底部汇总表展示键）─────────────────
+ *   默认输出键顺序 DEFAULT_OUTPUT_KEY_ORDER（有值才展示，label 前缀'付款'）:
+ *   companyTotalBalance 客户变动差额 | supplierTotalBalance 供应商变动差额 | selfCompanyTotalFunds 银行卡资金变动差额
+ *   remainingInventoryAmount 库存变动差额 | driverUnpaidAmount 运费变动差额 | loanFromCompany 银行卡资金变动差额
+ *   futuresMarginBalance 期货保证金变动差额 | paymentMarginBalance 厂家保证金变动差额
+ *   receiveMarginBalance 保证金变动差额 | loanBalance 借款变动差额
  */
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
