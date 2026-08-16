@@ -1033,3 +1033,21 @@ processData(compareData) {
 
 
 特别注意，已经写好的一个案例 可以参考 packages\ui-components\components\FundChangeTemplates\InventoryChangeTemplate\index.vue 这个组件的模式（包括表格中主子表的展示（若有），和表格下方底部小表格的展示）
+
+## AI 友好字段地图注释（每个模板必须）
+
+每个模板组件的 `index.vue` 必须在其 `<script>` 顶部 JSDoc 中包含 **AI FIELD MAP 注释**，供 AI 与后续维护快速了解展示字段。锚点固定，可用 grep/正则定位：
+
+- `AI FIELD MAP` — 区块标题（声明本注释为 AI 阅读设计）
+- `DATA ENTRY` — 数据入口：props、接口来源（如 getByIds 返回结构）
+- `RENDER STRUCTURE` — 渲染结构：固定列、数据列数量与来源配置、合计行、底部汇总表
+- `COLUMNS` — 字段表，每行固定格式：`prop | 中文列名 | source 来源 | note 备注`
+- `DIFF ROW` — 差额行说明（差额计算方式、回填到哪些列）
+- `BOTTOM SUMMARY` — 底部汇总表展示键（若有）
+
+规则：
+1. 字段表必须与 `fundChangeExcelColumns.js` 中对应列配置 **1:1 对应**（含过滤掉的纯差额列说明）；
+2. `source` 必须指明数据来源路径（主表字段 / 明细字段 / 计算逻辑）；
+3. 修改组件时若增删/重命名展示字段，**必须同步更新该注释**；
+4. 文件顶部保留"变更记录"注释（见 requirement-recorder Skill 的文件顶部变更注释规范）；
+5. 参考范本：`FundChangeTemplates/InventoryChangeTemplate/index.vue`。
