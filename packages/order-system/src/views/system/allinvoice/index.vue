@@ -51,7 +51,7 @@
 			:summary-method="getSummaries"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" width="140" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" width="140" show-overflow-tooltip>
 				<template #default="scope">
 					{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}
 				</template>
@@ -103,8 +103,8 @@
 		<!-- 添加或修改发票购入信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
-				<el-form-item label="开票日期" prop="invoiceDate">
-					<el-input v-model="form.invoiceDate" placeholder="请输入开票日期" />
+				<el-form-item label="日期" prop="invoiceDate">
+					<el-input v-model="form.invoiceDate" placeholder="请输入日期" />
 				</el-form-item>
 				<el-form-item label="我方收票主体" prop="invoiceObject">
 					<el-input v-model="form.invoiceObject" placeholder="请输入我方收票主体" />
@@ -222,7 +222,7 @@ export default {
 			// 表单校验
 			rules: {},
 			columns: [
-				{ key: 0, label: `开票日期`, visible: true },
+				{ key: 0, label: `日期`, visible: true },
 				{ key: 1, label: `我方主体`, visible: true },
 				{ key: 2, label: `发票金额`, visible: true },
 				{ key: 3, label: `公司类型`, visible: true },

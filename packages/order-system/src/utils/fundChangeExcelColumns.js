@@ -220,10 +220,10 @@ export const FACTORY_MARGIN_COLUMNS = [
 	{ prop: 'amountDiff', label: '金额变动差额', aggregator: 'absSum', summaryLabel: '金额变动差额汇总' }
 ];
 
-/** 票点：状态, 开票日期, 我方主体, 发票金额, 公司类型, 公司名称, 开票单位名称, 票点, 票点收入, 是否为订单税, 公司类型, 公司名称, 开票单位名称, 票点, 票点成本, 票点差额, 实际开票金额, 实际开票日期, 当月欠票, 备注 */
+/** 票点：状态, 日期, 我方主体, 发票金额, 公司类型, 公司名称, 开票单位名称, 票点, 票点收入, 是否为订单税, 公司类型, 公司名称, 开票单位名称, 票点, 票点成本, 票点差额, 实际开票金额, 实际开票日期, 当月欠票, 备注 */
 export const TICKET_POINT_COLUMNS = [
 	{ prop: 'status', label: '状态', width: 90 },
-	{ prop: 'invoiceDate', label: '开票日期', width: 120 },
+	{ prop: 'invoiceDate', label: '日期', width: 120 },
 	{ prop: 'selfSubject', label: '我方主体', width: 120 },
 	{ prop: 'invoiceAmount', label: '发票金额', width: 120, showSummary: false },
 	{ prop: 'incomeCompanyType', label: '公司类型', width: 100 },
