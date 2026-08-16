@@ -1,3 +1,9 @@
+/**
+ * 变更记录（每次需求变更在此追加，最新在上；格式：日期 - 改了什么）：
+ * - [2026-08-16] 修复：票点修改变动统计中「我方主体」与「开票单位名称」字段映射取反。
+ *   - selfSubject(我方主体)：fallback 链由错误的 invoiceCompanyName 改为 invoiceObject（对照 allinvoice 页面：我方主体=invoiceObject）；
+ *   - incomeInvoiceUnit(开票单位名称)：单主体候选去掉 invoiceObject，改为 invoiceCompanyName 优先（对照 allinvoice 页面：开票单位名称=invoiceCompanyName）。
+ */
 import { format, subtract, add } from 'mathjs';
 
 export const UNIFIED_TICKET_POINT_MODULE_KEY = 'allinvoice';
@@ -38,7 +44,7 @@ export function mapTicketPointRecordToRow(info = {}) {
 	const actualInvoiceAmount = firstDefined(info.actualInvoiceAmount, info.extraInfo?.actualInvoiceAmount, '');
 	const monthlyDebt = firstDefined(info.monthlyDebt, info.currentMonthOweInvoiceAmount, info.extraInfo?.currentMonthOweInvoiceAmount, '');
 	const remark = firstDefined(info.comments, info.remark, info.extraInfo?.comment, '');
-	const selfSubject = firstDefined(info.selfSubject, info.selfCompanyName, info.invoiceCompanyName, '');
+	const selfSubject = firstDefined(info.selfSubject, info.selfCompanyName, info.invoiceObject, '');
 
 	if (hasDualPartyTicketPointFields(info)) {
 		const hasCustomerParty = Boolean(info.incomeCompanyType || info.customer || info.Customer || info.customerPointAmount != null || info.customerTicketPoint != null);
@@ -76,7 +82,7 @@ export function mapTicketPointRecordToRow(info = {}) {
 		invoiceAmount: info.invoiceAmount,
 		incomeCompanyType: firstDefined(info.companyType, info.incomeCompanyType, ''),
 		incomeCompanyName: firstDefined(info.companyName, info.customer, info.Customer, info.Supplier, info.supplier, ''),
-		incomeInvoiceUnit: firstDefined(info.invoiceObject, info.invoiceUnitName, info.invoiceCompanyName, ''),
+		incomeInvoiceUnit: firstDefined(info.invoiceCompanyName, info.invoiceUnitName, ''),
 		incomePoint: getSinglePartyTicketPoint(info),
 		incomePointAmount: getSinglePartyTicketPointAmount(info),
 		isOrderTax: info.isOrderTax,

@@ -1,3 +1,8 @@
+/**
+ * 变更记录（每次需求变更在此追加，最新在上；格式：日期 - 改了什么）：
+ * - [2026-08-16] 修正断言：随 ticketPoint.js 修复「我方主体」与「开票单位名称」映射取反
+ *   （selfSubject=invoiceObject、incomeInvoiceUnit=invoiceCompanyName，对照 allinvoice 页面业务语义）。
+ */
 import { describe, expect, test } from '@jest/globals';
 import {
 	buildTicketPointDiffFields,
@@ -29,11 +34,11 @@ describe('ticketPoint fund change helpers', () => {
 		expect(row).toEqual({
 			status: '已开票',
 			invoiceDate: '2026-04-08',
-			selfSubject: '济南明龙玻璃有限公司',
+			selfSubject: '鲁运',
 			invoiceAmount: 42956,
 			incomeCompanyType: '客户',
 			incomeCompanyName: '章丘明龙',
-			incomeInvoiceUnit: '鲁运',
+			incomeInvoiceUnit: '济南明龙玻璃有限公司',
 			incomePoint: 0.075,
 			incomePointAmount: 3221.7,
 			isOrderTax: undefined,
