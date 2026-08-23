@@ -66,6 +66,16 @@ export default {
 		};
 	},
 
+	created() {
+		// 页面切换/标签切换时恢复已查询的表格数据，避免重复请求
+		this.restoreFromCache();
+	},
+
+	beforeDestroy() {
+		// 组件销毁前缓存数据，下次进入页面时恢复
+		this.saveToCache();
+	},
+
 	methods: {
 		fix_2,
 		formatBalance,
@@ -76,6 +86,40 @@ export default {
 		abs,
 		isDebit,
 		isCredit,
+		// 数据缓存相关：用于切换标签/页面时不丢失已查询的表格数据
+		getCacheKey() {
+			return 'supplierDetail_sessionCache';
+		},
+		restoreFromCache() {
+			try {
+				const cached = sessionStorage.getItem(this.getCacheKey());
+				if (!cached) return;
+				const data = JSON.parse(cached);
+				this.tableData = Array.isArray(data.tableData) ? data.tableData : [];
+				if (data.searchForm) {
+					this.searchForm = { ...this.searchForm, ...data.searchForm };
+				}
+				if (data.companyName !== undefined) {
+					this.companyName = data.companyName;
+				}
+			} catch (err) {
+				// 解析失败时静默忽略
+			}
+		},
+		saveToCache() {
+			try {
+				sessionStorage.setItem(
+					this.getCacheKey(),
+					JSON.stringify({
+						tableData: this.tableData,
+						searchForm: this.searchForm,
+						companyName: this.companyName
+					})
+				);
+			} catch (err) {
+				// 存储失败时静默忽略
+			}
+		},
 		getSelectedTimeRange() {
 			const [beginTime, endTime] = this.searchForm.dateRange || [];
 			if (!beginTime || !endTime) {
