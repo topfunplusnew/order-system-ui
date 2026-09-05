@@ -1,3 +1,7 @@
+/*
+需求：订单选择支持产品级别、厚度、长度、宽度筛选，并允许跨条件多次追加且保留已选状态。
+改动：选择列表由 OrderDetailList 维护跨查询状态，混入层透传已选数据并兼容清空操作。
+*/
 // 以下 import 仅被已注释的旧版 submitSelectOrderDetail 使用，保留备查
 // import { fix } from '../../../../api/tool/format';
 import { listOrderDetail } from '@/api/system/orderDetail';
@@ -18,6 +22,10 @@ export var mixin_choose_order = {
 				pageNum: 1,
 				pageSize: 20,
 				supplier: '',
+				levelName: '',
+				height: '',
+				length: '',
+				width: '',
 				params: {
 					beginTime: null,
 					endTime: null
@@ -84,6 +92,10 @@ export var mixin_choose_order = {
 			const supplier = this.queryParamsSupplier.supplier || baseQuery.supplier || '';
 			const beginTime = this.queryParamsSupplier.params?.beginTime || baseQuery.params?.beginTime || null;
 			const endTime = this.queryParamsSupplier.params?.endTime || baseQuery.params?.endTime || null;
+			const levelName = this.queryParamsSupplier.levelName || baseQuery.levelName || '';
+			const height = this.queryParamsSupplier.height || baseQuery.height || '';
+			const length = this.queryParamsSupplier.length || baseQuery.length || '';
+			const width = this.queryParamsSupplier.width || baseQuery.width || '';
 
 			// ruoyi 的 tansParams 会把 params 对象序列化成 params[xx]
 			const qs = {
@@ -91,6 +103,10 @@ export var mixin_choose_order = {
 				pageNum,
 				pageSize,
 				supplier,
+				levelName,
+				height,
+				length,
+				width,
 				params: {
 					...(baseQuery.params || {}),
 					beginTime,
@@ -103,15 +119,32 @@ export var mixin_choose_order = {
 					this.$message.info('暂时没有数据');
 					return;
 				}
-				this.needToSelectOrderDetailList = res.rows;
+				// 追加选择时，将上次已选明细并入当前结果，确保可见且保持勾选状态。
+				const rowsById = new Map((res.rows || []).filter(row => row && row.id != null).map(row => [String(row.id), row]));
+				(this.goods || []).forEach(row => {
+					if (row && row.id != null && !rowsById.has(String(row.id))) rowsById.set(String(row.id), row);
+				});
+				this.needToSelectOrderDetailList = [...rowsById.values()];
 				this.orderGoodsListVisible = true;
-				this.orderDetailTotal = res.total;
+				this.orderDetailTotal = Math.max(Number(res.total) || 0, this.needToSelectOrderDetailList.length);
+				this.$nextTick(() => {
+					if (this.restoreAppendSelection) this.restoreAppendSelection();
+					setTimeout(() => this.restoreAppendSelection && this.restoreAppendSelection(), 200);
+				});
 			});
 		},
 		// 确认选择供应商
 		handleCommitSupplier() {
 			// 初次进入列表时保证走第一页，避免分页参数缺失
 			this.queryParamsSupplier.pageNum = 1;
+			this.orderDetailInitialQuery = {
+				orderDate: this.queryParamsSupplier.params.beginTime,
+				supplier: this.queryParamsSupplier.supplier,
+				levelName: this.queryParamsSupplier.levelName,
+				height: this.queryParamsSupplier.height,
+				length: this.queryParamsSupplier.length,
+				width: this.queryParamsSupplier.width
+			};
 			this.getDetailBySupper(this.queryParamsSupplier);
 		},
 		// 以下方法已在 rebate/index.vue 中重写，混入内保留注释备查
@@ -131,7 +164,7 @@ export var mixin_choose_order = {
 		// 查看已选择的货物
 		checkSelectedGoods() {
 			this.orderGoodsVisible = true;
-		},
+		}
 		// 确认选择货物的列表（旧版：原生运算，已由 rebate/index.vue 的 mathjs 版本替代）
 		// submitSelectOrderDetail() {
 		// 	this.form.orderDetailIds = [];

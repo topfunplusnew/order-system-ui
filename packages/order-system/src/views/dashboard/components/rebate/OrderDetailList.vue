@@ -1,8 +1,17 @@
-<!--选择订单后的已选择货物列表-->
+<!--
+需求：订单选择支持产品级别、厚度、长度、宽度筛选，并允许多次调整条件追加选择；已选明细在再次搜索时保持勾选，可一键清空。
+改动：维护跨查询的已选明细集合，按明细 id 去重并回显当前结果；新增筛选字段和“清空已选”操作。
+修复：将已选货物同步保存到 localStorage，组件打开时恢复，清空时移除缓存。
+-->
 
 <script>
+import SearchOption from '@/components/SearchOption.vue';
+import { listProductLevel } from '@/api/system/productLevel';
+import { listCompany } from '@/api/system/company';
+
 export default {
 	name: 'OrderDetailList',
+	components: { SearchOption },
 	props: {
 		orderDetailList: {
 			type: Array,
@@ -11,12 +20,25 @@ export default {
 		total: {
 			type: Number,
 			default: 0
+		},
+		selectedOrderDetails: {
+			type: Array,
+			default: () => []
+		},
+		initialQuery: {
+			type: Object,
+			default: () => ({})
 		}
 	},
 	data() {
 		return {
 			loading: false,
 			selectedList: [],
+			selectedMap: Object.create(null),
+			storageKey: 'rebate-selected-order-details',
+			restoringSelection: false,
+			queryLevel: '',
+			queryCompany: '',
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
@@ -33,6 +55,38 @@ export default {
 			return this.orderDetailList;
 		}
 	},
+	watch: {
+		selectedOrderDetails: {
+			immediate: true,
+			handler(list) {
+				this.selectedList = [...(list || [])];
+				const stored = this.readStoredSelection();
+				if (stored.length) this.selectedList = stored;
+				this.selectedMap = Object.create(null);
+				this.selectedList.forEach(item => {
+					if (item && item.id != null) this.selectedMap[String(item.id)] = item;
+				});
+				this.$nextTick(this.restoreVisibleSelection);
+			}
+		},
+		orderDetailList() {
+			this.$nextTick(() => {
+				this.restoreVisibleSelection();
+				setTimeout(this.restoreVisibleSelection, 80);
+			});
+		},
+		initialQuery: {
+			immediate: true,
+			deep: true,
+			handler(query) {
+				this.queryParams = {
+					...this.queryParams,
+					...(query || {}),
+					params: { ...this.queryParams.params, ...((query && query.params) || {}) }
+				};
+			}
+		}
+	},
 	methods: {
 		boolTag(val) {
 			if (val === 0 || val === '0' || val === false) return '否';
@@ -44,11 +98,70 @@ export default {
 			const text = this.boolTag(val);
 			return text === '否' ? 'danger' : text === '是' ? 'success' : 'info';
 		},
+		listProductLevel,
+		listCompany,
+		handleCompanySelect(value) {
+			if (value) this.queryParams.supplier = value.companyName;
+		},
+		handleProductLevelQuery(value) {
+			this.queryLevel = value;
+		},
+		handleProductLevelSelect(value) {
+			if (!value) return;
+			this.queryParams.levelName = value.levelName;
+			this.queryParams.levelID = value.id;
+			this.queryParams.height = value.height;
+			this.queryParams.length = value.length;
+			this.queryParams.width = value.width;
+		},
 		handleSelectionChange(selection) {
-			this.selectedList = selection;
+			if (this.restoringSelection) return;
+			const visibleIds = new Set(this.orderDetailList.filter(item => item && item.id != null).map(item => String(item.id)));
+			visibleIds.forEach(id => delete this.selectedMap[id]);
+			(selection || []).forEach(item => {
+				if (item && item.id != null) this.selectedMap[String(item.id)] = item;
+			});
+			this.selectedList = Object.values(this.selectedMap);
+			this.persistSelection();
 		},
 		submitSelectOrderDetail() {
 			this.$emit('handleSelect', this.selectedList);
+		},
+		clearSelectedOrderDetails() {
+			this.selectedMap = Object.create(null);
+			this.selectedList = [];
+			this.$emit('handleClearSelected');
+			this.clearStoredSelection();
+			this.$nextTick(this.restoreVisibleSelection);
+			setTimeout(this.restoreVisibleSelection, 80);
+		},
+		readStoredSelection() {
+			try {
+				return JSON.parse(localStorage.getItem(this.storageKey) || '[]');
+			} catch (e) {
+				return [];
+			}
+		},
+		persistSelection() {
+			localStorage.setItem(this.storageKey, JSON.stringify(this.selectedList));
+		},
+		clearStoredSelection() {
+			localStorage.removeItem(this.storageKey);
+		},
+		restoreVisibleSelection() {
+			const table = this.$refs.orderDetailTable;
+			if (!table) return;
+			this.restoringSelection = true;
+			try {
+				table.clearSelection();
+				this.orderDetailList.forEach(row => {
+					if (row && row.id != null && this.selectedMap[String(row.id)]) table.toggleRowSelection(row, true);
+				});
+			} finally {
+				this.$nextTick(() => {
+					this.restoringSelection = false;
+				});
+			}
 		},
 		// 对货物进行查询和筛选
 		handleQuery(pagination) {
@@ -80,22 +193,40 @@ export default {
 		<!--		需要对货物进行查询和筛选-->
 		<el-form :model="queryParams" size="mini" :inline="true" label-width="100px">
 			<el-row>
-				<el-form-item label="日期" prop="orderDate">
-					<el-date-picker v-model="queryParams.orderDate" type="date" placeholder="选择订单货物时间" value-format="yyyy-MM-dd"></el-date-picker>
+				<el-form-item label="时间范围" prop="orderDateRange">
+					<el-date-picker v-model="queryParams.orderDateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" />
 				</el-form-item>
 				<el-form-item label="供应商名称" prop="supplier">
-					<!--          换成输入框-->
-					<el-input v-model="queryParams.supplier" placeholder="请输入供应商名称"></el-input>
+					<el-row type="flex" align="middle">
+						<el-input v-model="queryParams.supplier" placeholder="请选择供应商" />
+						<SearchOption :limit-info="{ companyType: '供应商' }" :get-data="listCompany" query-info="companyName" query-label="供应商查找" :query-name="queryCompany" @update:queryName="value => (queryCompany = value)" @commitBack="handleCompanySelect">
+							<template #table-columns><el-table-column label="供应商" align="center" prop="companyName" /></template>
+						</SearchOption>
+					</el-row>
 				</el-form-item>
-				<el-form-item label="级别名称" prop="levelName">
-					<el-input v-model="queryParams.levelName" placeholder="请输入级别名称"></el-input>
+				<el-form-item label="产品级别" prop="levelName">
+					<el-row type="flex" align="middle">
+						<el-input v-model="queryParams.levelName" placeholder="请选择产品级别"></el-input>
+						<SearchOption :limit-info="{}" :get-data="listProductLevel" query-info="levelName" query-label="产品级别查找" :query-name="queryLevel" @update:queryName="handleProductLevelQuery" @commitBack="handleProductLevelSelect">
+							<template #table-columns>
+								<el-table-column label="级别编码" align="center" prop="levelNo" />
+								<el-table-column label="产品级别" align="center" prop="levelName" />
+							</template>
+						</SearchOption>
+					</el-row>
 				</el-form-item>
+				<el-form-item label="厚度" prop="height"><el-input v-model="queryParams.height" placeholder="请输入厚度"></el-input></el-form-item>
+				<el-form-item label="长度" prop="length"><el-input v-model="queryParams.length" placeholder="请输入长度"></el-input></el-form-item>
+				<el-form-item label="宽度" prop="width"><el-input v-model="queryParams.width" placeholder="请输入宽度"></el-input></el-form-item>
 			</el-row>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 			<el-form-item>
 				<el-button :disabled="selectedList.length === 0" type="success" size="mini" @click="submitSelectOrderDetail">选择所选货物</el-button>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="danger" size="mini" :disabled="selectedList.length === 0" @click="clearSelectedOrderDetails">清空已选</el-button>
 			</el-form-item>
 		</el-form>
 		<el-table
@@ -104,6 +235,8 @@ export default {
 			v-loading="loading"
 			border
 			:data="filterSelectedList"
+			ref="orderDetailTable"
+			:row-key="row => String(row.id)"
 			:cell-style="
 				() => {
 					return { padding: '.5px' };

@@ -1,3 +1,11 @@
+<!--
+需求补充：供应商选单的前置筛选表单也需使用 SearchOption 自动填充产品级别。
+实际改动：接入产品级别查询接口和搜索按钮，选中后填充级别名称、厚度、长度、宽度，保留竖向表单布局。
+需求：返利关联订单支持产品级别、厚度、长度、宽度筛选，可多次搜索追加选择，已选项回显，并提供独立清空按钮。
+改动：向 OrderDetailList 传入当前 goods，接收清空事件；选择结果按明细 id 累加，保持既有选择。
+修复：追加选择读取订单明细本地缓存，清空或取消返利时清除缓存。
+修复：点击“选择所选货物”后关闭订单列表和供应商筛选弹窗，已选数据继续保留。
+-->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
@@ -221,6 +229,7 @@
 								</el-button>
 								<el-row v-else>
 									<el-button size="mini" type="success" :disabled="!form.unitPrice" @click="checkSelectedGoods">查看已选择货物</el-button>
+									<el-button size="mini" type="primary" :disabled="!form.unitPrice" @click="openAppendOrderList">追加选择货物</el-button>
 									<el-button size="mini" type="danger" :disabled="!form.unitPrice" @click="refreshSelectedGoods">重新选择货物</el-button>
 								</el-row>
 							</el-form-item>
@@ -299,18 +308,7 @@
 		</el-dialog>
 
 		<!--    选择订单详情 点击返利货物后面的选择订单打开的弹窗 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="true"
-			title="订单选择"
-			:visible.sync="orderDialogVisible"
-			width="460px"
-			custom-class="order-select-dialog"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="订单选择" :visible.sync="orderDialogVisible" width="460px" custom-class="order-select-dialog">
 			<el-row class="order-select-actions">
 				<el-button type="primary" size="mini" @click="selectBySupplier">根据供应商选择</el-button>
 				<el-button type="primary" size="mini" @click="handleOpenSelectOrder">搜索全部订单明细</el-button>
@@ -321,7 +319,15 @@
 
 		<!--    第二种方式：直接搜索全部订单明细并多选 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="选择订单明细" :visible.sync="orderSelectVisible" width="80%">
-			<OrderDetailList v-if="orderSelectVisible" :order-detail-list="directOrderDetailList" :total="directOrderDetailTotal" @handleSelect="handleSelectOrderDetailChange" @handleQuery="value => getDirectOrderDetailList(value)" />
+			<OrderDetailList
+				v-if="orderSelectVisible"
+				:order-detail-list="directOrderDetailList"
+				:total="directOrderDetailTotal"
+				:selected-order-details="goods"
+				@handleSelect="handleSelectOrderDetailChange"
+				@handleClearSelected="clearSelectedOrderDetails"
+				@handleQuery="value => getDirectOrderDetailList(value)"
+			/>
 		</el-dialog>
 
 		<!--    查看已经选择的货物-->
@@ -333,17 +339,17 @@
 		</InfoDialog>
 
 		<!--    根据供应商选择订单-->
-		<InfoDialog title="根据供应商选择订单" :visible.sync="orderBySupplierVisible" @update:visible="orderBySupplierVisible = false" width="500px">
+		<InfoDialog title="根据供应商选择订单" :visible.sync="orderBySupplierVisible" @update:visible="orderBySupplierVisible = false" width="700px">
 			<template #info>
-				<div>
-					<el-row style="text-align: center">
-						<el-form :model="queryParamsSupplier" size="mini" :inline="true" label-width="68px">
-							<el-form-item label="供应商">
+				<div class="supplier-order-filter-dialog">
+					<el-row>
+						<el-form class="supplier-order-filter-form" :model="queryParamsSupplier" size="mini" label-width="88px">
+							<el-form-item class="supplier-filter-item" label="供应商">
 								<el-row>
-									<el-col :span="20">
+									<el-col :span="22">
 										<el-input v-model="queryParamsSupplier.supplier" placeholder="请输入供应商" />
 									</el-col>
-									<el-col :span="4">
+									<el-col :span="2">
 										<SearchOption
 											:get-data="listCompany"
 											:limit-info="{
@@ -372,6 +378,23 @@
 							<el-form-item label="结束时间">
 								<el-date-picker v-model="queryParamsSupplier.params.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd"></el-date-picker>
 							</el-form-item>
+							<el-form-item label="产品级别">
+								<el-row type="flex" align="middle">
+									<el-input v-model="queryParamsSupplier.levelName" placeholder="请选择产品级别" />
+									<SearchOption :limit-info="{}" :get-data="listProductLevel" query-info="levelName" query-label="产品级别查找" :query-name="supplierProductLevelQuery" @update:queryName="value => (supplierProductLevelQuery = value)" @commitBack="handleSupplierProductLevelSelect">
+										<template #table-columns>
+											<el-table-column label="级别编码" align="center" prop="levelNo" />
+											<el-table-column label="产品级别" align="center" prop="levelName" />
+											<el-table-column label="厚度" align="center" prop="height" />
+											<el-table-column label="长度" align="center" prop="length" />
+											<el-table-column label="宽度" align="center" prop="width" />
+										</template>
+									</SearchOption>
+								</el-row>
+							</el-form-item>
+							<el-form-item label="厚度"><el-input v-model="queryParamsSupplier.height" placeholder="请输入厚度" /></el-form-item>
+							<el-form-item label="长度"><el-input v-model="queryParamsSupplier.length" placeholder="请输入长度" /></el-form-item>
+							<el-form-item label="宽度"><el-input v-model="queryParamsSupplier.width" placeholder="请输入宽度" /></el-form-item>
 						</el-form>
 					</el-row>
 					<el-row style="text-align: center; margin-top: 15px">
@@ -384,7 +407,17 @@
 		<!--    订单货物列表-->
 		<InfoDialog title="根据供应商所选货物列表" :visible.sync="orderGoodsListVisible" @update:visible="orderGoodsListVisible = false">
 			<template #info>
-				<OrderDetailList :order-detail-list="needToSelectOrderDetailList" :total="orderDetailTotal" @handleSelect="handleSelectOrderDetailChange" @handleQuery="value => getDetailBySupper(value)" />
+				<OrderDetailList
+					:key="orderDetailListKey"
+					ref="appendOrderDetailList"
+					:order-detail-list="needToSelectOrderDetailList"
+					:total="orderDetailTotal"
+					:selected-order-details="goods"
+					:initial-query="orderDetailInitialQuery"
+					@handleSelect="handleSelectOrderDetailChange"
+					@handleClearSelected="clearSelectedOrderDetails"
+					@handleQuery="value => getDetailBySupper(value)"
+				/>
 			</template>
 		</InfoDialog>
 
@@ -460,6 +493,7 @@ import { fix } from '@/api/tool/format';
 import OrderDetailInfo from '@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { listCompany } from '@/api/system/company';
+import { listProductLevel } from '@/api/system/productLevel';
 import SearchOption from '@/components/SearchOption.vue';
 import InfoDialog from '../../../components/InfoDialog.vue';
 import OrderDetailList from '../../dashboard/components/rebate/OrderDetailList.vue';
@@ -493,6 +527,9 @@ export default {
 			multiple: true,
 			// 当前选中的供应商（用于一致性检查）
 			currentSelectedSupplier: null,
+			supplierProductLevelQuery: '',
+			orderDetailInitialQuery: {},
+			orderDetailListKey: 0,
 			// 计提返利时间段选择（前端使用，用于时间段组件绑定）
 			rebateDateRange: null,
 			// 收到返利时间段选择（前端使用，用于时间段组件绑定）
@@ -744,8 +781,33 @@ export default {
 		this.getList();
 	},
 	methods: {
+		openAppendOrderList() {
+			const storedGoods = this.readStoredRebateGoods();
+			if (storedGoods.length) this.goods = storedGoods;
+			// 追加时重建列表组件，确保上次已选明细按 selected-order-details 重新回显。
+			this.orderDetailListKey += 1;
+			this.orderDetailInitialQuery = {
+				orderDate: this.queryParamsSupplier.params.beginTime,
+				supplier: this.form.supplier || this.goods[0]?.supplier || this.queryParamsSupplier.supplier,
+				levelName: this.queryParamsSupplier.levelName,
+				height: this.queryParamsSupplier.height,
+				length: this.queryParamsSupplier.length,
+				width: this.queryParamsSupplier.width
+			};
+			this.queryParamsSupplier.supplier = this.orderDetailInitialQuery.supplier || '';
+			this.getDetailBySupper(this.queryParamsSupplier);
+			this.orderDialogVisible = false;
+		},
 		isNull,
 		listCompany,
+		listProductLevel,
+		handleSupplierProductLevelSelect(value) {
+			if (!value) return;
+			this.queryParamsSupplier.levelName = value.levelName;
+			this.queryParamsSupplier.height = value.height;
+			this.queryParamsSupplier.length = value.length;
+			this.queryParamsSupplier.width = value.width;
+		},
 		listBankAccount,
 		// 以下方法原用于本页 el-table 多选，现由 OrderDetailList 组件内选择，未绑定模板故注释
 		// getRowClassName({ row, rowIndex }) {
@@ -783,6 +845,7 @@ export default {
 		// },
 		// 重写mixin中的清空已选择的货物方法，添加供应商状态重置
 		refreshSelectedGoods() {
+			localStorage.removeItem('rebate-selected-order-details');
 			this.goods = [];
 			this.form.orderDetailIds = [];
 			// 重置当前选中的供应商
@@ -797,18 +860,41 @@ export default {
 				this.$message.warning('供应商返利只能选择同一供应商的订单明细，请重新选择');
 				return;
 			}
-			this.goods = [];
-			this.goods = selection;
+			const existingSupplier = this.goods[0]?.supplier;
+			if (existingSupplier && selectedSuppliers.some(supplier => supplier !== existingSupplier)) {
+				this.$message.warning('供应商返利只能选择同一供应商的订单明细，请重新选择');
+				return;
+			}
+			const merged = new Map(this.goods.filter(item => item && item.id != null).map(item => [String(item.id), item]));
+			(selection || []).forEach(item => {
+				if (item && item.id != null) merged.set(String(item.id), item);
+			});
+			this.goods = [...merged.values()];
 
 			// 从选择的货物中获取供应商信息，用于自动填充
 			if (!_.isEmpty(selection)) {
 				this.currentSelectedSupplier = selectedSuppliers[0] || selection[0].supplier;
 			}
 
-			this.orderGoodsListVisible = false;
-			this.orderBySupplierVisible = false;
-			this.orderSelectVisible = false;
 			this.submitSelectOrderDetail();
+			this.orderGoodsListVisible = false;
+			this.orderSelectVisible = false;
+			this.orderBySupplierVisible = false;
+		},
+		clearSelectedOrderDetails() {
+			this.goods = [];
+			this.form.orderDetailIds = [];
+			this.currentSelectedSupplier = null;
+			localStorage.removeItem('rebate-selected-order-details');
+		},
+		restoreAppendSelection() {
+			const list = this.$refs.appendOrderDetailList;
+			if (!list || !list.$refs.orderDetailTable) return;
+			const selectedIds = new Set(this.goods.map(item => String(item.id)));
+			list.$refs.orderDetailTable.clearSelection();
+			list.orderDetailList.forEach(row => {
+				if (selectedIds.has(String(row.id))) list.$refs.orderDetailTable.toggleRowSelection(row, true);
+			});
 		},
 		// 重写mixin中的确认选择货物方法，添加供应商自动填充功能
 		submitSelectOrderDetail() {
@@ -836,6 +922,7 @@ export default {
 
 			// 推入id数组
 			this.form.orderDetailIds = this.goods.map(item => item.id);
+			localStorage.setItem('rebate-selected-order-details', JSON.stringify(this.goods));
 
 			// 更新返利方式对应的显示变量
 			this.areaOrWeightBox = this.form.rebateMethod;
@@ -852,11 +939,15 @@ export default {
 			// 更新金额（使用计算属性的值）
 			this.form.rebate = this.calculatedRebate;
 
-			// 关闭对话框
+			// 保持订单选择弹窗打开，用户可以继续搜索并追加明细。
 			this.orderDialogVisible = false;
-
-			// 重置供应商选择状态
-			this.currentSelectedSupplier = null;
+		},
+		readStoredRebateGoods() {
+			try {
+				return JSON.parse(localStorage.getItem('rebate-selected-order-details') || '[]');
+			} catch (e) {
+				return [];
+			}
 		},
 		// 获取最早的返利日期
 		getEarliestReceivedDate(row) {
@@ -1443,6 +1534,58 @@ export default {
 	}
 };
 </script>
+
+<style scoped lang="scss">
+/*
+需求：根据供应商选择订单的筛选条件保持竖向完整展示，同时控制弹窗整体尺寸。
+改动：将弹窗调整为 700px 宽，表单限制为 500px，缩小 label、控件高度和行间距，保持内容紧凑。
+*/
+.supplier-order-filter-dialog {
+	.supplier-order-filter-form {
+		width: 500px;
+		margin: 0 auto;
+
+		::v-deep .el-form-item {
+			display: flex;
+			align-items: center;
+			margin: 0 0 9px;
+		}
+
+		::v-deep .el-form-item__label {
+			width: 88px !important;
+			flex: 0 0 88px;
+			padding-right: 4px;
+			font-size: 14px;
+			line-height: 30px;
+			white-space: nowrap;
+			text-align: right;
+		}
+
+		::v-deep .el-form-item__content {
+			flex: 1;
+			min-width: 0;
+			margin-left: 0 !important;
+		}
+
+		::v-deep .supplier-filter-item {
+			.el-form-item__content,
+			.el-row {
+				width: 100%;
+			}
+
+			.el-input {
+				width: 100%;
+			}
+		}
+
+		::v-deep .el-input,
+		::v-deep .el-date-editor {
+			width: 100%;
+			height: 30px;
+		}
+	}
+}
+</style>
 
 <style scoped lang="scss">
 .money {
