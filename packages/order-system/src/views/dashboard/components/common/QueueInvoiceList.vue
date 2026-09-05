@@ -1,3 +1,7 @@
+<!--
+  需求：同一客户对应不同我方公司时，批量开票必须按当前我方公司隔离金额和模板，禁止合并。
+  实际改动：记录当前我方公司，并在剩余金额、模板生成及发票主体处理中同时校验我方公司。
+-->
 <script>
 import InvoiceItem from '@/views/dashboard/components/common/InvoiceItem.vue';
 import { create, all } from 'mathjs';
@@ -44,7 +48,8 @@ export default {
 			supplierId: null,
 			// 票点信息
 			currentTicketPoint: 0,
-			currentTicketPointAmount: 0
+			currentTicketPointAmount: 0,
+			currentUs: ''
 		};
 	},
 	created() {
@@ -75,10 +80,10 @@ export default {
 				// 根据发票类型匹配
 				if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
 					// 客户模式：查找购买方ID匹配的记录
-					return tpl.purchaseId && String(tpl.purchaseId) === String(this.supplierId);
+					return tpl.purchaseId && String(tpl.purchaseId) === String(this.supplierId) && (!this.currentUs || tpl.sellerName === this.currentUs);
 				} else if (this.invoiceType === PUBLIC_DICT_TYPE.SUPPLIER) {
 					// 供应商模式：查找销方ID匹配的记录
-					return tpl.sellerId && String(tpl.sellerId) === String(this.supplierId);
+					return tpl.sellerId && String(tpl.sellerId) === String(this.supplierId) && (!this.currentUs || tpl.purchaseName === this.currentUs);
 				}
 
 				return false;
@@ -286,17 +291,17 @@ export default {
 			const selectedCompanyId = this.supplierId;
 			let filtered = batchRows.filter(row => !row.invoiced);
 
-			// 按公司ID筛选
+			// 按对方公司ID和当前我方公司筛选
 			if (selectedCompanyId) {
-				const sellerMatches = filtered.filter(row => row.sellerId && String(row.sellerId) === String(selectedCompanyId));
-				if (sellerMatches.length > 0) {
-					filtered = sellerMatches;
-				} else {
-					const purchaseMatches = filtered.filter(row => row.purchaseId && String(row.purchaseId) === String(selectedCompanyId));
-					if (purchaseMatches.length > 0) {
-						filtered = purchaseMatches;
+				filtered = filtered.filter(row => {
+					if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
+						return row.purchaseId && String(row.purchaseId) === String(selectedCompanyId) && (!this.currentUs || row.sellerName === this.currentUs);
 					}
-				}
+					if (this.invoiceType === PUBLIC_DICT_TYPE.SUPPLIER) {
+						return row.sellerId && String(row.sellerId) === String(selectedCompanyId) && (!this.currentUs || row.purchaseName === this.currentUs);
+					}
+					return false;
+				});
 			}
 
 			if (filtered.length === 0) {
@@ -433,7 +438,7 @@ export default {
 					const invoice = this.createInvoiceObject(
 						{
 							invoiceDate: tpl.invoiceDate || parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-							invoiceObject: invoiceObject || sessionStorage.getItem('us') || '',
+							invoiceObject: this.currentUs || invoiceObject || sessionStorage.getItem('us') || '',
 							invoiceAmount: actualInvoiceAmount,
 							companyType: companyTypeConst,
 							companyName: companyName,
@@ -512,7 +517,7 @@ export default {
 			// 创建客户发票对象
 			return this.createInvoiceObject({
 				invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				invoiceObject: sessionStorage.getItem('us'), // 己方公司实体
+				invoiceObject: this.currentUs || sessionStorage.getItem('us'), // 当前检索行的我方公司实体
 				invoiceAmount: Number(this.math.format(invoiceAmount, { precision: 2, notation: 'fixed' })),
 				companyType: PUBLIC_DICT_TYPE.CUSTOMER,
 				companyName: orderItem.customer,
@@ -546,7 +551,7 @@ export default {
 			// 创建供应商发票对象
 			return this.createInvoiceObject({
 				invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				invoiceObject: sessionStorage.getItem('us'),
+				invoiceObject: this.currentUs || sessionStorage.getItem('us'),
 				invoiceAmount: Number(this.math.format(invoiceAmount, { precision: 2, notation: 'fixed' })),
 				companyType: PUBLIC_DICT_TYPE.SUPPLIER,
 				companyName: _suppliers[0].supplier,
@@ -577,6 +582,7 @@ export default {
 			// 接收票点信息
 			this.currentTicketPoint = value.ticketPoint || 0;
 			this.currentTicketPointAmount = value.ticketPointAmount || 0;
+			this.currentUs = value.us || '';
 		});
 
 		this.$bus.$on('invoice-clear', () => {
@@ -595,6 +601,7 @@ export default {
 			// 清除票点信息
 			this.currentTicketPoint = 0;
 			this.currentTicketPointAmount = 0;
+			this.currentUs = '';
 		});
 
 		// 监听生成发票的触发（由 SelectGoods 发出）
