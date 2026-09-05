@@ -1,3 +1,7 @@
+<!--
+  需求：批量开票客户金额使用后端返回的销售含税明细合计和可开票金额，不能用 allPayments 在前端推算。
+  实际改动：客户订单金额直接读取 saleIncludeTaxTotal、customerInvoicedAmount、customerRemainingInvoiceAmount。
+-->
 <script>
 import { listGoodsOrder, getGoodsOrder } from '@/api/system/goodsOrder';
 import QuerySearchBar from '@/views/dashboard/components/goodsOrder/QuerySearchBar.vue';
@@ -167,23 +171,21 @@ export default {
 		parseTime,
 		/**
 		 * 计算单行订单的剩余开票金额
-		 * 销项票(mode=out)：总货款 allPayments - 已开票金额 totalInvoiceAmount
+		 * 销项票(mode=out)：直接使用后端 customerRemainingInvoiceAmount
 		 * 进项票(mode=in)：从 smailOrderDetails 中筛出与当前供应商(supplierId)匹配的明细，对其 paymentFactory 求和，再减去已开票金额
 		 * @param {Object} row - 订单行数据
 		 * @returns {number} 剩余开票金额，保留2位小数
 		 */
 		calculateRemainingAmount(row) {
-			const totalInvoiceAmount = this.math.bignumber(row.params?.totalInvoiceAmount || 0);
 			let baseAmount;
 			if (this.mode === 'in') {
 				const details = row.smailOrderDetails || [];
 				const supplierId = this.id != null ? String(this.id) : null;
 				baseAmount = details.filter(d => supplierId != null && String(d.supplierID) === supplierId).reduce((sum, d) => this.math.add(sum, this.math.bignumber(d.paymentFactory || 0)), this.math.bignumber(0));
 			} else {
-				baseAmount = this.math.bignumber(row.allPayments || 0);
+				baseAmount = this.math.bignumber(row.customerRemainingInvoiceAmount || 0);
 			}
-			const remaining = this.math.subtract(baseAmount, totalInvoiceAmount);
-			return Math.max(0, Number(this.math.format(remaining, { precision: 2, notation: 'fixed' })));
+			return Math.max(0, Number(this.math.format(baseAmount, { precision: 2, notation: 'fixed' })));
 		},
 		// 查看订单详情（表头 + 明细）
 		async handleViewOrder(row) {
@@ -354,21 +356,8 @@ export default {
 
 			for (let row of rows) {
 				if (type === PUBLIC_DICT_TYPE.CUSTOMER) {
-					const totalInvoiceAmount = this.math.bignumber(row.params.totalInvoiceAmount || 0);
-					if (this.math.larger(totalInvoiceAmount, this.math.bignumber(0))) {
-						const allPayments = this.math.bignumber(row.allPayments || 0);
-						if (this.math.larger(totalInvoiceAmount, allPayments)) {
-							this.$message.warning('参数有误：已开票金额大于总货款');
-							// 取消勾选
-							this.$refs.goodsTable.clearSelection();
-							break;
-						}
-						money = this.math.add(money, totalInvoiceAmount);
-					} else {
-						// 客户操作金额
-						const allPayments = this.math.bignumber(row.allPayments || 0);
-						money = this.math.add(money, allPayments);
-					}
+					// 客户操作金额直接使用后端计算的当前剩余可开票金额
+					money = this.math.add(money, this.math.bignumber(row.customerRemainingInvoiceAmount || 0));
 				} else if (type === PUBLIC_DICT_TYPE.SUPPLIER) {
 					let _total = this.math.bignumber(0);
 					if (!row.smailOrderDetails) {
@@ -539,7 +528,7 @@ export default {
 			<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
 			<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 			<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
-			<el-table-column show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px"></el-table-column>
+			<el-table-column show-overflow-tooltip :label="mode === 'out' ? '销售含税明细合计' : '总货款'" align="center" :prop="mode === 'out' ? 'saleIncludeTaxTotal' : 'allPayments'" width="130px"></el-table-column>
 			<el-table-column show-overflow-tooltip label="总出厂货款" align="center" prop="allPaymentFactory" width="100px"></el-table-column>
 			<el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
 			<!--      原为海运车牌号-->

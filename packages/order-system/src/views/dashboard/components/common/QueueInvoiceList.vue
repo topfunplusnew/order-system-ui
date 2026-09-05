@@ -319,10 +319,8 @@ export default {
 			orders.forEach(order => {
 				let remaining = 0;
 				if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
-					// 客户模式：使用总货款减去已开票金额
-					const allPayments = b(order.allPayments || 0);
-					const totalInvoiceAmount = b(order.params?.totalInvoiceAmount || 0);
-					remaining = Number(this.math.format(this.math.subtract(allPayments, totalInvoiceAmount), { precision: 2, notation: 'fixed' }));
+					// 客户可开票金额由后端按销售含税明细及已开票净额计算
+					remaining = Number(order.customerRemainingInvoiceAmount || 0);
 				} else if (this.invoiceType === PUBLIC_DICT_TYPE.SUPPLIER) {
 					// 供应商模式：使用出厂货款之和减去已开票金额
 					if (order.smailOrderDetails && Array.isArray(order.smailOrderDetails)) {
@@ -505,7 +503,7 @@ export default {
 		handleCustomer(orderItem) {
 			// 不存在id 返回null
 			if (!orderItem.customerID) return null;
-			const invoiceAmount = this.math.bignumber(orderItem.allPayments);
+			const invoiceAmount = this.math.bignumber(orderItem.customerRemainingInvoiceAmount || 0);
 			// 使用新的票点计算公式：票点金额 = 开票金额 / (1 + 票点) * 票点
 			let ticketPointAmount = 0;
 			if (this.math.larger(this.currentTicketPoint, 0)) {
