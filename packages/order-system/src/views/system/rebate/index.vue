@@ -1474,6 +1474,7 @@ export default {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.goods = [];
+							localStorage.removeItem('rebate-selected-order-details');
 							this.getList();
 						});
 					}
