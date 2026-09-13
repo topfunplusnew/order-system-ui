@@ -1,3 +1,4 @@
+<!-- 用户需求：订单界面除了“导出订单目录”“导出全部订单”外，额外增加“导出开票明细”。实际改动：新增导出按钮与 handleExportInvoiceDetails 方法，调用 /system/goodsOrder/exportInvoiceDetails，入参与订单列表查询保持一致。 -->
 <!--
 用户需求：修复点击“已开票”后 scope 未定义、开票记录表格没有数据显示的问题。
 实际改动：为客户和供应商名称列补充表格默认插槽的 scope 声明，确保通过 scope.row 正常渲染开票记录。
@@ -1154,6 +1155,15 @@ export default {
 			};
 			this.download('system/goodsOrder/export', this.isDeletedMode ? buildDeletedQueryParams(params) : params, `${baseName}列表_${new Date().getTime()}.xlsx`);
 		},
+		// 开票明细导出：入参与订单列表查询一致
+		handleExportInvoiceDetails() {
+			const baseName = this.isDeletedMode ? this.deletedLabel : this.isAdjustOrder ? '调整单' : '订单';
+			const params = {
+				...this.queryParams,
+				isAdjust: this.isAdjustOrder ? -1 : 0
+			};
+			this.download('system/goodsOrder/exportInvoiceDetails', this.isDeletedMode ? buildDeletedQueryParams(params) : params, `${baseName}开票明细_${new Date().getTime()}.xlsx`);
+		},
 		// 表头拖动结束后更新虚拟滚动表头布局
 		onHeaderDragend() {
 			this.refreshTableLayoutAfterColumnsChange();
@@ -1377,6 +1387,7 @@ export default {
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出订单目录</el-button>
 						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExportNoPage">导出全部订单</el-button>
+						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExportInvoiceDetails">导出开票明细</el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
