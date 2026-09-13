@@ -1,3 +1,4 @@
+<!-- 用户需求：表格行鼠标经过时高亮更醒目，但不能遮挡文字。实际改动：引入 assets/styles/table-row-hover.scss，用行背景色 + 首列 inset 强调条实现高亮，不用遮罩层。 -->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
@@ -1134,3 +1135,8 @@ export default {
 	}
 };
 </script>
+
+<style scoped lang="scss">
+/* 表格行鼠标经过高亮：醒目且不遮挡文字，规则统一维护在 assets/styles/table-row-hover.scss */
+@import '~@/assets/styles/table-row-hover.scss';
+</style>

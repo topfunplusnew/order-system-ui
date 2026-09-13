@@ -1,3 +1,4 @@
+<!-- 用户需求：批量开票大弹窗的公司列表增加时间列（invoiceDate），数据按 invoiceDate 再拆分，并增加时间搜索。实际改动：聚合唯一键加入开票日期拆分公司行、搜索区增加时间范围查询、重置与关闭时同步清空时间条件。 -->
 <script>
 import { create, all } from 'mathjs';
 import { getCompany } from '@/api/system/company';
@@ -6,6 +7,7 @@ import QueueInvoiceList from '@/views/dashboard/components/common/QueueInvoiceLi
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import DragDiv from '@/components/DragDiv/index.vue';
 import { listBatchInvoiceIn, listBatchInvoiceOut, deleteBatchInvoiceInByVoucher, deleteBatchInvoiceInById, deleteBatchInvoiceInInvoice, deleteBatchInvoiceOutByVoucher, deleteBatchInvoiceOutById, deleteBatchInvoiceOutInvoice } from '@/api/system/batchInvoice';
+import { buildCompanyRowKey, isInvoiceDateInRange, normalizeInvoiceDate } from './utils/companyInvoiceDate';
 
 // 默认导出组件
 export default {
@@ -82,6 +84,8 @@ export default {
 			otherCompany: null,
 			// 已操作状态搜索字段（null: 全部, true: 已操作, false: 未操作）
 			operatedStatus: null,
+			// 开票时间搜索字段（invoiceDate，日期范围）
+			invoiceDateRange: [],
 			// 统计信息
 			statisticsInfo: {
 				purchaseStats: {
@@ -336,8 +340,11 @@ export default {
 					return;
 				}
 
-				// 唯一键：公司ID + 我方公司
-				const _onlyKey = id + '::' + us;
+				// 开票时间（invoiceDate）：同一公司同一我方公司按日期再拆分
+				const invoiceDate = normalizeInvoiceDate(element.invoiceDate);
+
+				// 唯一键：公司ID + 我方公司 + 开票日期
+				const _onlyKey = buildCompanyRowKey(id, us, invoiceDate);
 				const _existing = map.get(_onlyKey);
 				if (_existing) {
 					// 累加金额（仅累加未开票的记录）
@@ -361,6 +368,10 @@ export default {
 						type,
 						name,
 						us,
+						// 开票时间：公司列表的时间列，同时作为拆分依据
+						invoiceDate,
+						// 行唯一键：用于行高亮，避免同公司不同开票日期互相影响
+						rowKey: _onlyKey,
 						total: element.invoiced ? 0 : element.total,
 						ticketPoint: element.ticketPoint,
 						ticketPointAmount: element.invoiced ? 0 : element.ticketPointAmount,
@@ -521,6 +532,10 @@ export default {
 							return false;
 						}
 					}
+					// 开票时间筛选（基于 invoiceDate，按日期范围匹配）
+					if (!isInvoiceDateInRange(item.invoiceDate, this.invoiceDateRange)) {
+						return false;
+					}
 					return true;
 				});
 			};
@@ -566,6 +581,7 @@ export default {
 			this.myCompany = null;
 			this.otherCompany = null;
 			this.operatedStatus = null;
+			this.invoiceDateRange = [];
 		},
 		// 重置订单列表的数据 通过事件总线实现
 		handleResetOrderList() {
@@ -607,6 +623,7 @@ export default {
 			this.myCompany = null;
 			this.otherCompany = null;
 			this.operatedStatus = null;
+			this.invoiceDateRange = [];
 			this.statisticsInfo = {
 				purchaseStats: {
 					suppliers: { total: 0, count: 0 },
@@ -739,6 +756,13 @@ export default {
 																<el-button type="primary" size="mini" @click="handleFilter">查询</el-button>
 																<el-button type="warning" size="mini" @click="handleReset">重置</el-button>
 															</div>
+														</el-col>
+													</el-row>
+													<el-row :gutter="8">
+														<el-col :span="10">
+															<el-form-item label="时间" label-width="160px">
+																<el-date-picker v-model="invoiceDateRange" type="daterange" size="mini" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" clearable style="width: 100%" />
+															</el-form-item>
 														</el-col>
 													</el-row>
 												</el-form>

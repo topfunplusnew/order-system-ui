@@ -1,0 +1,33 @@
+/**
+ * 表格行鼠标经过高亮（醒目但不遮挡文字）
+ *
+ * 使用方式：在 Vue 单文件组件的 scoped 样式块中引入（含 ::v-deep，不能全局引入）：
+ *   @import '~@/assets/styles/table-row-hover.scss';
+ * 目前引入方：NoneInvoiceIn、NoneInvoiceOut、InvoiceOtherHave、InvoiceOther。
+ * 注意：本文件内禁止出现 HTML 标签字面量（例如 style 的闭合标签），否则在把 CSS 文本写入
+ *       style 元素（innerHTML 方式）或内联进 HTML 时会被提前截断，导致 CSS 静默失效。
+ *
+ * 实现要点（均为「不遮挡文字」而做的取舍）：
+ * - 只改行背景色 + 首列左侧强调条：内阴影（inset box-shadow）按规范绘制在文字下方，
+ *   且只向内绘制，既不覆盖任何单元格文字，也不改变行高与列宽。
+ * - 不使用绝对定位的遮罩层/半透明覆盖层，避免盖住文字或让文字发灰。
+ * - Element UI 在鼠标进入行时会通过 store 的 hoverRow 状态给「主表格」和「固定列（fixed）」
+ *   的同序号行同时加上 hover-row 类，因此两处高亮颜色一致，不会出现固定列与主体行错位的断层。
+ * - Element 自带的悬停色 #F5F7FA 规则优先级更高，故必须使用 !important 覆盖。
+ */
+
+/* 悬停底色：Element 主色 light-8，明显区别于默认的浅灰 #F5F7FA，深色文字仍然清晰可读 */
+$table-row-hover-bg: #d9ecff;
+/* 首列强调条颜色：Element 主色 */
+$table-row-hover-accent: #409eff;
+
+::v-deep .el-table__body tr.hover-row > td,
+::v-deep .el-table__body tr:hover > td {
+	background-color: $table-row-hover-bg !important;
+}
+
+/* 首列左侧强调条：inset 阴影位于文字下方，不遮挡文字、不产生布局位移 */
+::v-deep .el-table__body tr.hover-row > td:first-child,
+::v-deep .el-table__body tr:hover > td:first-child {
+	box-shadow: inset 3px 0 0 0 $table-row-hover-accent;
+}

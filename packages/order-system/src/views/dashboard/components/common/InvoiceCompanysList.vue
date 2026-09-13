@@ -1,3 +1,4 @@
+<!-- 用户需求：批量开票大弹窗的公司列表增加时间列（invoiceDate）。实际改动：公司表格新增“时间”列展示开票日期，行高亮改用拆分行唯一键避免同公司多日期互相影响。 -->
 <!--
   需求：同一客户对应不同我方公司时，点击“检索”必须按当前我方公司独立开票，不得合并金额或模板。
   实际改动：检索聚合改为仅使用当前行；sessionStorage 仅保存当前我方公司，移除跨我方公司的合并上下文。
@@ -223,8 +224,8 @@ export default {
 			// 存储当前选中行的公司ID，供 InvoiceBody 精确回写（使用上面已声明的 companyId）
 			sessionStorage.setItem('companyList_selected_company_id', companyId);
 			sessionStorage.removeItem('merged_company_info');
-			// 方便变颜色
-			this.selectedRowId = row.id;
+			// 方便变颜色（同公司可能按开票时间拆分为多行，优先使用行唯一键）
+			this.selectedRowId = row.rowKey || row.id;
 			// 不在检索时标记，由开具发票成功后由上层写入映射
 		},
 		// 计算该公司在模板数据中的未开票金额总和
@@ -270,7 +271,7 @@ export default {
 			if (!row.type) {
 				return {};
 			}
-			return this.selectedRowId === row.id
+			return this.selectedRowId === (row.rowKey || row.id)
 				? {
 						background: '#c5f695 !important'
 				  }
@@ -321,6 +322,12 @@ export default {
 				<el-table-column prop="us" label="我方"></el-table-column>
 				<el-table-column prop="name" label="对方公司"></el-table-column>
 				<el-table-column prop="type" label="类型"></el-table-column>
+				<!-- 开票时间：公司列表按 invoiceDate 拆分后的时间列 -->
+				<el-table-column prop="invoiceDate" label="时间" min-width="110">
+					<template slot-scope="scope">
+						<span>{{ scope.row.invoiceDate || '-' }}</span>
+					</template>
+				</el-table-column>
 				<el-table-column prop="total" label="开票金额">
 					<template slot-scope="scope">
 						<span class="bold-text money">{{ scope.row.total }}</span>

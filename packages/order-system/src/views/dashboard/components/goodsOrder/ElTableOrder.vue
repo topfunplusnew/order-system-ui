@@ -1,3 +1,4 @@
+<!-- 用户需求：客户开票记录、供应商开票记录弹窗各增加一个“销方”列。实际改动：客户开票记录取开票方 invoiceObject，供应商开票记录取票据单位名称 invoiceCompanyName（缺失回退供应商名称）。 -->
 <!-- 用户需求：订单界面除了“导出订单目录”“导出全部订单”外，额外增加“导出开票明细”。实际改动：新增导出按钮与 handleExportInvoiceDetails 方法，调用 /system/goodsOrder/exportInvoiceDetails，入参与订单列表查询保持一致。 -->
 <!--
 用户需求：修复点击“已开票”后 scope 未定义、开票记录表格没有数据显示的问题。
@@ -2088,6 +2089,16 @@ export default {
 							</template>
 						</el-table-column>
 
+						<!-- 销方：销项发票的开票方（我方开票主体 invoiceObject） -->
+						<el-table-column prop="invoiceObject" label="销方" align="center">
+							<template #default="scope">
+								<div class="company-cell">
+									<i class="el-icon-office-building"></i>
+									{{ scope.row.invoiceObject || '-' }}
+								</div>
+							</template>
+						</el-table-column>
+
 						<el-table-column prop="allPayments" label="需开票金额" align="center">
 							<template #default>
 								<div class="amount-cell need-amount">
@@ -2198,6 +2209,16 @@ export default {
 										<div class="company-cell">
 											<i class="el-icon-office-building"></i>
 											{{ scope.row.companyName }}
+										</div>
+									</template>
+								</el-table-column>
+
+								<!-- 销方：进项发票的开票方（票据单位名称 invoiceCompanyName，缺失时回退到供应商名称） -->
+								<el-table-column prop="invoiceCompanyName" label="销方" align="center">
+									<template #default="scope">
+										<div class="company-cell">
+											<i class="el-icon-office-building"></i>
+											{{ scope.row.invoiceCompanyName || scope.row.companyName || '-' }}
 										</div>
 									</template>
 								</el-table-column>
