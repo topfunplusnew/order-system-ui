@@ -10185,6 +10185,27 @@
 		"remark": ""
 	},
 	{
+		"menu_id": 2589,
+		"menu_name": "质量赔偿统计表",
+		"parent_id": 2576,
+		"order_num": 4,
+		"path": "qualityCompensation",
+		"component": "salesReward/qualityCompensation/index.vue",
+		"QUERY": null,
+		"is_frame": 1,
+		"is_cache": 0,
+		"menu_type": "C",
+		"visible": "0",
+		"STATUS": "0",
+		"perms": "system:salesReward:list",
+		"icon": "documentation",
+		"create_by": "admin",
+		"create_time": "13/09/2026 00:00:00",
+		"update_by": "",
+		"update_time": null,
+		"remark": "质量赔偿统计表"
+	},
+	{
 		"menu_id": 2587,
 		"menu_name": "车辆派出管理补充信息",
 		"parent_id": 2336,

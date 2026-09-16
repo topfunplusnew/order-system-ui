@@ -111,7 +111,7 @@
 					<el-input v-model="form.orderNum" placeholder="请输入排序" @input="handleInputTrim($event, 'form', 'orderNum')" />
 				</el-form-item>
 				<el-form-item label="编号" prop="subjectNo">
-					<el-input v-model="form.subjectNo" placeholder="请输入编号" @input="handleInputTrim($event, 'form', 'subjectNo')" />
+					<el-input v-model="form.subjectNo" :placeholder="form.id != null ? '修改不会自动改动编码' : '选择父级后自动生成，也可手动录入'" @input="handleInputTrim($event, 'form', 'subjectNo')" />
 				</el-form-item>
 				<el-form-item label="是否禁用" prop="STATUS">
 					<el-radio-group v-model="form.STATUS">
@@ -154,6 +154,7 @@
 
 <script>
 import { listSubject, getSubject, delSubject, addSubject, updateSubject } from '@/api/system/subject';
+import { buildChildSubjectNo, shouldAutoGenerateSubjectNo } from '@/utils/subjectNo';
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -271,21 +272,14 @@ export default {
 		formId: {
 			// handler不该用箭头函数 会拿不到this
 			handler: function (val) {
-				if (val !== 0 && val !== null && val !== undefined) {
-					// 应该先getId 填充this.form.type数据
-					getSubject(val).then(response => {
-						// this.form.type = response.data.type;
-						this.form.subjectNo = response.data.subjectNo;
-					});
-					// val是id 然后再拿id去查找该元素的子元素个数 用来拼接
-					listSubject({ id: val }, false).then(response => {
-						// 查询该id下的子元素数组
-						const filters = response.data.filter(item => {
-							return item.parentId === val;
-						});
-						this.form.subjectNo += `00${filters.length + 1}`;
-					});
+				// 只有「新增」时才自动生成编码。
+				// 老逻辑不区分新增/修改，打开「修改」弹窗时 parentId 由 null 变成实际值同样会触发，
+				// 编码被重算成“父级编码 + 下一个空号”并随 updateSubject 一起提交，
+				// 导致历史数据按编码回填/关联时对不上。
+				if (!shouldAutoGenerateSubjectNo({ recordId: this.form.id, parentId: val })) {
+					return;
 				}
+				this.generateSubjectNo(val);
 			}
 		}
 	},
@@ -396,6 +390,35 @@ export default {
 			this.open = true;
 			this.title = '添加科目';
 		},
+		/**
+		 * 根据父级编码生成子科目编码（只允许在「新增」时调用，见 shouldAutoGenerateSubjectNo）。
+		 * 两个接口并行取回、只写一次 form.subjectNo：老实现是两个回调各自赋值同一个字段，
+		 * 谁后返回谁生效，编码会随机变成“父级编码”或“原编码再拼一次后缀”等脏值。
+		 */
+		generateSubjectNo(parentId) {
+			if (!shouldAutoGenerateSubjectNo({ recordId: this.form.id, parentId })) {
+				return;
+			}
+			Promise.all([getSubject(parentId), listSubject({ id: parentId }, false)])
+				.then(([parentResponse, listResponse]) => {
+					// 异步返回后再校验一次：仍是新增态，且父级没有被改成别的（丢弃过期响应）
+					if (!shouldAutoGenerateSubjectNo({ recordId: this.form.id, parentId: this.form.parentId }) || this.form.parentId !== parentId) {
+						return;
+					}
+					const parent = parentResponse && parentResponse.data ? parentResponse.data : {};
+					const siblings = (listResponse && listResponse.data ? listResponse.data : []).filter(item => String(item.parentId) === String(parentId));
+					const subjectNo = buildChildSubjectNo(
+						parent.subjectNo,
+						siblings.map(item => item.subjectNo)
+					);
+					if (subjectNo) {
+						this.form.subjectNo = subjectNo;
+					}
+				})
+				.catch(() => {
+					// 生成失败不阻塞录入：保留（或由用户手动填写）编码
+				});
+		},
 		/** 展开/折叠操作 */
 		toggleExpandAll() {
 			this.refreshTable = false;
@@ -414,11 +437,16 @@ export default {
 				onOk: () => {
 					this.reset();
 					this.getTreeselect();
-					if (row != null) {
-						this.form.parentId = row.parentId;
-					}
 					getSubject(row.id).then(response => {
+						// 连同 parentId 一起整体赋值：不能在 form.id 仍为空（新增态）时单独写 form.parentId，
+						// 那会触发 formId 的 watch 误生成编码。这里 form.id 与 parentId 同时就位，
+						// shouldAutoGenerateSubjectNo 因 recordId 有值直接 return，编码保持原值。
 						this.form = _.cloneDeep(response.data);
+						if (this.form.parentId === null || this.form.parentId === undefined) {
+							// 兜底：接口未返回 parentId 时用列表行的父级，避免修改后父级被清空
+							// （此处 form.id 已有值，写入 parentId 不会再触发编码生成）
+							this.form.parentId = row.parentId;
+						}
 						this.open = true;
 						this.title = '修改科目';
 					});
