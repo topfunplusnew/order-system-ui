@@ -1,10 +1,16 @@
 /*
 需求：订单选择支持产品级别、厚度、长度、宽度筛选，并允许跨条件多次追加且保留已选状态。
 改动：选择列表由 OrderDetailList 维护跨查询状态，混入层透传已选数据并兼容清空操作。
+需求：在"根据供应商选择订单"弹窗选好开始/结束时间后，要带到"根据供应商所选货物列表"弹窗的时间选择器里。
+改动：确定时把 orderDateRange 一并传给货物列表（仅用于选择器回显）。
+⚠️ 接口标记：listOrderDetail 目前只有 orderDate 可用，params.beginTime / params.endTime 后端不支持，
+   因此查询时只发送 orderDate，并在请求前剔除 params 里的时间字段；后端支持后再启用（见 orderDateRange.js 顶部标记）。
 */
 // 以下 import 仅被已注释的旧版 submitSelectOrderDetail 使用，保留备查
 // import { fix } from '../../../../api/tool/format';
 import { listOrderDetail } from '@/api/system/orderDetail';
+// ⚠️ 这里只用 stripOrderDateRange / pickFilterValue；convertOrderDateRangeToParams 是后端支持 params 时间字段后才接入的
+import { pickFilterValue, stripOrderDateRange } from './orderDateRange';
 // import { RebateType } from '@/api/tool/enums';
 
 export var mixin_choose_order = {
@@ -67,7 +73,8 @@ export var mixin_choose_order = {
 		},
 		// 2. 直接搜索全部订单明细
 		getDirectOrderDetailList(query) {
-			const baseQuery = query || {};
+			// ⚠️ 同 getDetailBySupper：接口只支持 orderDate，不发送 params.beginTime/endTime
+			const { query: baseQuery, hasOrderDateRange, orderDateRange } = stripOrderDateRange(query);
 			const requestQuery = {
 				...baseQuery,
 				pageNum: baseQuery.pageNum || 1,
@@ -76,6 +83,15 @@ export var mixin_choose_order = {
 					...(baseQuery.params || {})
 				}
 			};
+			// 时间：选择器里选了范围就取开始日期，清空则不带时间条件
+			if (hasOrderDateRange) {
+				const orderDate = (orderDateRange && orderDateRange[0]) || null;
+				if (orderDate) {
+					requestQuery.orderDate = orderDate;
+				} else {
+					delete requestQuery.orderDate;
+				}
+			}
 			listOrderDetail(requestQuery).then(res => {
 				this.directOrderDetailList = res.rows || [];
 				this.directOrderDetailTotal = res.total || 0;
@@ -86,16 +102,21 @@ export var mixin_choose_order = {
 			this.queryParamsSupplier.supplier = val.companyName;
 		},
 		getDetailBySupper(query) {
-			const baseQuery = query || {};
+			// ⚠️ listOrderDetail 目前只支持 orderDate 一个时间字段，params.beginTime/endTime 后端用不了，
+			// 因此这里只做清理（去掉选择器字段与残留的 params 时间字段），不发送 params 时间条件。
+			// 后端支持后改用 convertOrderDateRangeToParams 接入，详见 mixins/rebate/orderDateRange.js 顶部标记。
+			const { query: baseQuery, hasOrderDateRange, orderDateRange } = stripOrderDateRange(query);
 			const pageNum = baseQuery.pageNum || this.queryParamsSupplier.pageNum || 1;
 			const pageSize = baseQuery.pageSize || this.queryParamsSupplier.pageSize || 20;
-			const supplier = this.queryParamsSupplier.supplier || baseQuery.supplier || '';
-			const beginTime = this.queryParamsSupplier.params?.beginTime || baseQuery.params?.beginTime || null;
-			const endTime = this.queryParamsSupplier.params?.endTime || baseQuery.params?.endTime || null;
-			const levelName = this.queryParamsSupplier.levelName || baseQuery.levelName || '';
-			const height = this.queryParamsSupplier.height || baseQuery.height || '';
-			const length = this.queryParamsSupplier.length || baseQuery.length || '';
-			const width = this.queryParamsSupplier.width || baseQuery.width || '';
+			// 筛选条件以「根据供应商所选货物列表」弹窗的表单为准：表单里被清空（'' / null）就按清空处理，
+			// 只有表单里完全没有该字段时才回退到「根据供应商选择订单」弹窗的旧值。
+			const supplier = pickFilterValue(baseQuery, 'supplier', this.queryParamsSupplier.supplier) || '';
+			const levelName = pickFilterValue(baseQuery, 'levelName', this.queryParamsSupplier.levelName) || '';
+			const height = pickFilterValue(baseQuery, 'height', this.queryParamsSupplier.height) || '';
+			const length = pickFilterValue(baseQuery, 'length', this.queryParamsSupplier.length) || '';
+			const width = pickFilterValue(baseQuery, 'width', this.queryParamsSupplier.width) || '';
+			// 时间：接口只支持 orderDate。选择器里选了范围就取开始日期，清空则不带时间条件。
+			const orderDate = hasOrderDateRange ? (orderDateRange && orderDateRange[0]) || null : pickFilterValue(baseQuery, 'orderDate', null);
 
 			// ruoyi 的 tansParams 会把 params 对象序列化成 params[xx]
 			const qs = {
@@ -108,11 +129,14 @@ export var mixin_choose_order = {
 				length,
 				width,
 				params: {
-					...(baseQuery.params || {}),
-					beginTime,
-					endTime
+					...(baseQuery.params || {})
 				}
 			};
+			if (orderDate) {
+				qs.orderDate = orderDate;
+			} else {
+				delete qs.orderDate;
+			}
 			// 点击选择供应商和时间段后 查询列表 然后弹出选择货物详情
 			listOrderDetail(qs).then(res => {
 				if (!res.rows) {
@@ -137,8 +161,12 @@ export var mixin_choose_order = {
 		handleCommitSupplier() {
 			// 初次进入列表时保证走第一页，避免分页参数缺失
 			this.queryParamsSupplier.pageNum = 1;
+			const beginTime = this.queryParamsSupplier.params.beginTime || null;
+			const endTime = this.queryParamsSupplier.params.endTime || null;
 			this.orderDetailInitialQuery = {
-				orderDate: this.queryParamsSupplier.params.beginTime,
+				orderDate: beginTime,
+				// 货物列表弹窗的时间选择器绑定的是 orderDateRange，把开始/结束时间一起带过去
+				orderDateRange: beginTime || endTime ? [beginTime, endTime] : null,
 				supplier: this.queryParamsSupplier.supplier,
 				levelName: this.queryParamsSupplier.levelName,
 				height: this.queryParamsSupplier.height,

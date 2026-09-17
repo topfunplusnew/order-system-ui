@@ -1,3 +1,4 @@
+<!-- 用户需求：选完订单开票后，列表里的时间（开票时间）要填充上。实际改动：开票成功时广播 batch-invoice:succeeded 并带上本批发票，供批次面板回填开票时间。 -->
 <!--
   需求：同一客户对应不同我方公司时，批量开票必须按当前我方公司隔离金额和模板，禁止合并。
   实际改动：记录当前我方公司，并在剩余金额、模板生成及发票主体处理中同时校验我方公司。
@@ -182,6 +183,9 @@ export default {
 
 			// 如果成功
 			if (result.flag) {
+				// 先把本批发票（含 batchInvoiceId、invoiceDate）抛给批次面板，用于把开票时间回填到列表
+				this.$bus.$emit('batch-invoice:succeeded', filteredInvoices.slice());
+
 				// 告诉订单列表重新加载
 				this.$bus.$emit('select-goods:update');
 

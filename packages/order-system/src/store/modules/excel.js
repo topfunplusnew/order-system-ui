@@ -76,13 +76,18 @@ const mutations = {
 	SET_CURRENT_MODE: (state, data) => {
 		state.currentMode = data || 'in';
 	},
-	// 更新批次详情中某条记录的开票状态
-	UPDATE_BATCH_ROW_INVOICED: (state, { id, invoiced, invoiceId }) => {
+	// 更新批次详情中某条记录的开票状态（可同时回填开票时间，供"时间/开票时间"列展示）
+	UPDATE_BATCH_ROW_INVOICED: (state, { id, invoiced, invoiceId, invoiceDate }) => {
 		const row = state.batchDetailRows.find(r => r.id === id);
 		if (row) {
-			row.invoiced = invoiced;
+			if (invoiced !== undefined) {
+				row.invoiced = invoiced;
+			}
 			if (invoiceId) {
 				row.invoiceId = invoiceId;
+			}
+			if (invoiceDate) {
+				row.invoiceDate = invoiceDate;
 			}
 		}
 	}

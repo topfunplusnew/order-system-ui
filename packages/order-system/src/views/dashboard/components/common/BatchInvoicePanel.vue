@@ -1,3 +1,4 @@
+<!-- 用户需求：选完订单开票后，列表里的时间（开票时间）要填充上。实际改动：开票成功事件带上发票（含 batchInvoiceId/invoiceDate），把开票时间回填到批次明细、顶部列表与公司列表的时间列，并记住映射以便后端刷新后继续回填。 -->
 <!-- 用户需求：批量开票大弹窗的公司列表增加时间列（invoiceDate），数据按 invoiceDate 再拆分，并增加时间搜索。实际改动：聚合唯一键加入开票日期拆分公司行、搜索区增加时间范围查询、重置与关闭时同步清空时间条件。 -->
 <script>
 import { create, all } from 'mathjs';
@@ -7,7 +8,7 @@ import QueueInvoiceList from '@/views/dashboard/components/common/QueueInvoiceLi
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import DragDiv from '@/components/DragDiv/index.vue';
 import { listBatchInvoiceIn, listBatchInvoiceOut, deleteBatchInvoiceInByVoucher, deleteBatchInvoiceInById, deleteBatchInvoiceInInvoice, deleteBatchInvoiceOutByVoucher, deleteBatchInvoiceOutById, deleteBatchInvoiceOutInvoice } from '@/api/system/batchInvoice';
-import { buildCompanyRowKey, isInvoiceDateInRange, normalizeInvoiceDate } from './utils/companyInvoiceDate';
+import { buildCompanyRowKey, buildInvoiceDateByBatchRowId, isInvoiceDateInRange, normalizeInvoiceDate, withFallbackInvoiceDate } from './utils/companyInvoiceDate';
 
 // 默认导出组件
 export default {
@@ -86,6 +87,9 @@ export default {
 			operatedStatus: null,
 			// 开票时间搜索字段（invoiceDate，日期范围）
 			invoiceDateRange: [],
+			// 本批已开票行的开票时间（Map: batchRowId -> invoiceDate）：
+			// 后端批次行不一定返回 invoiceDate，这里记住前端开票时用的时间，刷新后依然能回填列表
+			invoiceDateFallback: new Map(),
 			// 统计信息
 			statisticsInfo: {
 				purchaseStats: {
@@ -115,9 +119,12 @@ export default {
 	mounted() {
 		// 监听开票成功事件，刷新数据
 		this.$bus.$on('batch-invoice:refresh', this.handleRefreshBatchData);
+		// 开票成功后把本批发票的开票时间回填到批次明细与列表
+		this.$bus.$on('batch-invoice:succeeded', this.handleBatchInvoiceSucceeded);
 	},
 	beforeDestroy() {
 		this.$bus.$off('batch-invoice:refresh', this.handleRefreshBatchData);
+		this.$bus.$off('batch-invoice:succeeded', this.handleBatchInvoiceSucceeded);
 	},
 	methods: {
 		getApiHandlers() {
@@ -160,7 +167,8 @@ export default {
 			}
 			try {
 				const res = await api.list(query);
-				this.batchList = res?.rows || [];
+				// 已开票但后端未返回开票时间的行，用本批记录的开票时间回填，保证"开票时间"列有值
+				this.batchList = (res?.rows || []).map(row => (row && row.invoiced ? withFallbackInvoiceDate(row, this.invoiceDateFallback) : row));
 				this.pagination.total = res?.total || 0;
 			} catch (error) {
 				console.error('加载批量导入记录失败:', error);
@@ -302,6 +310,35 @@ export default {
 			// 同时刷新列表
 			this.fetchBatchList();
 		},
+		/**
+		 * 开票成功后把「开票时间」回填到批次明细与列表
+		 * 用户需求：选完订单开票后，列表里的时间（开票时间）要填充上；后端批次行未返回 invoiceDate 时也要能显示。
+		 * @param {Array} invoices - 本批提交的发票（含 batchInvoiceId、invoiceDate）
+		 */
+		handleBatchInvoiceSucceeded(invoices) {
+			const dateByBatchRowId = buildInvoiceDateByBatchRowId(invoices);
+			if (dateByBatchRowId.size === 0) {
+				return;
+			}
+
+			// 记住本批次行的开票时间，供后端刷新后回填（不清空，重开该批次时依然能看到时间）
+			dateByBatchRowId.forEach((invoiceDate, id) => {
+				this.invoiceDateFallback.set(id, invoiceDate);
+			});
+
+			// 本地批次明细与顶部列表：标记已开票并写入开票时间
+			const stampRow = row => (dateByBatchRowId.has(row.id) ? { ...row, invoiced: true, invoiceDate: dateByBatchRowId.get(row.id) } : row);
+			this.batchDetailRows = this.batchDetailRows.map(stampRow);
+			this.batchList = this.batchList.map(stampRow);
+
+			// 同步 Vuex 中的批次明细（SelectGoods / QueueInvoiceList 读取它）
+			dateByBatchRowId.forEach((invoiceDate, id) => {
+				this.$store.dispatch('excel/updateBatchRowInvoiced', { id, invoiced: true, invoiceDate });
+			});
+
+			// 重新聚合公司列表：时间列按开票时间填充/拆分，并同步 Vuex 中的批次明细
+			this.processAndAggregateData(this.batchDetailRows);
+		},
 		// 处理并聚合后端数据（纯计算，不存入 Vuex）
 		processAndAggregateData(rows = []) {
 			let purchaseMap = new Map();
@@ -412,7 +449,8 @@ export default {
 				voucher: item.voucher || '',
 				invoiced: item.invoiced || false,
 				invoiceId: item.invoiceId || null,
-				invoiceDate: item.invoiceDate || null
+				// 后端批次行未返回 invoiceDate 时，用前端开票时记录的时间回填（仅限已开票的行）
+				invoiceDate: item.invoiceDate || (item.invoiced ? this.invoiceDateFallback.get(item.id) : null) || null
 			};
 		},
 		// 计算票点金额

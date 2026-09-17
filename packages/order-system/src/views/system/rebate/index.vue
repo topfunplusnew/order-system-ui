@@ -786,8 +786,12 @@ export default {
 			if (storedGoods.length) this.goods = storedGoods;
 			// 追加时重建列表组件，确保上次已选明细按 selected-order-details 重新回显。
 			this.orderDetailListKey += 1;
+			const beginTime = this.queryParamsSupplier.params.beginTime || null;
+			const endTime = this.queryParamsSupplier.params.endTime || null;
 			this.orderDetailInitialQuery = {
-				orderDate: this.queryParamsSupplier.params.beginTime,
+				orderDate: beginTime,
+				// 货物列表弹窗的时间选择器绑定的是 orderDateRange，把开始/结束时间一起带过去
+				orderDateRange: beginTime || endTime ? [beginTime, endTime] : null,
 				supplier: this.form.supplier || this.goods[0]?.supplier || this.queryParamsSupplier.supplier,
 				levelName: this.queryParamsSupplier.levelName,
 				height: this.queryParamsSupplier.height,
@@ -801,12 +805,10 @@ export default {
 		isNull,
 		listCompany,
 		listProductLevel,
+		// 「根据供应商选择订单」弹窗：选择产品级别后只回填级别名称，不再自动带出厚度/长度/宽度（由用户自己填）
 		handleSupplierProductLevelSelect(value) {
 			if (!value) return;
 			this.queryParamsSupplier.levelName = value.levelName;
-			this.queryParamsSupplier.height = value.height;
-			this.queryParamsSupplier.length = value.length;
-			this.queryParamsSupplier.width = value.width;
 		},
 		listBankAccount,
 		// 以下方法原用于本页 el-table 多选，现由 OrderDetailList 组件内选择，未绑定模板故注释

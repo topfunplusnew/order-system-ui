@@ -61,3 +61,41 @@ export function isInvoiceDateInRange(invoiceDate, range) {
 	}
 	return true;
 }
+
+/**
+ * 从本批发票中提取「批次行ID -> 开票时间」映射
+ * 用于开票成功后把开票时间回填到批次明细与列表（后端批次行不一定返回 invoiceDate）
+ * @param {Array} invoices - 发票对象数组，含 batchInvoiceId（批次行ID）与 invoiceDate
+ * @returns {Map} batchRowId -> invoiceDate（原始开票时间，交由展示层格式化）
+ */
+export function buildInvoiceDateByBatchRowId(invoices) {
+	const map = new Map();
+	if (!Array.isArray(invoices)) {
+		return map;
+	}
+	invoices.forEach(invoice => {
+		if (!invoice) {
+			return;
+		}
+		const batchRowId = invoice.batchInvoiceId;
+		if (batchRowId === null || batchRowId === undefined || batchRowId === '' || !invoice.invoiceDate) {
+			return;
+		}
+		map.set(batchRowId, invoice.invoiceDate);
+	});
+	return map;
+}
+
+/**
+ * 用「批次行ID -> 开票时间」映射给批次行补开票时间（只补缺失的行，不覆盖已有值）
+ * @param {Object} row - 批次行（含 id、invoiceDate）
+ * @param {Map} dateByBatchRowId - buildInvoiceDateByBatchRowId 的结果
+ * @returns {Object} 补全后的行；无需补全时原样返回，便于调用方做引用判断
+ */
+export function withFallbackInvoiceDate(row, dateByBatchRowId) {
+	if (!row || !dateByBatchRowId || typeof dateByBatchRowId.get !== 'function' || row.invoiceDate) {
+		return row;
+	}
+	const fallbackDate = dateByBatchRowId.get(row.id);
+	return fallbackDate ? { ...row, invoiceDate: fallbackDate } : row;
+}

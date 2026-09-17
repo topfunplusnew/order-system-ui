@@ -3,7 +3,7 @@
  * 实际改动：新增开票时间归一化、公司行聚合唯一键、日期范围匹配三个纯函数，供 BatchInvoicePanel 拆分与筛选使用。
  */
 /* global describe, test, expect */
-import { buildCompanyRowKey, isInvoiceDateInRange, normalizeInvoiceDate } from './companyInvoiceDate';
+import { buildCompanyRowKey, buildInvoiceDateByBatchRowId, isInvoiceDateInRange, normalizeInvoiceDate, withFallbackInvoiceDate } from './companyInvoiceDate';
 
 describe('normalizeInvoiceDate', () => {
 	test('带时分秒的开票时间按天归一化', () => {
@@ -68,5 +68,60 @@ describe('isInvoiceDateInRange', () => {
 	test('指定范围时未开票（无开票时间）的记录不匹配', () => {
 		expect(isInvoiceDateInRange(null, ['2024-07-27', '2024-07-28'])).toBe(false);
 		expect(isInvoiceDateInRange('', ['2024-07-27', '2024-07-28'])).toBe(false);
+	});
+});
+
+describe('buildInvoiceDateByBatchRowId', () => {
+	test('按批次行ID收集开票时间', () => {
+		const map = buildInvoiceDateByBatchRowId([
+			{ batchInvoiceId: 11, invoiceDate: '2024-07-27 10:00:00' },
+			{ batchInvoiceId: 22, invoiceDate: '2024-07-28 09:30:00' }
+		]);
+
+		expect(map.get(11)).toBe('2024-07-27 10:00:00');
+		expect(map.get(22)).toBe('2024-07-28 09:30:00');
+	});
+
+	test('同一批次行多条发票时保留最后一次开票时间', () => {
+		const map = buildInvoiceDateByBatchRowId([
+			{ batchInvoiceId: 11, invoiceDate: '2024-07-27 10:00:00' },
+			{ batchInvoiceId: 11, invoiceDate: '2024-07-29 11:00:00' }
+		]);
+
+		expect(map.size).toBe(1);
+		expect(map.get(11)).toBe('2024-07-29 11:00:00');
+	});
+
+	test('跳过没有批次行ID或没有开票时间的发票（如按订单单独开票）', () => {
+		const map = buildInvoiceDateByBatchRowId([{ batchInvoiceId: null, invoiceDate: '2024-07-27 10:00:00' }, { batchInvoiceId: 33, invoiceDate: null }, { batchInvoiceId: '', invoiceDate: '2024-07-27 10:00:00' }, null, { batchInvoiceId: 44, invoiceDate: '2024-07-27 10:00:00' }]);
+
+		expect([...map.keys()]).toEqual([44]);
+	});
+
+	test('非数组入参返回空 Map', () => {
+		expect(buildInvoiceDateByBatchRowId(undefined).size).toBe(0);
+		expect(buildInvoiceDateByBatchRowId(null).size).toBe(0);
+	});
+});
+
+describe('withFallbackInvoiceDate', () => {
+	test('后端有开票时间时不覆盖', () => {
+		const row = { id: 11, invoiceDate: '2024-07-27 10:00:00' };
+		expect(withFallbackInvoiceDate(row, new Map([[11, '2024-07-30 10:00:00']]))).toBe(row);
+	});
+
+	test('后端缺失时补上本批记录的开票时间', () => {
+		const row = { id: 11, invoiceDate: null };
+		expect(withFallbackInvoiceDate(row, new Map([[11, '2024-07-30 10:00:00']])).invoiceDate).toBe('2024-07-30 10:00:00');
+	});
+
+	test('映射里没有该行时原样返回', () => {
+		const row = { id: 99, invoiceDate: null };
+		expect(withFallbackInvoiceDate(row, new Map([[11, '2024-07-30 10:00:00']]))).toBe(row);
+	});
+
+	test('空行或空映射安全返回', () => {
+		expect(withFallbackInvoiceDate(null, new Map())).toBeNull();
+		expect(withFallbackInvoiceDate({ id: 1 }, null)).toEqual({ id: 1 });
 	});
 });

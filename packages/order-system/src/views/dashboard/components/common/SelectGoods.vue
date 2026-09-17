@@ -1,3 +1,4 @@
+<!-- 用户需求：开票时在订单列表调整分页大小（或翻页、搜索）后，已勾选的订单/已分配金额会丢失。实际改动：表格加 row-key + 选择列加 reserve-selection，使勾选状态与 Vuex 中的已选订单跨分页保留；同时让无差量的 selection-change 不再报错、清空时同步清勾选。 -->
 <!--
   需求：批量开票客户金额使用后端返回的销售含税明细合计和可开票金额，不能用 allPayments 在前端推算。
   实际改动：客户订单金额直接读取 saleIncludeTaxTotal、customerInvoicedAmount、customerRemainingInvoiceAmount。
@@ -160,6 +161,12 @@ export default {
 		// 监听清除事件 要清除选择的订单
 		this.$bus.$on('invoice-clear', () => {
 			this.$store.dispatch('excel/clearSelectedOrders');
+			// 同步清空表格勾选，避免出现"勾选框还在、已选订单已被清空"的不一致状态
+			// 先清空 preOrderList，使清勾选触发的 selection-change 不再回退开票金额
+			this.preOrderList = [];
+			if (this.$refs.goodsTable) {
+				this.$refs.goodsTable.clearSelection();
+			}
 		});
 	},
 	beforeDestroy() {
@@ -307,9 +314,15 @@ export default {
 			const addedRows = orders.filter(row => !this.preOrderList.includes(row));
 			const removedRows = this.preOrderList.filter(row => !orders.includes(row));
 
-			// 非法参数校验
+			// 选中集合没有变化时直接返回（例如分页/分页大小变化后表格抛出的空 selection-change），
+			// 避免 _row 为空导致报错，也避免金额被重复加减
 			const _row = addedRows[0] || removedRows[0];
-			if (_row.params.totalInvoiceAmount == null || _row.params.totalInvoiceAmount === undefined) {
+			if (!_row) {
+				return;
+			}
+
+			// 非法参数校验
+			if (!_row.params || _row.params.totalInvoiceAmount == null || _row.params.totalInvoiceAmount === undefined) {
 				this.$message.warning('参数有误：已开票金额为空');
 				return;
 			}
@@ -478,7 +491,7 @@ export default {
 
 <template>
 	<div>
-		<QuerySearchBar :query-params="queryParams" :visible-fields="searchBarFields" :fixed-field-values="searchBarFixedFieldValues" @updateQuery="handleQuery" />
+		<QuerySearchBar :query-params="queryParams" :visible-fields="searchBarFields" :fixed-field-values="searchBarFixedFieldValues" :current-page-num="queryParams.pageNum" :current-page-size="queryParams.pageSize" @updateQuery="handleQuery" />
 		<!-- 操作按钮：手动生成发票（备用，选中订单后会自动生成） -->
 		<div class="select-actions">
 			<el-button type="primary" size="mini" @click="generateInvoice">手动生成发票</el-button>
@@ -491,6 +504,7 @@ export default {
 			fit
 			ref="goodsTable"
 			border
+			row-key="id"
 			empty-text="暂无可开票订单（订单的可开票金额为0）"
 			:data="goodsOrderList"
 			virtual-scroll
@@ -507,7 +521,7 @@ export default {
 					<el-button type="text" size="mini" @click.stop="handleViewOrder(scope.row)">查 看</el-button>
 				</template>
 			</el-table-column>
-			<el-table-column type="selection" width="55" align="center" :selectable="selectable" />
+			<el-table-column type="selection" width="55" align="center" reserve-selection :selectable="selectable" />
 			<el-table-column v-if="type" show-overflow-tooltip :label="type + `剩余开票金额`" align="center" width="150px">
 				<template #default="scope">
 					{{ calculateRemainingAmount(scope.row) }}

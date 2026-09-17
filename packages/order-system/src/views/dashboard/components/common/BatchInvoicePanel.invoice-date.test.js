@@ -12,7 +12,8 @@ describe('BatchInvoicePanel 公司列表按开票时间拆分与搜索', () => {
 	const source = readSource('./BatchInvoicePanel.vue');
 
 	test('聚合唯一键包含开票日期，同一公司按 invoiceDate 拆分为多行', () => {
-		expect(source).toContain("import { buildCompanyRowKey, isInvoiceDateInRange, normalizeInvoiceDate } from './utils/companyInvoiceDate';");
+		expect(source).toMatch(/import \{[^}]*buildCompanyRowKey[^}]*\} from '\.\/utils\/companyInvoiceDate';/);
+		expect(source).toMatch(/import \{[^}]*isInvoiceDateInRange[^}]*\} from '\.\/utils\/companyInvoiceDate';/);
 		expect(source).toContain('const invoiceDate = normalizeInvoiceDate(element.invoiceDate);');
 		expect(source).toContain('const _onlyKey = buildCompanyRowKey(id, us, invoiceDate);');
 		// 拆分行需要携带开票时间与行唯一键
