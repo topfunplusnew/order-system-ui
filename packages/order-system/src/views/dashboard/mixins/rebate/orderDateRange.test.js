@@ -8,7 +8,7 @@
 /* global describe, test, expect, jest */
 import fs from 'fs';
 import path from 'path';
-import { convertOrderDateRangeToParams, pickFilterValue, stripOrderDateRange } from './orderDateRange';
+import { convertOrderDateRangeToParams, pickFilterValue, resolveBeginEndTime } from './orderDateRange';
 
 jest.mock('@/api/system/orderDetail', () => ({
 	listOrderDetail: jest.fn(() => Promise.resolve({ rows: [], total: 0 }))
@@ -28,50 +28,83 @@ const sliceMethod = (source, signature) => {
 	return source.slice(start, source.indexOf('\n\t\t},', start));
 };
 
-describe('stripOrderDateRange（当前启用：只清理，不加 params 时间字段）', () => {
-	test('剔除选择器字段 orderDateRange，避免作为请求参数发出去', () => {
-		const { query } = stripOrderDateRange({ supplier: '沙河氢氟酸', orderDateRange: ['2024-09-03', '2026-09-30'] });
+describe('convertOrderDateRangeToParams（范围查找，已启用）', () => {
+	test('把 daterange 数组转换成 params.beginTime / params.endTime', () => {
+		const { query, hasOrderDateRange } = convertOrderDateRangeToParams({ supplier: '沙河氢氟酸', orderDateRange: ['2024-09-03', '2026-09-30'] });
 
-		expect(Object.prototype.hasOwnProperty.call(query, 'orderDateRange')).toBe(false);
+		expect(hasOrderDateRange).toBe(true);
+		expect(query.params.beginTime).toBe('2024-09-03');
+		expect(query.params.endTime).toBe('2026-09-30');
 		expect(query.supplier).toBe('沙河氢氟酸');
 	});
 
-	test('剔除 params 里残留的 beginTime / endTime（接口不支持，不能传）', () => {
-		const { query } = stripOrderDateRange({ params: { beginTime: '2024-09-03', endTime: '2026-09-30', orderDateSort: 'desc' } });
+	test('orderDateRange 不作为请求参数发出去', () => {
+		const { query } = convertOrderDateRangeToParams({ orderDateRange: ['2024-09-03', '2026-09-30'] });
 
-		expect(query.params.beginTime).toBeUndefined();
-		expect(query.params.endTime).toBeUndefined();
-		// 其它 params 字段保持不变
+		expect(Object.prototype.hasOwnProperty.call(query, 'orderDateRange')).toBe(false);
+	});
+
+	test('只选了一边时另一边为空（部分范围）', () => {
+		const onlyBegin = convertOrderDateRangeToParams({ orderDateRange: ['2024-09-03', null] }).query;
+		expect(onlyBegin.params.beginTime).toBe('2024-09-03');
+		expect(onlyBegin.params.endTime).toBeNull();
+
+		const onlyEnd = convertOrderDateRangeToParams({ orderDateRange: [null, '2026-09-30'] }).query;
+		expect(onlyEnd.params.beginTime).toBeNull();
+		expect(onlyEnd.params.endTime).toBe('2026-09-30');
+	});
+
+	test('清空时间选择器（null）会清掉范围条件', () => {
+		const { query, hasOrderDateRange } = convertOrderDateRangeToParams({ orderDateRange: null, params: { beginTime: '2024-09-03', endTime: '2026-09-30' } });
+
+		expect(hasOrderDateRange).toBe(true);
+		expect(query.params.beginTime).toBeNull();
+		expect(query.params.endTime).toBeNull();
+	});
+
+	test('没有携带 orderDateRange 时不改动原有 params 条件', () => {
+		const { query, hasOrderDateRange } = convertOrderDateRangeToParams({ params: { beginTime: '2024-09-03', endTime: '2026-09-30', orderDateSort: 'desc' } });
+
+		expect(hasOrderDateRange).toBe(false);
+		expect(query.params.beginTime).toBe('2024-09-03');
+		expect(query.params.endTime).toBe('2026-09-30');
 		expect(query.params.orderDateSort).toBe('desc');
 	});
 
-	test('保留 orderDate（接口目前唯一可用的时间字段）', () => {
-		const { query } = stripOrderDateRange({ orderDate: '2024-09-03' });
-
-		expect(query.orderDate).toBe('2024-09-03');
-	});
-
-	test('返回选择器状态：是否由货物列表弹窗提供、起止日期', () => {
-		const withRange = stripOrderDateRange({ orderDateRange: ['2024-09-03', '2026-09-30'] });
-		expect(withRange.hasOrderDateRange).toBe(true);
-		expect(withRange.orderDateRange).toEqual(['2024-09-03', '2026-09-30']);
-
-		const cleared = stripOrderDateRange({ orderDateRange: null });
-		expect(cleared.hasOrderDateRange).toBe(true);
-		expect(cleared.orderDateRange).toBeNull();
-
-		// 上级弹窗自己传的查询对象里没有该字段
-		expect(stripOrderDateRange({ supplier: 'A' }).hasOrderDateRange).toBe(false);
-	});
-
 	test('不修改入参，且入参为空时安全返回', () => {
-		const input = { orderDateRange: ['2024-09-03', '2024-09-30'], params: { beginTime: 'x' } };
-		const { query } = stripOrderDateRange(input);
+		const input = { orderDateRange: ['2024-09-03', '2024-09-30'] };
+		const { query } = convertOrderDateRangeToParams(input);
 
 		expect(input.orderDateRange).toEqual(['2024-09-03', '2024-09-30']);
-		expect(input.params.beginTime).toBe('x');
 		expect(query).not.toBe(input);
-		expect(stripOrderDateRange(undefined).query).toEqual({});
+		expect(convertOrderDateRangeToParams(undefined).query).toEqual({});
+	});
+});
+
+describe('resolveBeginEndTime（选择器优先，上级弹窗兜底）', () => {
+	test('货物列表弹窗提供了范围时以它为准', () => {
+		expect(resolveBeginEndTime({ beginTime: '2024-07-01', endTime: '2024-07-10' }, { beginTime: '2020-01-01', endTime: '2020-01-02' }, true)).toEqual({
+			beginTime: '2024-07-01',
+			endTime: '2024-07-10'
+		});
+	});
+
+	test('弹窗里清空范围时按清空处理，不回退上级旧值', () => {
+		expect(resolveBeginEndTime({ beginTime: null, endTime: null }, { beginTime: '2020-01-01', endTime: '2020-01-02' }, true)).toEqual({
+			beginTime: null,
+			endTime: null
+		});
+	});
+
+	test('没有携带选择器范围时用上级弹窗的开始/结束时间', () => {
+		expect(resolveBeginEndTime(undefined, { beginTime: '2020-01-01', endTime: '2020-01-02' }, false)).toEqual({
+			beginTime: '2020-01-01',
+			endTime: '2020-01-02'
+		});
+	});
+
+	test('两边都没有时返回 null', () => {
+		expect(resolveBeginEndTime(undefined, undefined, false)).toEqual({ beginTime: null, endTime: null });
 	});
 });
 
@@ -94,34 +127,24 @@ describe('pickFilterValue（清空后的值必须生效）', () => {
 	});
 });
 
-describe('convertOrderDateRangeToParams（后端支持后才启用）', () => {
-	test('实现保留完好：仍能把 orderDateRange 转成 params.beginTime/endTime', () => {
-		const { query, hasOrderDateRange } = convertOrderDateRangeToParams({ orderDateRange: ['2024-09-03', '2026-09-30'] });
-
-		expect(hasOrderDateRange).toBe(true);
-		expect(query.params.beginTime).toBe('2024-09-03');
-		expect(query.params.endTime).toBe('2026-09-30');
-		expect(Object.prototype.hasOwnProperty.call(query, 'orderDateRange')).toBe(false);
-	});
-
-	test('标注为暂不启用（@deprecated + 明确标记）', () => {
+describe('convertOrderDateRangeToParams 已正式启用（apifox 更新后）', () => {
+	test('模块注释已更新为"支持范围查找"，不再保留旧的不支持标记', () => {
 		const source = fs.readFileSync(path.resolve(__dirname, './orderDateRange.js'), 'utf8');
 
-		expect(source).toContain('@deprecated');
-		expect(source).toContain('params.beginTime / params.endTime 后端尚未支持');
-		expect(source).toContain('待后端明确说支持以后');
+		expect(source).toContain('已支持范围查找');
+		expect(source).toContain('不要再发送 orderDate');
+		expect(source).not.toContain('后端尚未支持');
+		expect(source).not.toContain('@deprecated');
 	});
 });
 
-describe('查询请求不混传三个时间字段，且清空后不再带旧条件', () => {
-	test('getDetailBySupper 只做清理，不组装 params 时间条件', () => {
+describe('查询请求：时间走范围参数，且清空后不再带旧条件', () => {
+	test('getDetailBySupper 用 params.beginTime/endTime 做范围查询', () => {
 		const methodSource = sliceMethod(mixinSource, 'getDetailBySupper(query) {');
 
-		expect(methodSource).toContain('stripOrderDateRange(query)');
-		// 不能出现 beginTime/endTime 的取值或对象字段（注释里的说明不算）
-		expect(methodSource).not.toMatch(/beginTime\s*[:,]/);
-		expect(methodSource).not.toMatch(/endTime\s*[:,]/);
-		expect(methodSource).toMatch(/params: \{\s*\.\.\.\(baseQuery\.params \|\| \{\}\)\s*\}/);
+		expect(methodSource).toContain('convertOrderDateRangeToParams(query)');
+		expect(methodSource).toContain('resolveBeginEndTime(baseQuery.params, this.queryParamsSupplier.params, hasOrderDateRange)');
+		expect(methodSource).toMatch(/params: \{\s*\.\.\.\(baseQuery\.params \|\| \{\}\),\s*beginTime,\s*endTime\s*\}/);
 	});
 
 	test('筛选条件以货物列表弹窗的表单为准（清空后不被上级旧值覆盖）', () => {
@@ -136,24 +159,22 @@ describe('查询请求不混传三个时间字段，且清空后不再带旧条�
 		expect(methodSource).not.toContain('this.queryParamsSupplier.supplier || baseQuery.supplier');
 	});
 
-	test('时间跟随选择器：选了就带开始日期，清空就不带 orderDate', () => {
-		const methodSource = sliceMethod(mixinSource, 'getDetailBySupper(query) {');
-
-		expect(methodSource).toContain("const orderDate = hasOrderDateRange ? (orderDateRange && orderDateRange[0]) || null : pickFilterValue(baseQuery, 'orderDate', null);");
-		expect(methodSource).toContain('delete qs.orderDate;');
+	test('不再发送单个 orderDate（避免与范围叠加多筛一次）', () => {
+		expect(sliceMethod(mixinSource, 'getDetailBySupper(query) {')).toContain('delete qs.orderDate;');
+		expect(sliceMethod(mixinSource, 'getDirectOrderDetailList(query) {')).toContain('delete requestQuery.orderDate;');
+		expect(sliceMethod(mixinSource, 'handleCommitSupplier() {')).not.toMatch(/orderDate\s*:/);
+		expect(sliceMethod(rebateSource, 'openAppendOrderList() {')).not.toMatch(/orderDate\s*:/);
 	});
 
-	test('getDirectOrderDetailList 同样只做清理并跟随选择器', () => {
+	test('getDirectOrderDetailList 同样做范围转换', () => {
 		const methodSource = sliceMethod(mixinSource, 'getDirectOrderDetailList(query) {');
 
-		expect(methodSource).toContain('stripOrderDateRange(query)');
-		expect(methodSource).not.toMatch(/beginTime\s*[:,]/);
-		expect(methodSource).not.toMatch(/endTime\s*[:,]/);
-		expect(methodSource).toContain('delete requestQuery.orderDate;');
+		expect(methodSource).toContain('convertOrderDateRangeToParams(query)');
 	});
 
-	test('混合文件里保留了接口限制标记', () => {
-		expect(mixinSource).toContain('listOrderDetail 目前只有 orderDate 可用');
+	test('旧的"接口不支持"标记已移除，接口状态已更新为支持范围查找', () => {
+		expect(mixinSource).not.toContain('目前只有 orderDate 可用');
+		expect(mixinSource).toContain('params.beginTime/params.endTime 支持范围查找');
 	});
 });
 
@@ -243,14 +264,14 @@ describe('getDetailBySupper 实际组装出的请求参数', () => {
 		expect(request.height).toBe('');
 		expect(request.length).toBe('');
 		expect(request.width).toBe('');
-		// 时间选择器清空后不带 orderDate，也不带后端不支持的 params 时间字段
+		// 时间选择器清空后不带时间条件（范围参数为 null，ruoyi 的 tansParams 不会拼进 URL）
+		expect(request.params.beginTime).toBeNull();
+		expect(request.params.endTime).toBeNull();
 		expect(request.orderDate).toBeUndefined();
-		expect(request.params.beginTime).toBeUndefined();
-		expect(request.params.endTime).toBeUndefined();
 		expect(request.orderDateRange).toBeUndefined();
 	});
 
-	test('时间选择器选了范围时，按开始日期带上 orderDate', async () => {
+	test('时间选择器选了范围时，按 params.beginTime/endTime 做范围查询', async () => {
 		const ctx = createContext();
 		await ctx.getDetailBySupper({
 			pageNum: 1,
@@ -261,12 +282,13 @@ describe('getDetailBySupper 实际组装出的请求参数', () => {
 		});
 
 		const request = lastRequest();
-		expect(request.orderDate).toBe('2024-09-03');
-		expect(request.params.beginTime).toBeUndefined();
-		expect(request.params.endTime).toBeUndefined();
+		expect(request.params.beginTime).toBe('2024-09-03');
+		expect(request.params.endTime).toBe('2026-09-30');
+		// 不再发送单个 orderDate
+		expect(request.orderDate).toBeUndefined();
 	});
 
-	test('以「根据供应商选择订单」弹窗发起查询时，条件照旧生效且不传 params 时间字段', async () => {
+	test('以「根据供应商选择订单」弹窗发起查询时，用该弹窗的开始/结束时间做范围查询', async () => {
 		const ctx = createContext();
 		// 确定/追加选择走的是这个入参（没有 orderDateRange 字段）
 		await ctx.getDetailBySupper(ctx.queryParamsSupplier);
@@ -275,7 +297,22 @@ describe('getDetailBySupper 实际组装出的请求参数', () => {
 		expect(request.supplier).toBe('沙河氢氟酸');
 		expect(request.levelName).toBe('级别A');
 		expect(request.height).toBe('10');
-		expect(request.params.beginTime).toBeUndefined();
-		expect(request.params.endTime).toBeUndefined();
+		expect(request.params.beginTime).toBe('2024-09-03');
+		expect(request.params.endTime).toBe('2026-09-30');
+		expect(request.orderDate).toBeUndefined();
+	});
+
+	test('货物列表弹窗改过时间范围后，会同步回「根据供应商选择订单」弹窗（追加选择沿用）', async () => {
+		const ctx = createContext();
+		await ctx.getDetailBySupper({
+			pageNum: 1,
+			pageSize: 20,
+			orderDateRange: ['2024-10-01', '2024-10-31'],
+			params: {}
+		});
+
+		expect(ctx.queryParamsSupplier.params.beginTime).toBe('2024-10-01');
+		expect(ctx.queryParamsSupplier.params.endTime).toBe('2024-10-31');
+		expect(lastRequest().params.beginTime).toBe('2024-10-01');
 	});
 });

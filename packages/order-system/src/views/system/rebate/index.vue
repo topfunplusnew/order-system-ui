@@ -789,8 +789,7 @@ export default {
 			const beginTime = this.queryParamsSupplier.params.beginTime || null;
 			const endTime = this.queryParamsSupplier.params.endTime || null;
 			this.orderDetailInitialQuery = {
-				orderDate: beginTime,
-				// 货物列表弹窗的时间选择器绑定的是 orderDateRange，把开始/结束时间一起带过去
+				// 货物列表弹窗的时间选择器绑定的是 orderDateRange，把开始/结束时间一起带过去（查询用 params 范围）
 				orderDateRange: beginTime || endTime ? [beginTime, endTime] : null,
 				supplier: this.form.supplier || this.goods[0]?.supplier || this.queryParamsSupplier.supplier,
 				levelName: this.queryParamsSupplier.levelName,
