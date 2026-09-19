@@ -1,9 +1,10 @@
 <!--
+用户需求：供应商返利首次只选一行不能混入历史货物，追加仅限当前返利单，取消勾选应生效。
+实际改动：移除追加时的全局缓存恢复和确认时的缓存写入；接收组件的完整选择结果，关闭选单销毁草稿，回显交给组件统一处理。
 需求补充：供应商选单的前置筛选表单也需使用 SearchOption 自动填充产品级别。
 实际改动：接入产品级别查询接口和搜索按钮，选中后填充级别名称、厚度、长度、宽度，保留竖向表单布局。
 需求：返利关联订单支持产品级别、厚度、长度、宽度筛选，可多次搜索追加选择，已选项回显，并提供独立清空按钮。
-改动：向 OrderDetailList 传入当前 goods，接收清空事件；选择结果按明细 id 累加，保持既有选择。
-修复：追加选择读取订单明细本地缓存，清空或取消返利时清除缓存。
+改动：向 OrderDetailList 传入当前 goods，接收清空事件；组件维护本单跨查询选择，页面按明细 id 去重回填。
 修复：点击“选择所选货物”后关闭订单列表和供应商筛选弹窗，已选数据继续保留。
 -->
 <template>
@@ -408,6 +409,7 @@
 		<InfoDialog title="根据供应商所选货物列表" :visible.sync="orderGoodsListVisible" @update:visible="orderGoodsListVisible = false">
 			<template #info>
 				<OrderDetailList
+					v-if="orderGoodsListVisible"
 					:key="orderDetailListKey"
 					ref="appendOrderDetailList"
 					:order-detail-list="needToSelectOrderDetailList"
@@ -782,8 +784,6 @@ export default {
 	},
 	methods: {
 		openAppendOrderList() {
-			const storedGoods = this.readStoredRebateGoods();
-			if (storedGoods.length) this.goods = storedGoods;
 			// 追加时重建列表组件，确保上次已选明细按 selected-order-details 重新回显。
 			this.orderDetailListKey += 1;
 			const beginTime = this.queryParamsSupplier.params.beginTime || null;
@@ -866,7 +866,8 @@ export default {
 				this.$message.warning('供应商返利只能选择同一供应商的订单明细，请重新选择');
 				return;
 			}
-			const merged = new Map(this.goods.filter(item => item && item.id != null).map(item => [String(item.id), item]));
+			// 子组件已维护本单跨查询的完整选择，不能再次合并旧 goods，否则取消勾选的明细会被加回。
+			const merged = new Map();
 			(selection || []).forEach(item => {
 				if (item && item.id != null) merged.set(String(item.id), item);
 			});
@@ -890,12 +891,7 @@ export default {
 		},
 		restoreAppendSelection() {
 			const list = this.$refs.appendOrderDetailList;
-			if (!list || !list.$refs.orderDetailTable) return;
-			const selectedIds = new Set(this.goods.map(item => String(item.id)));
-			list.$refs.orderDetailTable.clearSelection();
-			list.orderDetailList.forEach(row => {
-				if (selectedIds.has(String(row.id))) list.$refs.orderDetailTable.toggleRowSelection(row, true);
-			});
+			if (list) list.restoreVisibleSelection();
 		},
 		// 重写mixin中的确认选择货物方法，添加供应商自动填充功能
 		submitSelectOrderDetail() {
@@ -923,7 +919,6 @@ export default {
 
 			// 推入id数组
 			this.form.orderDetailIds = this.goods.map(item => item.id);
-			localStorage.setItem('rebate-selected-order-details', JSON.stringify(this.goods));
 
 			// 更新返利方式对应的显示变量
 			this.areaOrWeightBox = this.form.rebateMethod;
@@ -942,13 +937,6 @@ export default {
 
 			// 保持订单选择弹窗打开，用户可以继续搜索并追加明细。
 			this.orderDialogVisible = false;
-		},
-		readStoredRebateGoods() {
-			try {
-				return JSON.parse(localStorage.getItem('rebate-selected-order-details') || '[]');
-			} catch (e) {
-				return [];
-			}
 		},
 		// 获取最早的返利日期
 		getEarliestReceivedDate(row) {

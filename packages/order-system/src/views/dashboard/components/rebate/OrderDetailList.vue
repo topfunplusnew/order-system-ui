@@ -1,7 +1,8 @@
 <!--
+用户需求：供应商返利只选一行时不能带出其他返利单的历史货物，当前返利单仍可跨查询追加。
+实际改动：仅从 selectedOrderDetails 初始化选择，移除全局缓存读写；临时勾选只保留在本次选单组件内。
 需求：订单选择支持产品级别、厚度、长度、宽度筛选，并允许多次调整条件追加选择；已选明细在再次搜索时保持勾选，可一键清空。
 改动：维护跨查询的已选明细集合，按明细 id 去重并回显当前结果；新增筛选字段和“清空已选”操作。
-修复：将已选货物同步保存到 localStorage，组件打开时恢复，清空时移除缓存。
 -->
 
 <script>
@@ -35,7 +36,6 @@ export default {
 			loading: false,
 			selectedList: [],
 			selectedMap: Object.create(null),
-			storageKey: 'rebate-selected-order-details',
 			restoringSelection: false,
 			queryLevel: '',
 			queryCompany: '',
@@ -60,8 +60,6 @@ export default {
 			immediate: true,
 			handler(list) {
 				this.selectedList = [...(list || [])];
-				const stored = this.readStoredSelection();
-				if (stored.length) this.selectedList = stored;
 				this.selectedMap = Object.create(null);
 				this.selectedList.forEach(item => {
 					if (item && item.id != null) this.selectedMap[String(item.id)] = item;
@@ -122,7 +120,6 @@ export default {
 				if (item && item.id != null) this.selectedMap[String(item.id)] = item;
 			});
 			this.selectedList = Object.values(this.selectedMap);
-			this.persistSelection();
 		},
 		submitSelectOrderDetail() {
 			this.$emit('handleSelect', this.selectedList);
@@ -131,22 +128,8 @@ export default {
 			this.selectedMap = Object.create(null);
 			this.selectedList = [];
 			this.$emit('handleClearSelected');
-			this.clearStoredSelection();
 			this.$nextTick(this.restoreVisibleSelection);
 			setTimeout(this.restoreVisibleSelection, 80);
-		},
-		readStoredSelection() {
-			try {
-				return JSON.parse(localStorage.getItem(this.storageKey) || '[]');
-			} catch (e) {
-				return [];
-			}
-		},
-		persistSelection() {
-			localStorage.setItem(this.storageKey, JSON.stringify(this.selectedList));
-		},
-		clearStoredSelection() {
-			localStorage.removeItem(this.storageKey);
 		},
 		restoreVisibleSelection() {
 			const table = this.$refs.orderDetailTable;
