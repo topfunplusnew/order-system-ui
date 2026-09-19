@@ -1,4 +1,8 @@
 <!--
+用户需求：混选供应商提示失败后，重新搜索并选中同一供应商应能正常确认。
+实际改动：供应商校验失败时通知来源选单组件回退未确认勾选；保留本单已确认货物，并明确更换供应商应使用“重新选择货物”。
+用户需求：本页涉及的数字使用 math.js 高精度计算，避免浮点误差和溢出。
+实际改动：面积、重箱、计提金额、流水汇总、超额比较与手动金额判断统一使用独立 BigNumber 工具；金额输入保留文本，展示/提交保留十进制字符串，异常数值提示并拦截。
 用户需求：供应商返利首次只选一行不能混入历史货物，追加仅限当前返利单，取消勾选应生效。
 实际改动：移除追加时的全局缓存恢复和确认时的缓存写入；接收组件的完整选择结果，关闭选单销毁草稿，回显交给组件统一处理。
 需求补充：供应商选单的前置筛选表单也需使用 SearchOption 自动填充产品级别。
@@ -158,8 +162,8 @@
 			<el-table-column v-if="columns[8].visible" label="收到返利金额" align="center" prop="receivedRebateAmount" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ getTotalReceivedAmount(scope.row) > 0 ? getTotalReceivedAmount(scope.row) : '未收到' }}</div>
-						<span v-if="getTotalReceivedAmount(scope.row) > 0" class="money">{{ getTotalReceivedAmount(scope.row) }}</span>
+						<div slot="content">{{ hasReceivedAmount(scope.row) ? getTotalReceivedAmount(scope.row) : '未收到' }}</div>
+						<span v-if="hasReceivedAmount(scope.row)" class="money">{{ getTotalReceivedAmount(scope.row) }}</span>
 						<span v-else>未收到</span>
 					</el-tooltip>
 				</template>
@@ -195,6 +199,7 @@
 
 		<!-- todo 添加或修改返利回扣对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
+			<el-alert v-if="calculationError" :title="calculationError" type="error" :closable="false" />
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 					<el-row>
@@ -427,7 +432,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="返利" :visible.sync="rebateDialogVisible" width="500px" append-to-body>
 			<el-form ref="rebateForm" :model="rebateForm" :rules="rebateFormRules" label-width="120px">
 				<el-form-item label="返利金额" prop="amount">
-					<el-input v-model="rebateForm.amount" type="number" placeholder="请输入返利金额" clearable @keyup.enter.native="handleQuery">
+					<el-input v-model="rebateForm.amount" inputmode="decimal" placeholder="请输入返利金额" clearable @keyup.enter.native="handleQuery">
 						<template slot="append">元</template>
 					</el-input>
 				</el-form-item>
@@ -468,7 +473,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="修改返利流水" :visible.sync="editRebateDetailDialogVisible" width="500px" append-to-body>
 			<el-form ref="editRebateDetailForm" :model="editRebateDetailForm" :rules="rebateFormRules" label-width="120px">
 				<el-form-item label="返利金额" prop="amount">
-					<el-input v-model="editRebateDetailForm.amount" type="number" placeholder="请输入返利金额" clearable @keyup.enter.native="handleQuery">
+					<el-input v-model="editRebateDetailForm.amount" inputmode="decimal" placeholder="请输入返利金额" clearable @keyup.enter.native="handleQuery">
 						<template slot="append">元</template>
 					</el-input>
 				</el-form-item>
@@ -491,7 +496,6 @@
 import { listRebate, getRebate, delRebate, addRebate, updateRebate } from '@/api/system/Rebate';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { RebateType, TableName } from '@/api/tool/enums';
-import { fix } from '@/api/tool/format';
 import OrderDetailInfo from '@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { listCompany } from '@/api/system/company';
@@ -506,7 +510,7 @@ import { listOrderDetailByIds } from '@/api/system/orderDetail';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import { parseTime } from '../../../utils/ruoyi';
 import _ from 'lodash';
-import { add, multiply, divide, subtract, abs, number, round } from 'mathjs';
+import { rebateMath, decimal, decimalText, calculateRebateBasis, calculateRebateAmount, sumRebateAmounts, exceedsRebate, isSameRebateAmount, hasRebateDifference } from '@/utils/rebateMath';
 
 export default {
 	name: 'Rebate',
@@ -735,26 +739,29 @@ export default {
 			return TableName;
 		},
 		// 计算面积值
-		calculatedArea() {
-			if (_.isEmpty(this.goods)) {
-				return 0;
+		calculationError() {
+			try {
+				const area = calculateRebateBasis(this.goods);
+				const weightBox = calculateRebateBasis(this.goods, true);
+				calculateRebateAmount(area, this.form.unitPrice);
+				calculateRebateAmount(weightBox, this.form.unitPrice);
+				decimal(this.form.rebate);
+				return '';
+			} catch (error) {
+				return `返利数值异常：${error.message}`;
 			}
-			return this.goods.reduce((sum, item) => {
-				return add(sum, divide(multiply(multiply(number(item.length) || 0, number(item.width) || 0), number(item.pieces) || 0), 1000000));
-			}, 0);
+		},
+		calculatedArea() {
+			return this.calculationError ? '' : calculateRebateBasis(this.goods);
 		},
 		// 计算重箱值
 		calculatedWeightBox() {
-			if (_.isEmpty(this.goods)) {
-				return 0;
-			}
-			return this.goods.reduce((sum, item) => {
-				return add(sum, divide(divide(multiply(multiply(multiply(number(item.height) || 0, number(item.length) || 0), number(item.width) || 0), number(item.pieces) || 0), 1000000), 20));
-			}, 0);
+			return this.calculationError ? '' : calculateRebateBasis(this.goods, true);
 		},
 		// 计算返利金额（支持手动编辑）
 		calculatedRebate: {
 			get() {
+				if (this.calculationError) return this.isManualEditRebate ? this.form.rebate : '';
 				// 如果手动编辑过，返回手动值
 				if (this.isManualEditRebate) {
 					return this.form.rebate || 0;
@@ -764,18 +771,22 @@ export default {
 					return this.form.rebate || 0;
 				}
 				const baseValue = this.form.rebateMethod === this.RebateType.Weight ? this.calculatedWeightBox : this.calculatedArea;
-				return fix(multiply(baseValue, number(this.form.unitPrice) || 0));
+				return calculateRebateAmount(baseValue, this.form.unitPrice);
 			},
 			set(value) {
 				this.form.rebate = value;
 				// 计算当前应该的值
-				let expectedValue = 0;
+				let expectedValue = '0';
+				if (this.calculationError) {
+					this.isManualEditRebate = true;
+					return;
+				}
 				if (!_.isEmpty(this.goods) && this.form.unitPrice && this.form.rebateMethod) {
 					const baseValue = this.form.rebateMethod === this.RebateType.Weight ? this.calculatedWeightBox : this.calculatedArea;
-					expectedValue = fix(multiply(baseValue, number(this.form.unitPrice) || 0));
+					expectedValue = calculateRebateAmount(baseValue, this.form.unitPrice);
 				}
 				// 如果用户输入的值与计算值不同，标记为手动编辑
-				this.isManualEditRebate = number(value) !== expectedValue;
+				this.isManualEditRebate = !isSameRebateAmount(value, expectedValue);
 			}
 		}
 	},
@@ -783,6 +794,15 @@ export default {
 		this.getList();
 	},
 	methods: {
+		validateNumericValues(values) {
+			try {
+				values.forEach(value => decimal(value));
+				return true;
+			} catch (error) {
+				this.$message.error(error.message);
+				return false;
+			}
+		},
 		openAppendOrderList() {
 			// 追加时重建列表组件，确保上次已选明细按 selected-order-details 重新回显。
 			this.orderDetailListKey += 1;
@@ -855,15 +875,17 @@ export default {
 			this.directOrderDetailTotal = 0;
 		},
 		// 重写mixin中的通过供应商选择货物方法，添加供应商自动填充功能
-		handleSelectOrderDetailChange(selection) {
+		handleSelectOrderDetailChange(selection, resetSelection) {
 			const selectedSuppliers = [...new Set((selection || []).map(item => item?.supplier).filter(Boolean))];
 			if (selectedSuppliers.length > 1) {
-				this.$message.warning('供应商返利只能选择同一供应商的订单明细，请重新选择');
+				if (typeof resetSelection === 'function') resetSelection();
+				this.$message.warning('供应商返利只能选择同一供应商的订单明细，已撤销本次未确认勾选，请重新选择');
 				return;
 			}
 			const existingSupplier = this.goods[0]?.supplier;
 			if (existingSupplier && selectedSuppliers.some(supplier => supplier !== existingSupplier)) {
-				this.$message.warning('供应商返利只能选择同一供应商的订单明细，请重新选择');
+				if (typeof resetSelection === 'function') resetSelection();
+				this.$message.warning(`当前返利单只能追加供应商“${existingSupplier}”的订单明细；已恢复原选择，如需更换供应商请点击“重新选择货物”`);
 				return;
 			}
 			// 子组件已维护本单跨查询的完整选择，不能再次合并旧 goods，否则取消勾选的明细会被加回。
@@ -895,6 +917,10 @@ export default {
 		},
 		// 重写mixin中的确认选择货物方法，添加供应商自动填充功能
 		submitSelectOrderDetail() {
+			if (this.calculationError) {
+				this.$message.error(this.calculationError);
+				return;
+			}
 			this.form.orderDetailIds = [];
 			if (_.isEmpty(this.goods)) {
 				this.$message.info('请选择货物');
@@ -955,13 +981,15 @@ export default {
 		// 计算返利金额总和
 		getTotalReceivedAmount(row) {
 			const detailList = _.get(row, 'detailList', []) || [];
-			if (_.isEmpty(detailList)) {
-				return 0;
+			try {
+				return sumRebateAmounts(detailList);
+			} catch (error) {
+				return '数值异常';
 			}
-
-			return detailList.reduce((total, item) => {
-				return add(total, number(item.actualReceived) || 0);
-			}, 0);
+		},
+		hasReceivedAmount(row) {
+			const total = this.getTotalReceivedAmount(row);
+			return total === '数值异常' || decimal(total).gt(decimal('0'));
 		},
 		handleCommitBackCompanyGive(val) {
 			this.form.supplier = val.companyName;
@@ -1012,7 +1040,8 @@ export default {
 			this.$refs.rebateForm.validate(valid => {
 				if (valid) {
 					const row = this.currentRebateRow;
-					const currentAmount = number(this.rebateForm.amount) || 0;
+					if (!this.validateNumericValues([this.rebateForm.amount])) return;
+					const currentAmount = decimalText(this.rebateForm.amount);
 					const date = this.rebateForm.date;
 
 					if (!row || !row.id) {
@@ -1028,20 +1057,18 @@ export default {
 								return;
 							}
 
-							const originalAmount = res.data.rebate || row.rebate; // 原返利金额
+							const originalAmount = res.data.rebate ?? row.rebate; // 原返利金额
 
 							// 获取已有的流水列表
 							const existingDetailList = _.get(res.data, 'detailList', []) || [];
 
 							// 计算已累计返利金额
-							const existingTotal = existingDetailList.reduce((sum, item) => {
-								return add(sum, number(item.actualReceived) || 0);
-							}, 0);
+							const existingTotal = sumRebateAmounts(existingDetailList);
 
-							const newTotal = add(existingTotal, currentAmount);
+							const newTotal = decimalText(rebateMath.add(decimal(existingTotal), decimal(currentAmount)));
 
 							// 检查是否需要备注：单次金额超标或累计金额超标
-							const needRemark = currentAmount > originalAmount || newTotal > originalAmount;
+							const needRemark = exceedsRebate(currentAmount, existingTotal, originalAmount);
 
 							/**
 							 * 处理返利逻辑
@@ -1075,18 +1102,18 @@ export default {
 										this.getList();
 									})
 									.catch(error => {
-										this.$message.error('返利失败：' + (error.msg || '未知错误'));
+										this.$message.error('返利失败：' + (error.msg || error.message || '未知错误'));
 									});
 							};
 
 							// 如果需要备注，弹出输入框
 							if (needRemark) {
 								let remarkMessage = '';
-								if (currentAmount > originalAmount && newTotal > originalAmount) {
+								if (decimal(currentAmount).gt(decimal(originalAmount)) && decimal(newTotal).gt(decimal(originalAmount))) {
 									remarkMessage = `本次返利金额(${currentAmount})和累计返利金额(${newTotal})均超过原金额(${originalAmount})，请输入备注原因：`;
-								} else if (currentAmount > originalAmount) {
+								} else if (decimal(currentAmount).gt(decimal(originalAmount))) {
 									remarkMessage = `本次返利金额(${currentAmount})超过原金额(${originalAmount})，请输入备注原因：`;
-								} else if (newTotal > originalAmount) {
+								} else if (decimal(newTotal).gt(decimal(originalAmount))) {
 									remarkMessage = `累计返利金额(${newTotal})超过原金额(${originalAmount})，请输入备注原因：`;
 								}
 
@@ -1111,7 +1138,7 @@ export default {
 							}
 						})
 						.catch(error => {
-							this.$message.error('获取返利数据失败：' + (error.msg || '未知错误'));
+							this.$message.error('获取返利数据失败：' + (error.msg || error.message || '未知错误'));
 						});
 				}
 			});
@@ -1149,10 +1176,7 @@ export default {
 				if (index === 0) {
 					sums[index] = '合计';
 				} else if (column.property === 'actualReceived') {
-					const values = data.map(item => number(item.actualReceived) || 0);
-					sums[index] = values.reduce((prev, curr) => {
-						return add(prev, curr);
-					}, 0);
+					sums[index] = this.getTotalReceivedAmount({ detailList: data });
 				} else {
 					sums[index] = '';
 				}
@@ -1190,21 +1214,18 @@ export default {
 						return;
 					}
 
-					const currentAmount = number(this.editRebateDetailForm.amount) || 0;
+					if (!this.validateNumericValues([this.editRebateDetailForm.amount, this.currentRebateData.rebate, ...this.rebateDetailList.map(item => item.actualReceived)])) return;
+					const currentAmount = decimalText(this.editRebateDetailForm.amount);
 					const originalAmount = this.currentRebateData.rebate; // 原返利金额
 
 					// 计算修改后的累计返利金额
 					const detailList = _.cloneDeep(this.rebateDetailList);
 					// 临时移除当前编辑的项，计算其他项的累计金额
-					const otherTotal = detailList
-						.filter((item, idx) => idx !== this.currentEditIndex)
-						.reduce((sum, item) => {
-							return add(sum, number(item.actualReceived) || 0);
-						}, 0);
-					const newTotal = add(otherTotal, currentAmount);
+					const otherTotal = sumRebateAmounts(detailList.filter((item, idx) => idx !== this.currentEditIndex));
+					const newTotal = decimalText(rebateMath.add(decimal(otherTotal), decimal(currentAmount)));
 
 					// 检查是否需要备注
-					const needRemark = currentAmount > originalAmount || newTotal > originalAmount;
+					const needRemark = exceedsRebate(currentAmount, otherTotal, originalAmount);
 
 					const processUpdate = (remark = '') => {
 						// 更新流水列表中的对应项（传入id表示更新）
@@ -1232,11 +1253,11 @@ export default {
 
 					if (needRemark) {
 						let remarkMessage = '';
-						if (currentAmount > originalAmount && newTotal > originalAmount) {
+						if (decimal(currentAmount).gt(decimal(originalAmount)) && decimal(newTotal).gt(decimal(originalAmount))) {
 							remarkMessage = `本次返利金额(${currentAmount})和累计返利金额(${newTotal})均超过原金额(${originalAmount})，请输入备注原因：`;
-						} else if (currentAmount > originalAmount) {
+						} else if (decimal(currentAmount).gt(decimal(originalAmount))) {
 							remarkMessage = `本次返利金额(${currentAmount})超过原金额(${originalAmount})，请输入备注原因：`;
-						} else if (newTotal > originalAmount) {
+						} else if (decimal(newTotal).gt(decimal(originalAmount))) {
 							remarkMessage = `累计返利金额(${newTotal})超过原金额(${originalAmount})，请输入备注原因：`;
 						}
 
@@ -1400,7 +1421,7 @@ export default {
 				// 保存服务器返回的原始 rebate 值
 				const originalRebate = response.data.rebate || 0;
 				// 填充选择框（在 goods 加载前先设置，避免显示问题）
-				this.form.rebateMethod = response.data.rebateMethod === '1' ? RebateType.Weight : RebateType.Square;
+				this.form.rebateMethod = String(response.data.rebateMethod) === '1' ? RebateType.Weight : RebateType.Square;
 				this.areaOrWeightBox = this.form.rebateMethod;
 				// 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
 				if (!_.isEmpty(this.form.orderDetailIds)) {
@@ -1415,9 +1436,13 @@ export default {
 							if (!_.isEmpty(this.goods) && this.form.unitPrice && this.form.rebateMethod) {
 								// 计算当前应该的值
 								const baseValue = this.form.rebateMethod === this.RebateType.Weight ? this.calculatedWeightBox : this.calculatedArea;
-								const calculatedValue = fix(multiply(baseValue, number(this.form.unitPrice) || 0));
+								if (this.calculationError) {
+									this.$message.error(this.calculationError);
+									return;
+								}
+								const calculatedValue = calculateRebateAmount(baseValue, this.form.unitPrice);
 								// 如果计算值和服务器返回的值不一致，标记为手动编辑，使用服务器返回的值
-								if (abs(subtract(number(calculatedValue), number(originalRebate))) > 0.01) {
+								if (hasRebateDifference(calculatedValue, originalRebate)) {
 									this.isManualEditRebate = true;
 									this.form.rebate = originalRebate;
 								} else {
@@ -1444,11 +1469,20 @@ export default {
 		},
 		/** 提交按钮 */
 		submitForm() {
+			if (this.calculationError) {
+				this.$message.error(this.calculationError);
+				return;
+			}
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					// 确保 rebate 字段的值是最新的计算值（同步计算属性的值到 form.rebate）
 					if (this.calculatedRebate !== undefined && this.calculatedRebate !== null) {
-						this.form.rebate = number(this.calculatedRebate) || 0;
+						this.form.rebate = decimalText(this.calculatedRebate);
+						this.form.unitPrice = decimalText(this.form.unitPrice);
+						if (!_.isEmpty(this.goods)) {
+							this.form.area = this.calculatedArea;
+							this.form.weightBox = this.calculatedWeightBox;
+						}
 					}
 					this.form.rebateMethod = this.form.rebateMethod === RebateType.Weight ? 1 : 2;
 					if (this.form.id != null) {

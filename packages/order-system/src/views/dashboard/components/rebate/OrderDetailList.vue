@@ -1,4 +1,6 @@
 <!--
+用户需求：混选供应商被拒绝后，重新搜索单一供应商不能继续被隐藏的历史勾选阻止。
+实际改动：统一初始化/回退选择集合；确认事件携带回退函数，校验拒绝时撤销本次草稿并恢复本单已确认货物及表格勾选。
 浏览器实测补充：重新搜索后表格自动清选不能覆盖本单选择；仅通过用户勾选/全选事件更新集合，忽略换数据触发的 selection-change。
 用户需求：供应商返利只选一行时不能带出其他返利单的历史货物，当前返利单仍可跨查询追加。
 实际改动：仅从 selectedOrderDetails 初始化选择，移除全局缓存读写；临时勾选只保留在本次选单组件内。
@@ -60,12 +62,7 @@ export default {
 		selectedOrderDetails: {
 			immediate: true,
 			handler(list) {
-				this.selectedList = [...(list || [])];
-				this.selectedMap = Object.create(null);
-				this.selectedList.forEach(item => {
-					if (item && item.id != null) this.selectedMap[String(item.id)] = item;
-				});
-				this.$nextTick(this.restoreVisibleSelection);
+				this.resetSelection(list);
 			}
 		},
 		orderDetailList() {
@@ -87,6 +84,14 @@ export default {
 		}
 	},
 	methods: {
+		resetSelection(list) {
+			this.selectedList = [...(list || [])];
+			this.selectedMap = Object.create(null);
+			this.selectedList.forEach(item => {
+				if (item && item.id != null) this.selectedMap[String(item.id)] = item;
+			});
+			this.$nextTick(this.restoreVisibleSelection);
+		},
 		boolTag(val) {
 			if (val === 0 || val === '0' || val === false) return '否';
 			if (val === 1 || val === '1' || val === true) return '是';
@@ -123,7 +128,7 @@ export default {
 			this.selectedList = Object.values(this.selectedMap);
 		},
 		submitSelectOrderDetail() {
-			this.$emit('handleSelect', this.selectedList);
+			this.$emit('handleSelect', this.selectedList, () => this.resetSelection(this.selectedOrderDetails));
 		},
 		clearSelectedOrderDetails() {
 			this.selectedMap = Object.create(null);

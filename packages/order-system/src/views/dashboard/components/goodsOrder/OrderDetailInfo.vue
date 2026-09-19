@@ -1,4 +1,7 @@
-<!--订单详情列表-->
+<!--
+用户需求：供应商返利页面及其已选货物弹窗的数字使用 math.js 高精度计算，避免溢出和尾数丢失。
+实际改动：货物合计、单行面积/重箱和返利金额共用 BigNumber 工具，保持两位小数展示，提交十进制字符串；异常数值提示并阻止提交。
+-->
 
 <script>
 import { addRebate } from '@/api/system/Rebate';
@@ -6,7 +9,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 // 不再通过字典接口获取返利方式，使用硬编码选项
-import { fix, fix_2 } from '@/api/tool/format';
+import { decimalText, decimalFixed, calculateRebateBasis, calculateRebateAmount, sumRebateAmounts } from '@/utils/rebateMath';
 import { RebateType } from '@/api/tool/enums';
 import ExpandCursor from '../common/ExpandCursor.vue';
 import { applyAutoWidthToTable } from '@/utils/tableAutoWidth';
@@ -287,20 +290,15 @@ export default {
 				}
 
 				if (summaryColumns.includes(column.property)) {
-					const values = data.map(item => Number(item[column.property]));
-					if (!values.every(value => isNaN(value))) {
-						sums[index] = values.reduce((prev, curr) => {
-							const value = Number(curr);
-							if (!isNaN(value)) {
-								return prev + curr;
-							} else {
-								return prev;
-							}
-						}, 0);
-						sums[index] = fix_2(sums[index]);
-						sums[index] += column.property === 'tonnage' ? ' 吨' : ' 元';
-					} else {
+					if (data.every(item => item[column.property] === undefined)) {
 						sums[index] = 'N/A';
+						return;
+					}
+					try {
+						sums[index] = decimalFixed(sumRebateAmounts(data, column.property), 2);
+						sums[index] += column.property === 'tonnage' ? ' 吨' : ' 元';
+					} catch (error) {
+						sums[index] = '数值异常';
 					}
 				}
 			});
@@ -331,10 +329,13 @@ export default {
 			// 通过行确定订单明细 id
 			this.moneyBackInfo.orderDetailIds = [row.id];
 			// 按照 rebate/index.vue 的公式计算该行的面积与重箱
-			const area = (Number(row.length) * Number(row.width) * Number(row.pieces)) / 1000000 || 0;
-			const weightBox = (Number(row.height) * Number(row.length) * Number(row.width) * Number(row.pieces)) / 1000000 / 20 || 0;
-			this.moneyBackInfo.area = area;
-			this.moneyBackInfo.weightBox = weightBox;
+			try {
+				this.moneyBackInfo.area = calculateRebateBasis([row]);
+				this.moneyBackInfo.weightBox = calculateRebateBasis([row], true);
+			} catch (error) {
+				this.$message.error(error.message);
+				return;
+			}
 			// 默认选重箱（与主页面一致）
 			this.moneyBackInfo.rebateMethod = RebateType.Weight;
 			this.addMoneyBackVisible = true;
@@ -343,8 +344,13 @@ export default {
 		addMoneyBackInfo() {
 			// 计算金额：根据选择的返利方式，使用面积或重箱乘以单价
 			const base = this.moneyBackInfo.rebateMethod === RebateType.Weight ? this.moneyBackInfo.weightBox : this.moneyBackInfo.area;
-			const unit = Number(this.moneyBackInfo.unitPrice) || 0;
-			this.moneyBackInfo.rebate = fix_2((base || 0) * unit);
+			try {
+				this.moneyBackInfo.unitPrice = decimalText(this.moneyBackInfo.unitPrice);
+				this.moneyBackInfo.rebate = calculateRebateAmount(base, this.moneyBackInfo.unitPrice, 2);
+			} catch (error) {
+				this.$message.error(error.message);
+				return;
+			}
 			// 不要直接修改组件使用的 rebateMethod（仍为 RebateType），为后端构造 payload 时转换为 1/2
 			const payload = Object.assign({}, this.moneyBackInfo, {
 				rebateMethod: this.moneyBackInfo.rebateMethod === RebateType.Weight ? 1 : 2
