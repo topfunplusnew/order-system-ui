@@ -1,4 +1,5 @@
 <!--
+浏览器实测补充：重新搜索后表格自动清选不能覆盖本单选择；仅通过用户勾选/全选事件更新集合，忽略换数据触发的 selection-change。
 用户需求：供应商返利只选一行时不能带出其他返利单的历史货物，当前返利单仍可跨查询追加。
 实际改动：仅从 selectedOrderDetails 初始化选择，移除全局缓存读写；临时勾选只保留在本次选单组件内。
 需求：订单选择支持产品级别、厚度、长度、宽度筛选，并允许多次调整条件追加选择；已选明细在再次搜索时保持勾选，可一键清空。
@@ -227,7 +228,8 @@ export default {
 			"
 			max-height="700"
 			size="mini"
-			@selection-change="handleSelectionChange"
+			@select="handleSelectionChange"
+			@select-all="handleSelectionChange"
 			@sort-change="handleSortChange"
 		>
 			<el-table-column type="selection" width="70" align="center" fixed="left" />

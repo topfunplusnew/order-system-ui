@@ -1,4 +1,6 @@
 /**
+ * 用户需求：浏览器验证供应商返利选单，修复搜索刷新时出现的 Cannot read properties of undefined (reading 'unbind')。
+ * 实际改动：指令更新通过固定的指令对象调用清理/初始化，避免依赖 Vue 调用钩子时未绑定的 this。
  * v-fixed 固定布局指令
  * 用于固定某个元素，使其在滚动时保持固定位置
  *
@@ -345,7 +347,7 @@ function cleanupFixedMode(el) {
 	delete el._fixedOriginalTop;
 }
 
-export default {
+const fixedDirective = {
 	inserted(el, binding) {
 		const config = parseBindingValue(binding.value);
 
@@ -364,8 +366,8 @@ export default {
 	update(el, binding) {
 		// 如果值改变，重新应用
 		if (binding.value !== binding.oldValue) {
-			this.unbind(el);
-			this.inserted(el, binding);
+			fixedDirective.unbind(el);
+			fixedDirective.inserted(el, binding);
 		}
 	},
 
@@ -383,3 +385,5 @@ export default {
 		delete el._fixedMode;
 	}
 };
+
+export default fixedDirective;

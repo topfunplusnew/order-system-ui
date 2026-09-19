@@ -1,6 +1,7 @@
 /*
  * 用户需求：供应商返利只选择一行时，已选货物不能混入其他返利单或未确认的历史选择。
  * 实际改动：执行真实组件的选择监听和页面回填方法，覆盖旧缓存隔离、本单跨查询追加、取消勾选及新建重置。
+ * 浏览器补充验证：挂载真实 Element UI 表格，覆盖查询换数据触发自动清选时，保留本单勾选并允许用户取消。
  */
 /* global describe, test, expect, jest, beforeEach, afterEach */
 import fs from 'fs';
@@ -9,9 +10,15 @@ import { transformSync } from '@babel/core';
 import Vue from 'vue';
 import _ from 'lodash';
 import * as math from 'mathjs';
+import ElementUI from 'element-ui';
+import { parseComponent, compileToFunctions } from 'vue-template-compiler';
+
+Vue.use(ElementUI);
+Vue.directive('horizontal-scroll', {});
+Vue.component('pagination', { render: h => h('div') });
 
 // 项目未配置 .vue 的 Jest transformer：编译真实 script，仅隔离无关 UI 和网络依赖。
-function loadComponent(relativePath) {
+function loadComponent(relativePath, withTemplate = false) {
 	const source = fs.readFileSync(path.resolve(__dirname, relativePath), 'utf8');
 	const script = source.match(/<script>([\s\S]*?)<\/script>/)[1];
 	const { code } = transformSync(script, {
@@ -24,12 +31,14 @@ function loadComponent(relativePath) {
 	const dependencies = {
 		lodash: _,
 		mathjs: math,
+		'@/components/SearchOption.vue': { render: h => h('div') },
 		'@/api/system/company': { listCompany: jest.fn() },
 		'@/api/system/productLevel': { listProductLevel: jest.fn() },
 		'@/api/tool/format': { fix: value => Number(value.toFixed(2)) },
 		'@/api/tool/enums': { RebateType: { Weight: 'weight', Square: 'square' } }
 	};
 	new Function('require', 'module', 'exports', code)(name => dependencies[name] || {}, module, module.exports);
+	if (withTemplate) Object.assign(module.exports.default, compileToFunctions(parseComponent(source).template.content));
 	return module.exports.default;
 }
 
@@ -70,12 +79,35 @@ function createPage(goods = []) {
 
 beforeEach(() => localStorage.clear());
 afterEach(() => {
-	instances.forEach(vm => vm.$destroy());
+	instances.forEach(vm => {
+		vm.$destroy();
+		if (vm.$el && vm.$el.parentNode) vm.$el.parentNode.removeChild(vm.$el);
+	});
 	instances = [];
 	localStorage.clear();
 });
 
 describe('供应商返利选单隔离', () => {
+	test('真实表格搜索刷新不丢勾选，用户取消勾选仍生效', async () => {
+		const component = loadComponent('../views/dashboard/components/rebate/OrderDetailList.vue', true);
+		const list = new Vue({ ...component, propsData: { orderDetailList: [row, anotherRow], selectedOrderDetails: [row] } }).$mount();
+		document.body.appendChild(list.$el);
+		instances.push(list);
+		await Vue.nextTick();
+		await Vue.nextTick();
+		expect(list.$refs.orderDetailTable.selection.map(item => item.id)).toEqual([20]);
+		// 接口重新返回同一已选 ID 的新对象，模拟切换条件后把本单已选行并入结果。
+		list.orderDetailList = [{ ...anotherRow }, { ...row }];
+		await Vue.nextTick();
+		await Vue.nextTick();
+		await Vue.nextTick();
+		expect(list.selectedList.map(item => item.id)).toEqual([20]);
+		expect(list.$refs.orderDetailTable.selection.map(item => item.id)).toEqual([20]);
+		list.$el.querySelectorAll('.el-table__fixed-body-wrapper input[type="checkbox"]')[1].click();
+		await Vue.nextTick();
+		expect(list.selectedList.map(item => item.id)).toEqual([]);
+	});
+
 	test('旧缓存存在时首次仅选一行，已选货物、提交 ID 和返利金额均只包含该行', async () => {
 		localStorage.setItem(cacheKey, JSON.stringify([oldRow]));
 		const page = createPage();
