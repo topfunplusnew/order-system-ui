@@ -1,3 +1,7 @@
+<!--
+需求：票点管理粘贴公司名称时去除空白，只保留小括号和英文连字符 -，清除其他标点符号。
+改动：沿用共用粘贴清洗逻辑，更新本页说明为仅保留小括号和 -；系统选择的公司名称不处理。
+-->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
@@ -119,7 +123,7 @@
 					<el-input v-model="form.companyID" placeholder="请输入对方公司ID" />
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-					<!-- 2026-06-25 票点管理：仅手动填写票据单位名称时粘贴去除空格/括号，系统选择的供应商/客户不限制 -->
+					<!-- 2026-09-22 票点管理：仅手动填写票据单位名称时粘贴去除空白和其他标点，仅保留小括号和 -，系统选择的供应商/客户不限制 -->
 					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleManualInvoiceCompanyNamePaste($event, 'invoiceCompanyName')" />
 				</el-form-item>
 				<el-form-item label="票点" prop="ticketPoint">
@@ -163,7 +167,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { add, number } from 'mathjs';
 import reLength from '../../dashboard/mixins/reLength';
-// 2026-06-25 票点管理：仅手动填写的票据单位名称粘贴时去除空格/括号，系统选择的供应商/客户不限制
+// 2026-09-22 票点管理：仅手动填写的票据单位名称粘贴时去除空白和其他标点，仅保留小括号和 -，系统选择的供应商/客户不限制
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
 
 export default {

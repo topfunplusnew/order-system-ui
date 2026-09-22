@@ -1,5 +1,6 @@
 /**
- * 2026-06-25 票点管理：仅手动填写的票据单位名称粘贴时去除空格/括号
+ * 需求：票点管理粘贴公司名称时去除空白，只保留小括号和英文连字符 -，清除其他标点符号。
+ * 改动：沿用共用清洗函数回填表单，更新粘贴规则说明为仅保留小括号和 -。
  * 系统通过 SearchOption 选择的供应商/客户名称不做任何限制
  */
 import { sanitizeInvoiceCompanyNamePasted } from '@/utils/invoiceCompanyName';
