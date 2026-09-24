@@ -1,4 +1,8 @@
 <!--
+需求：全面检查发票新增时供应商选择回写的响应式表现，切换公司类型后重新选择也必须立即显示名称。
+改动：切换公司类型时保留公司名称和ID字段的响应式定义，改为赋 null 清空，避免 Vue 2 删除后普通赋值不更新视图。
+-->
+<!--
 需求：票点管理粘贴公司名称时去除空白，只保留小括号和英文连字符 -，清除其他标点符号。
 改动：沿用共用粘贴清洗逻辑，更新本页说明为仅保留小括号和 -；系统选择的公司名称不处理。
 -->
@@ -414,6 +418,8 @@ import { parseTime } from '@/utils/ruoyi';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
+// 需求：全面检查发票新增时供应商选择回写的响应式表现；切换公司类型后重新选择也必须立即显示名称。
+// 改动：切换公司类型时保留公司名称和ID字段的响应式定义，改为赋 null 清空，避免 Vue 2 删除后普通赋值不更新视图。
 // 2026-09-22 票点管理：仅手动填写的票据单位名称粘贴时去除空白和其他标点，仅保留小括号和 -，系统选择的供应商/客户不限制
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
 
@@ -635,8 +641,8 @@ export default {
 		// 监听公司类型变化，清除公司名称和ID
 		'form.companyType'(newVal, oldVal) {
 			if (newVal !== oldVal && oldVal !== null && oldVal !== undefined) {
-				delete this.form.companyName;
-				delete this.form.companyID;
+				this.form.companyName = null;
+				this.form.companyID = null;
 				this.companyName = '';
 			}
 		}
