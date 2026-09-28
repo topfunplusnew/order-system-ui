@@ -3,6 +3,7 @@
   需求：批量开票客户金额使用后端返回的销售含税明细合计和可开票金额，不能用 allPayments 在前端推算。
   实际改动：客户订单金额直接读取 saleIncludeTaxTotal、customerInvoicedAmount、customerRemainingInvoiceAmount。
 -->
+<!-- 用户需求：主批量开票订单查询需要过滤指定产品等级。实际改动：初始化、重置和每次订单列表请求都固定传 excludeInvoiceProductLevels=true。 -->
 <script>
 import { listGoodsOrder, getGoodsOrder } from '@/api/system/goodsOrder';
 import QuerySearchBar from '@/views/dashboard/components/goodsOrder/QuerySearchBar.vue';
@@ -233,6 +234,11 @@ export default {
 					console.log('Error parsing checkFlag:', err);
 				}
 			}
+
+			if (!this.queryParams.params || typeof this.queryParams.params !== 'object') {
+				this.queryParams.params = {};
+			}
+			this.queryParams.params.excludeInvoiceProductLevels = true;
 
 			// 搜索
 			try {
@@ -481,7 +487,8 @@ export default {
 					BatchInsertInvoiceCompanyType: PUBLIC_DICT_TYPE.CUSTOMER,
 					supplierId: null,
 					isIncludeTaxSale: this.mode === 'out' ? 1 : null,
-					isIncludeTaxFactory: this.mode === 'in' ? 1 : null
+					isIncludeTaxFactory: this.mode === 'in' ? 1 : null,
+					excludeInvoiceProductLevels: true
 				}
 			};
 		}

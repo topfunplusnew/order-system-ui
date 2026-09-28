@@ -1,3 +1,4 @@
+<!-- 用户需求：供应商余额管理页面最后增加交易时间，并与 CustomerTotal 的最后一次交易日期一致。实际改动：新增 lastOrderTime 交易时间列，展示日期前 10 位。 -->
 <template>
 	<div class="SUPPLIER-total">
 		<!-- 搜索区域 -->
@@ -85,6 +86,14 @@
 			<el-table-column label="查看供应商信息" align="center">
 				<template slot-scope="scope">
 					<el-link :underline="false" type="primary" @click="handleViewSUPPLIERInfo(scope.row.companyId)">查看</el-link>
+				</template>
+			</el-table-column>
+			<el-table-column prop="lastOrderTime" label="最后一次交易日期" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.lastOrderTime ? scope.row.lastOrderTime.slice(0, 10) : '' }}</div>
+						<span>{{ scope.row.lastOrderTime ? scope.row.lastOrderTime.slice(0, 10) : '' }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 		</el-table>

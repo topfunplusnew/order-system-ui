@@ -1,3 +1,4 @@
+<!-- 用户需求：入库每次修改必须填写修改原因，并可按入库主表查看修改记录。实际改动：为整单/明细更新接入原因校验与传递，新增修改记录分页查询弹窗，并在取消/保存/切换时清理原因。 -->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch && isConfigLoaded" label-width="150">
@@ -325,6 +326,8 @@
 														<el-dropdown-item v-hasPermi="['system:inventoryMain:edit']" command="handleUpdate" :disabled="isInventoryDisabledModify(scope.row)">
 															<span :title="isInventoryDisabledModify(scope.row) ? '该货物为二次入库货物，请在存货二次加工管理处修改' : ''">修改</span>
 														</el-dropdown-item>
+														<!-- 修改记录 -->
+														<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改记录</el-dropdown-item>
 														<!-- 删除 -->
 														<el-dropdown-item v-hasPermi="['system:inventoryMain:remove']" command="handleDelete" divided>
 															<span>删除</span>
@@ -845,6 +848,16 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
+
+		<!-- 查看入库修改记录弹窗 -->
+		<el-dialog title="查看修改记录" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
+			<el-table :data="editReasonList" style="width: 100%">
+				<el-table-column prop="modifyTime" label="修改时间" show-overflow-tooltip />
+				<el-table-column prop="reason" label="修改原因" show-overflow-tooltip />
+				<el-table-column prop="userName" label="修改人" show-overflow-tooltip />
+			</el-table>
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
+		</el-dialog>
 	</div>
 </template>
 
@@ -856,6 +869,7 @@ import { listFleet } from '../../../api/system/fleet';
 import { listInventory } from '../../../api/system/inventory';
 import { listProductLevel } from '../../../api/system/productLevel';
 import { listStoreHouse } from '../../../api/system/StoreHouse';
+import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import SearchOption from '../../../components/SearchOption.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { _fill } from './fill';
@@ -1073,6 +1087,17 @@ export default {
 			queryFleet: null,
 			open: false,
 			title: null,
+			// 入库修改原因与修改记录
+			editReason: null,
+			editReasonDialogVisible: false,
+			editReasonList: [],
+			editReasonTotal: 0,
+			editReasonQueryParams: {
+				pageNum: 1,
+				pageSize: 20,
+				tableName: 'inventory_main',
+				tid: null
+			},
 
 			// 查询组
 			queryItemsSupplier: {
@@ -1614,6 +1639,16 @@ export default {
 			}
 
 			// 构造新的库存信息，发送后端时计量单位统一为片数
+			if (this.form.id && (!this.editReason || !this.editReason.trim())) {
+				this.promptEditReason()
+					.then(() => this.handleRowSave(row, resolve, reject))
+					.catch(() => {
+						rows.forEach(item => this.$set(item, 'isEditing', true));
+						this.isEditingDetails = true;
+						reject && reject(new Error('已取消修改'));
+					});
+				return;
+			}
 			const normalizedDetails = allDetails.map(d => ({
 				...d,
 				countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
@@ -1623,7 +1658,8 @@ export default {
 			delete baseInventoryInfo.allLandFreight;
 			const newInventoryInfo = {
 				...baseInventoryInfo,
-				inventoryDetailList: normalizedDetails
+				inventoryDetailList: normalizedDetails,
+				...(this.form.id ? { editReason: this.editReason.trim() } : {})
 			};
 			// 计算总运费等主表信息
 			newInventoryInfo.allSeaFreight = this.isSea ? this.calculateDetailFreightTotal('seaFreight') : 0;
@@ -1643,8 +1679,24 @@ export default {
 			const apiCall = this.form.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = this.form.id ? '该行库存详情信息已修改并保存!' : '该行库存详情信息已添加并保存!';
 			const errorMessage = '保存失败，请重新编辑: ';
+			const submit = () => {
+				const payload = { ...newInventoryInfo };
+				if (this.form.id) {
+					payload.editReason = this.editReason.trim();
+				}
+				return apiCall(payload);
+			};
+			if (this.form.id && (!this.editReason || !this.editReason.trim())) {
+				this.promptEditReason()
+					.then(() => this.addOrUpdateInventoryDetail(newInventoryInfo, rows, resolve, reject, row))
+					.catch(() => {
+						currentRows.forEach(item => this.$set(item, 'isEditing', true));
+						reject && reject(new Error('已取消修改'));
+					});
+				return;
+			}
 
-			apiCall(newInventoryInfo)
+			submit()
 				.then(res => {
 					// 成功后清除可能的错误标记
 					currentRows.forEach(row => {
@@ -1672,6 +1724,7 @@ export default {
 						row.isAdd = false;
 					}
 					this.$message.success(successMessage);
+					if (this.form.id) this.clearEditReason();
 					// 如果是新增，更新主表ID和数据
 					if (!this.form.id && res.data && res.data.id) {
 						this.form.id = res.data.id;
@@ -1925,6 +1978,7 @@ export default {
 			}
 			this.open = false;
 			this.reset();
+			this.clearEditReason();
 			this.isEditingDetails = false; // 重置编辑状态
 		},
 		/**
@@ -1936,6 +1990,7 @@ export default {
 		 *              如果表单引用存在，则调用其 resetFields 和 clearValidate 方法。
 		 */
 		reset() {
+			this.clearEditReason();
 			this.isSea = false;
 			this.isLand = false;
 			this.form = {
@@ -2149,6 +2204,34 @@ export default {
 			});
 		},
 		/**
+		 * 打开修改原因输入框。原因只保存在当前编辑会话中，并在请求成功或取消时清理。
+		 */
+		promptEditReason() {
+			return this.$prompt('请输入修改原因', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputType: 'textarea',
+				inputPlaceholder: '请输入修改原因（最多500个字符）',
+				inputValidator: value => {
+					const normalizedValue = typeof value === 'string' ? value.trim() : '';
+					if (!normalizedValue) {
+						return '修改原因不能为空';
+					}
+					if (normalizedValue.length > 500) {
+						return '修改原因不能超过500个字符';
+					}
+					return true;
+				}
+			}).then(({ value }) => {
+				this.editReason = value.trim();
+				return this.editReason;
+			});
+		},
+		/** 清理当前入库编辑会话的修改原因。 */
+		clearEditReason() {
+			this.editReason = null;
+		},
+		/**
 		 * @description: 处理修改库存按钮操作。
 		 *              调用 reset 方法重置表单。
 		 *              获取要修改的记录 ID (来自行数据或多选)。
@@ -2161,46 +2244,59 @@ export default {
 		 */
 		handleUpdate(row) {
 			this.reset();
-			const id = row.id || this.ids;
+			const id = row ? row.id || this.ids : this.ids;
 			getInventoryMain(id).then(response => {
-				this.form = {
-					...response.data,
-					params: {
-						...response.data.params,
-						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
-					}
-				};
-				this.isSea = !!response.data.seaCarNo; // 使用主表信息判断
-				this.isLand = !!response.data.landCarNo; // 使用主表信息判断
-
-				// 确保设置 transportMode 字段以通过校验
-				this.form.transportMode = this.isLand || this.isSea ? 'selected' : '';
-
-				// 初始化子项的编辑状态
-				this.inventoryDetailList = response.data.inventoryDetailList.map((item, index) => {
-					const processedItem = {
-						...item,
-						countingUnit: item.countingUnit === '片' ? '片数' : item.countingUnit || '片数',
-						index: index + 1, // 设置唯一索引
-						isEditing: false, // 初始为非编辑状态
-						isDeleted: item.isDeleted !== undefined ? item.isDeleted : false, // 确保 isDeleted 字段存在
-						isAdd: false, // 从后端加载的数据标记为非新增
-						hasError: false // 初始无错误
+				if (!response.data) {
+					this.$message.error('获取库存信息失败');
+					return;
+				}
+				const continueUpdate = () => {
+					this.form = {
+						...response.data,
+						params: {
+							...response.data.params,
+							attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
+						}
 					};
-					// 初始化特殊字段的小数位数
-					initSpecialFieldDecimalPlaces(processedItem);
-					return processedItem;
-				});
-				// 对加载的数据进行计算
-				this.inventoryDetailList.forEach(detailRow => {
-					this.$nextTick(() => {
-						updateInventoryRowCalculations(detailRow, this.isSea, this.isLand);
-					});
-				});
+					this.isSea = !!response.data.seaCarNo; // 使用主表信息判断
+					this.isLand = !!response.data.landCarNo; // 使用主表信息判断
 
-				this.open = true;
-				this.title = '修改库存';
-				this.isEditingDetails = false; // 初始不进入全局编辑模式
+					// 确保设置 transportMode 字段以通过校验
+					this.form.transportMode = this.isLand || this.isSea ? 'selected' : '';
+
+					// 初始化子项的编辑状态
+					this.inventoryDetailList = response.data.inventoryDetailList.map((item, index) => {
+						const processedItem = {
+							...item,
+							countingUnit: item.countingUnit === '片' ? '片数' : item.countingUnit || '片数',
+							index: index + 1, // 设置唯一索引
+							isEditing: false, // 初始为非编辑状态
+							isDeleted: item.isDeleted !== undefined ? item.isDeleted : false, // 确保 isDeleted 字段存在
+							isAdd: false, // 从后端加载的数据标记为非新增
+							hasError: false // 初始无错误
+						};
+						// 初始化特殊字段的小数位数
+						initSpecialFieldDecimalPlaces(processedItem);
+						return processedItem;
+					});
+					// 对加载的数据进行计算
+					this.inventoryDetailList.forEach(detailRow => {
+						this.$nextTick(() => {
+							updateInventoryRowCalculations(detailRow, this.isSea, this.isLand);
+						});
+					});
+
+					this.open = true;
+					this.title = '修改库存';
+					this.isEditingDetails = false; // 初始不进入全局编辑模式
+				};
+
+				this.promptEditReason()
+					.then(continueUpdate)
+					.catch(() => {
+						this.clearEditReason();
+						this.$message.info('已取消修改');
+					});
 			});
 		},
 		/**
@@ -2253,6 +2349,13 @@ export default {
 					const submitPayload = { ...this.form };
 					// 后端不再接收 allLandFreight，提交前移除该字段
 					delete submitPayload.allLandFreight;
+					if (submitPayload.id && (!this.editReason || !this.editReason.trim())) {
+						this.promptEditReason().then(() => this.submitForm());
+						return;
+					}
+					if (submitPayload.id) {
+						submitPayload.editReason = this.editReason.trim();
+					}
 					apiCall({
 						...submitPayload,
 						params: {
@@ -2263,6 +2366,7 @@ export default {
 						.then(() => {
 							this.$modal.msgSuccess(successMessage);
 							this.open = false;
+							this.clearEditReason();
 							this.getList();
 							this.isEditingDetails = false; // 关闭弹窗时重置编辑状态
 							// 清空附件上传组件
@@ -2291,9 +2395,26 @@ export default {
 				case 'handleDelete':
 					this.handleDelete(row);
 					break;
+				case 'viewEditReason':
+					this.handleViewEditReason(row);
+					break;
 				default:
 					break;
 			}
+		},
+		handleViewEditReason(row) {
+			this.editReasonQueryParams.tid = row.id;
+			this.editReasonQueryParams.pageNum = 1;
+			this.editReasonList = [];
+			this.editReasonTotal = 0;
+			this.getEditReasonList();
+			this.editReasonDialogVisible = true;
+		},
+		getEditReasonList() {
+			listTableEditMessage(this.editReasonQueryParams).then(response => {
+				this.editReasonList = response.rows || [];
+				this.editReasonTotal = response.total || 0;
+			});
 		},
 		/**
 		 * @description: 处理删除库存主表记录按钮操作。
@@ -2303,7 +2424,7 @@ export default {
 		 * @param {object} row - 当前操作的行数据对象。
 		 */
 		handleDelete(row) {
-			const ids = row.id || this.ids;
+			const ids = row ? row.id || this.ids : this.ids;
 			this.$modal
 				.confirm('是否确认删除库存库存主表编号为"' + ids + '"的数据项？')
 				.then(function () {

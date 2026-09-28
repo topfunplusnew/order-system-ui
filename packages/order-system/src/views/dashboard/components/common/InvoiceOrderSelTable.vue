@@ -1,3 +1,9 @@
+<!--
+  用户需求：批量开票查询订单时，在 queryParams.params 中增加
+  excludeInvoiceProductLevels = true，自动过滤指定的振龙产品等级。
+  实际改动：初始化、重置及每次 listGoodsOrder 请求前都强制保留该过滤参数，
+  避免搜索条件覆盖 params 后过滤失效。
+-->
 <script>
 import { listGoodsOrder, getGoodsOrder } from '@/api/system/goodsOrder';
 import QuerySearchBar from '@/views/dashboard/components/goodsOrder/QuerySearchBar.vue';
@@ -153,6 +159,12 @@ export default {
 					console.log('Error parsing checkFlag:', err);
 				}
 			}
+
+			// 批量开票只查询允许开票的产品等级，确保搜索条件覆盖 params 后仍然生效
+			if (!this.queryParams.params || typeof this.queryParams.params !== 'object') {
+				this.queryParams.params = {};
+			}
+			this.queryParams.params.excludeInvoiceProductLevels = true;
 
 			// 搜索
 			try {
@@ -427,7 +439,8 @@ export default {
 					BatchInsertInvoiceCompanyType: PUBLIC_DICT_TYPE.CUSTOMER,
 					supplierId: null,
 					isIncludeTaxSale: null,
-					isIncludeTaxFactory: null
+					isIncludeTaxFactory: null,
+					excludeInvoiceProductLevels: true
 				}
 			};
 		}
