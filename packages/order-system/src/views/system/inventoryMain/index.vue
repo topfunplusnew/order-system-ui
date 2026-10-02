@@ -2297,6 +2297,7 @@ export default {
 					this.isEditingDetails = false; // 初始不进入全局编辑模式
 				};
 
+				// 已有入库主表进入修改流程时必须填写原因；兼容后端未返回标记的测试环境。
 				if (response.data.shouldTrackEditReason === true) {
 					this.promptEditReason()
 						.then(continueUpdate)

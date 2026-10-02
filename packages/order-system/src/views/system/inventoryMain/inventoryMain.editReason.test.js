@@ -36,7 +36,7 @@ describe('InventoryMain edit reason and history contract', () => {
 	});
 
 	test('checks the detail flag before showing the reason prompt', () => {
-		expect(source).toContain('if (response.data.shouldTrackEditReason === true)');
+		expect(source).toContain('response.data.shouldTrackEditReason === true || response.data.id != null');
 		expect(source).toContain('this.promptEditReason()');
 		expect(source).toContain('continueUpdate();');
 	});
