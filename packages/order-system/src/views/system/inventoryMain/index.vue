@@ -2244,7 +2244,13 @@ export default {
 		 */
 		handleUpdate(row) {
 			this.reset();
-			const id = row ? row.id || this.ids : this.ids;
+			const rowId = row && typeof row === 'object' && row.id != null ? row.id : null;
+			const selectedId = Array.isArray(this.ids) ? this.ids[0] : this.ids;
+			const id = rowId != null ? rowId : selectedId;
+			if (id == null || id === '') {
+				this.$message.warning('请选择要修改的入库单');
+				return;
+			}
 			getInventoryMain(id).then(response => {
 				if (!response.data) {
 					this.$message.error('获取库存信息失败');
@@ -2291,12 +2297,16 @@ export default {
 					this.isEditingDetails = false; // 初始不进入全局编辑模式
 				};
 
-				this.promptEditReason()
-					.then(continueUpdate)
-					.catch(() => {
-						this.clearEditReason();
-						this.$message.info('已取消修改');
-					});
+				if (response.data.shouldTrackEditReason === true) {
+					this.promptEditReason()
+						.then(continueUpdate)
+						.catch(() => {
+							this.clearEditReason();
+							this.$message.info('已取消修改');
+						});
+					return;
+				}
+				continueUpdate();
 			});
 		},
 		/**

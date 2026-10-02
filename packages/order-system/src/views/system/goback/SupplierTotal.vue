@@ -88,7 +88,7 @@
 					<el-link :underline="false" type="primary" @click="handleViewSUPPLIERInfo(scope.row.companyId)">查看</el-link>
 				</template>
 			</el-table-column>
-			<el-table-column prop="lastOrderTime" label="最后一次交易日期" show-overflow-tooltip>
+			<el-table-column prop="lastOrderTime" label="交易时间" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.lastOrderTime ? scope.row.lastOrderTime.slice(0, 10) : '' }}</div>

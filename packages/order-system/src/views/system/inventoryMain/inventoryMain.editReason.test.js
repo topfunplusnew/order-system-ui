@@ -34,4 +34,10 @@ describe('InventoryMain edit reason and history contract', () => {
 		expect(source).toContain('修改原因不能超过500个字符');
 		expect(source).toContain('value.trim()');
 	});
+
+	test('checks the detail flag before showing the reason prompt', () => {
+		expect(source).toContain('if (response.data.shouldTrackEditReason === true)');
+		expect(source).toContain('this.promptEditReason()');
+		expect(source).toContain('continueUpdate();');
+	});
 });
