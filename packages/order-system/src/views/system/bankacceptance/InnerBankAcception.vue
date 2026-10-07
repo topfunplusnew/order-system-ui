@@ -1,3 +1,7 @@
+<!--
+需求：移除 bankacceptance 页面中不再使用的 operateDate 字段。
+实际改动：删除内部转账票据查询参数和表单初始化中的 operateDate；票据交易日期继续使用 billDate。
+-->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
@@ -256,7 +260,6 @@ export default {
 				issueDateEnd: null,
 				pageNum: 1,
 				pageSize: 20,
-				operateDate: null,
 				billNo: null,
 				issueDate: null,
 				dueDate: null,
@@ -499,7 +502,6 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
-				operateDate: null,
 				billNo: null,
 				issueDate: null,
 				dueDate: null,

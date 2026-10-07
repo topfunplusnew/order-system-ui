@@ -1,3 +1,7 @@
+<!--
+需求：移除 bankacceptance 页面中不再使用的 operateDate 字段。
+实际改动：删除列表操作日期列，以及查询参数和表单初始化中的 operateDate；票据交易日期继续使用 billDate。
+-->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
@@ -57,25 +61,24 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="操作日期" align="center" prop="operateDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[1].visible" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip>
 				<!-- 点击后出来一个台账 -->
 				<template #default="scope">
 					<CheckTotal :row="scope.row" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="收票事由" align="center" prop="reason" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="背书人" align="center" prop="endorserName" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="票据种类" align="center" prop="billCategory" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="来源" align="center" prop="origin" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[14].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="收票事由" align="center" prop="reason" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="背书人" align="center" prop="endorserName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="票据种类" align="center" prop="billCategory" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="来源" align="center" prop="origin" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
 				<template slot-scope="scope">
@@ -230,7 +233,6 @@ export default {
 				issueDateEnd: null,
 				pageNum: 1,
 				pageSize: 20,
-				operateDate: null,
 				billNo: null,
 				issueDate: null,
 				dueDate: null,
@@ -256,7 +258,6 @@ export default {
 			},
 			columns: [
 				{ label: 'ID', visible: true },
-				{ label: '操作日期', visible: true },
 				{ label: '票据号码', visible: true },
 				{ label: '收票事由', visible: true },
 				{ label: '背书人', visible: true },
@@ -475,7 +476,6 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
-				operateDate: null,
 				billNo: null,
 				issueDate: null,
 				dueDate: null,

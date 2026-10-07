@@ -1,3 +1,7 @@
+<!--
+需求：移除支出商业票据、银行承兑页面中的 operateDate 字段。
+实际改动：删除操作日期列表列、查询参数和表单初始化字段，并保留 billDate 作为票据交易日期。
+-->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
@@ -41,24 +45,23 @@
 
 		<el-table ref="bankAcceptanceTable" v-loading="loading" v-horizontal-scroll="'always'" id="printBox" border :data="bankAcceptanceList" size="mini" show-summary :summary-method="getSummaries" :cell-style="() => ({ padding: '.5px' })" @selection-change="handleSelectionChange">
 			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="操作日期" align="center" prop="operateDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="票据号码" align="center" prop="billNo" show-overflow-tooltip>
+			<el-table-column v-if="columns[1].visible" label="票据号码" align="center" prop="billNo" show-overflow-tooltip>
 				<template #default="scope">
 					<CheckTotal :row="scope.row" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="背书事由" align="center" prop="reason" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="我方承兑账户" align="center" prop="billAccount" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="被背书人" align="center" prop="endorserName" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="票据金额" align="center" prop="billAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="贴息点数" align="center" prop="inDiscountPoints" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="贴息金额" align="center" prop="inDiscountAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="出票日期" align="center" prop="issueDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="到期日期" align="center" prop="dueDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="票据交易日期" align="center" prop="billDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="票据种类" align="center" prop="billCategory" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="来源" align="center" prop="origin" show-overflow-tooltip />
-			<el-table-column v-if="columns[14].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="背书事由" align="center" prop="reason" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="我方承兑账户" align="center" prop="billAccount" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="被背书人" align="center" prop="endorserName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="票据金额" align="center" prop="billAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="贴息点数" align="center" prop="inDiscountPoints" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="贴息金额" align="center" prop="inDiscountAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="出票日期" align="center" prop="issueDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="到期日期" align="center" prop="dueDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="票据交易日期" align="center" prop="billDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="票据种类" align="center" prop="billCategory" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="来源" align="center" prop="origin" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding">
 				<template #default="scope">
@@ -219,7 +222,6 @@ export default {
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
-				operateDate: null,
 				issueDateEnd: null,
 				issueDateStart: null,
 				billNo: null,
@@ -248,20 +250,19 @@ export default {
 			// 与表格 columns[n] 下标、表头 label 严格一一对应（供显隐列与持久化）
 			columns: [
 				{ key: 0, label: 'ID', visible: true },
-				{ key: 1, label: '操作日期', visible: true },
-				{ key: 2, label: '票据号码', visible: true },
-				{ key: 3, label: '背书事由', visible: true },
-				{ key: 4, label: '我方承兑账户', visible: true },
-				{ key: 5, label: '被背书人', visible: true },
-				{ key: 6, label: '票据金额', visible: true },
-				{ key: 7, label: '贴息点数', visible: true },
-				{ key: 8, label: '贴息金额', visible: true },
-				{ key: 9, label: '出票日期', visible: true },
-				{ key: 10, label: '到期日期', visible: true },
-				{ key: 11, label: '票据交易日期', visible: true },
-				{ key: 12, label: '票据种类', visible: true },
-				{ key: 13, label: '来源', visible: true },
-				{ key: 14, label: '备注', visible: true }
+				{ key: 1, label: '票据号码', visible: true },
+				{ key: 2, label: '背书事由', visible: true },
+				{ key: 3, label: '我方承兑账户', visible: true },
+				{ key: 4, label: '被背书人', visible: true },
+				{ key: 5, label: '票据金额', visible: true },
+				{ key: 6, label: '贴息点数', visible: true },
+				{ key: 7, label: '贴息金额', visible: true },
+				{ key: 8, label: '出票日期', visible: true },
+				{ key: 9, label: '到期日期', visible: true },
+				{ key: 10, label: '票据交易日期', visible: true },
+				{ key: 11, label: '票据种类', visible: true },
+				{ key: 12, label: '来源', visible: true },
+				{ key: 13, label: '备注', visible: true }
 			],
 			// 表单参数
 			form: {},
@@ -483,7 +484,6 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
-				operateDate: null,
 				billNo: null,
 				issueDate: null,
 				dueDate: null,
