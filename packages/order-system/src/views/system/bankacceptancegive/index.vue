@@ -1,15 +1,19 @@
 <!--
+需求：支出票据查询和导出日期改用 billDateStart/billDateEnd。
+实际改动：顶部日期筛选及查询参数初始化改绑 billDate 范围，出票日期表单字段保持不变。
+-->
+<!--
 需求：移除支出商业票据、银行承兑页面中的 operateDate 字段。
 实际改动：删除操作日期列表列、查询参数和表单初始化字段，并保留 billDate 作为票据交易日期。
 -->
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
-			<el-form-item label="开始时间" prop="issueDateStart">
-				<el-date-picker v-model="queryParams.issueDateStart" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+			<el-form-item label="开始时间" prop="billDateStart">
+				<el-date-picker v-model="queryParams.billDateStart" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
-			<el-form-item label="结束时间" prop="issueDateEnd">
-				<el-date-picker v-model="queryParams.issueDateEnd" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+			<el-form-item label="结束时间" prop="billDateEnd">
+				<el-date-picker v-model="queryParams.billDateEnd" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="票据号码" prop="billNo">
 				<el-input v-model="queryParams.billNo" placeholder="请输入票据号码" @keyup.enter.native="handleQuery" />
@@ -222,8 +226,8 @@ export default {
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
-				issueDateEnd: null,
-				issueDateStart: null,
+				billDateEnd: null,
+				billDateStart: null,
 				billNo: null,
 				issueDate: null,
 				dueDate: null,
