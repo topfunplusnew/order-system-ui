@@ -5,17 +5,17 @@
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
-			<el-form-item label="日期" prop="operateDate">
+			<!-- <el-form-item label="日期" prop="operateDate">
 				<el-date-picker v-model="queryParams.operateDate" type="date" placeholder="选择截止日期" value-format="yyyy-MM-dd" clearable />
+			</el-form-item> -->
+			<el-form-item label="票据日期" prop="billDate">
+				<el-date-picker v-model="queryParams.billDate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" clearable size="mini" />
 			</el-form-item>
 			<el-form-item label="票号" prop="billNo">
 				<el-input v-model="queryParams.billNo" placeholder="请输入票号" clearable size="mini" style="width: 160px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="我方承兑账户" prop="billAccount">
 				<el-input v-model="queryParams.billAccount" placeholder="请输入承兑账户" clearable size="mini" style="width: 160px" @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="票据日期" prop="billDate">
-				<el-date-picker v-model="queryParams.billDate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" clearable size="mini" />
 			</el-form-item>
 			<el-form-item label="到期日" prop="dueDateRange">
 				<el-date-picker v-model="queryParams.dueDateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" clearable size="mini" />
