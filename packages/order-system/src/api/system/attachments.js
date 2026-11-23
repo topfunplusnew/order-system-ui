@@ -1,7 +1,8 @@
 import request from '@/utils/request';
 
 // 新增通用附件（文件上传）
-export function addAttachments(file, params = {}) {
+// options.repeatSubmit === false 时跳过防重复提交校验，用于一次选择多个文件的连续上传
+export function addAttachments(file, params = {}, options = {}) {
 	const formData = new FormData();
 	formData.append('file', file);
 
@@ -16,13 +17,19 @@ export function addAttachments(file, params = {}) {
 	// TODO 这里可能需要改成批量 等待后端
 	const url = queryParams.toString() ? `/system/attachments?${queryParams.toString()}` : '/system/attachments';
 
+	const headers = {
+		'Content-Type': 'multipart/form-data'
+	};
+	// FormData 无法序列化区分，连续上传相同地址会被判定为重复提交
+	if (options.repeatSubmit === false) {
+		headers.repeatSubmit = false;
+	}
+
 	return request({
 		url: url,
 		method: 'post',
 		data: formData,
-		headers: {
-			'Content-Type': 'multipart/form-data'
-		}
+		headers
 	});
 }
 

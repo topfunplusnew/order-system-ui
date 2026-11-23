@@ -1,6 +1,6 @@
 <!--
-  用户需求：新增 DOS-74 质量赔偿统计表，订单指标取自订单，赔偿信息手动录入，剩余利润按公式计算，并支持查询、审核、删除和导出。
-  实际改动：重建质量赔偿页面，固定 incentiveType=质量赔偿，接入订单预览、14 个业务字段、独立记录操作、边界校验和 POST 表单导出。
+  用户需求：质量赔偿统计表无论填写/粘贴什么金额都不能再出现 NaN，并按前端对接说明支持 salesReward 附件（上传、追加、替换、移除、清空，客户确认审核后仍可操作）。
+  实际改动：金额解析/格式化/合计改走 qualityCompensation.config 纯函数；新增「附件管理」行按钮与表单附件入口，保存走 PUT /system/salesReward/attachments。
 -->
 <template>
 	<div class="app-container">
@@ -86,9 +86,10 @@
 			<el-table-column v-if="columns[17].visible" label="添加时间" prop="createTime" width="170" align="center">
 				<template #default="scope">{{ formatDateTime(scope.row.createTime) }}</template>
 			</el-table-column>
-			<el-table-column v-if="columns[18].visible" label="操作" width="350" fixed="right" align="center">
+			<el-table-column v-if="columns[18].visible" label="操作" width="440" fixed="right" align="center">
 				<template #default="scope">
 					<el-button size="mini" type="text" @click="handleCheckOrder(scope.row)">查看订单</el-button>
+					<el-button v-hasPermi="['system:salesReward:edit']" size="mini" type="text" icon="el-icon-paperclip" @click="handleAttachmentManage(scope.row)">附件管理{{ attachmentCountText(scope.row) }}</el-button>
 					<el-button v-hasPermi="['system:salesReward:edit']" size="mini" type="text" icon="el-icon-edit" :disabled="scope.row.auditState === '已审核'" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-if="scope.row.auditState === '未审核'" v-hasPermi="['system:salesReward:audit']" size="mini" type="text" icon="el-icon-check" @click="handleAudit(scope.row, true)">审核</el-button>
 					<el-button v-else v-hasPermi="['system:salesReward:audit']" size="mini" type="text" icon="el-icon-close" @click="handleAudit(scope.row, false)">取消审核</el-button>
@@ -123,43 +124,62 @@
 						<el-form-item label="综合单车利润"><el-input :value="formatAmount(form.comprehensiveProfit)" disabled /></el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="厂家赔偿我方金额" prop="manufacturerCompensationAmount"><el-input v-model="form.manufacturerCompensationAmount" clearable placeholder="可不填" @blur="formatAmountField('manufacturerCompensationAmount')" /></el-form-item>
+						<el-form-item label="厂家赔偿我方金额" prop="manufacturerCompensationAmount">
+							<el-input :value="form.manufacturerCompensationAmount" clearable placeholder="可不填" @input="handleAmountInput('manufacturerCompensationAmount', $event)" @blur="formatAmountField('manufacturerCompensationAmount')" />
+						</el-form-item>
 						<el-form-item label="厂家赔偿我方日期" prop="manufacturerCompensationDate"><el-date-picker v-model="form.manufacturerCompensationDate" clearable type="date" value-format="yyyy-MM-dd" placeholder="可不填" style="width: 100%" /></el-form-item>
-						<el-form-item label="我方赔偿客户金额" prop="customerCompensationAmount"><el-input v-model="form.customerCompensationAmount" clearable placeholder="可不填" @blur="formatAmountField('customerCompensationAmount')" /></el-form-item>
+						<el-form-item label="我方赔偿客户金额" prop="customerCompensationAmount">
+							<el-input :value="form.customerCompensationAmount" clearable placeholder="可不填" @input="handleAmountInput('customerCompensationAmount', $event)" @blur="formatAmountField('customerCompensationAmount')" />
+						</el-form-item>
 						<el-form-item label="我方赔偿客户日期" prop="customerCompensationDate"><el-date-picker v-model="form.customerCompensationDate" clearable type="date" value-format="yyyy-MM-dd" placeholder="可不填" style="width: 100%" /></el-form-item>
 						<el-form-item label="质量赔偿后剩余利润"><el-input :value="formatAmount(remainingProfit)" disabled /></el-form-item>
 						<el-form-item label="质量问题简易描述" prop="qualityIssueDescription"><el-input v-model="form.qualityIssueDescription" clearable maxlength="500" show-word-limit placeholder="最多 500 个字符" /></el-form-item>
 						<el-form-item label="备注" prop="remark"><el-input v-model="form.remark" clearable type="textarea" :rows="3" maxlength="550" show-word-limit placeholder="最多 550 个字符" /></el-form-item>
 					</el-col>
 				</el-row>
+				<el-form-item label="附件">
+					<AttachmentManager v-model="attachmentDraft" />
+				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm">确 定</el-button>
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
+
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="附件管理" :visible.sync="attachmentDialog.visible" width="720px" append-to-body>
+			<div v-loading="attachmentDialog.loading" class="attachment-dialog">
+				<el-alert type="info" :closable="false" show-icon title="客户确认审核后仍可追加、替换、移除和清空附件，点击保存后生效。" />
+				<AttachmentManager v-model="rowAttachmentDraft" />
+			</div>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" :loading="attachmentDialog.saving" :disabled="attachmentDialog.loading" @click="submitAttachments">保 存</el-button>
+				<el-button @click="attachmentDialog.visible = false">取 消</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
-import { listSalesReward, getSalesReward, delSalesReward, addSalesReward, updateSalesReward, auditSalesReward, getOrderRewardData } from '@/api/salesReward/salesReward';
+import { listSalesReward, getSalesReward, delSalesReward, addSalesReward, updateSalesReward, auditSalesReward, getOrderRewardData, updateSalesRewardAttachments } from '@/api/salesReward/salesReward';
 import { parseTime } from '@/utils/ruoyi';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { getGoodsOrder, listWithFullDetail } from '@/api/system/goodsOrder';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import SearchOption from '@/components/SearchOption.vue';
+import AttachmentManager from '@/components/AttachmentManager/index.vue';
+import { INCENTIVE_TYPE, buildQualityCompensationPayload, calcRemainingProfit, formatAmountText, isSameAttachmentIds, isValidOptionalAmount, normalizeAmountField, normalizeAttachmentIds, resolveAttachmentList, sanitizeAmountInput, sumAmount } from './qualityCompensation.config';
 
-const INCENTIVE_TYPE = '质量赔偿';
+const SUM_PROPS = ['orderProfit', 'manufacturerRebateDiscountAmount', 'customerManufacturerCommissionAmount', 'comprehensiveProfit', 'manufacturerCompensationAmount', 'customerCompensationAmount', 'remainingProfit'];
 
 export default {
 	name: 'QualityCompensation',
-	components: { SearchOption },
+	components: { SearchOption, AttachmentManager },
 	mixins: [mixin_printHTML, common_dialog],
 	data() {
 		const optionalAmountValidator = (rule, value, callback) => {
-			if (value === null || value === undefined || String(value).trim() === '') return callback();
-			if (!/^\d{1,18}(\.\d{1,2})?$/.test(String(value).trim())) return callback(new Error('金额不能小于 0，最多 18 位整数且小数最多 2 位'));
+			if (!isValidOptionalAmount(value)) return callback(new Error('金额不能小于 0，最多 18 位整数且小数最多 2 位'));
 			callback();
 		};
 		const optionalTextRule = max => (rule, value, callback) => {
@@ -198,6 +218,14 @@ export default {
 				createTimeEnd: null
 			},
 			form: {},
+			// 表单里正在编辑的附件列表，随 v-model 与 AttachmentManager 双向同步
+			attachmentDraft: [],
+			// 行级「附件管理」弹窗里正在编辑的附件列表，与表单互不干扰
+			rowAttachmentDraft: [],
+			// 详情回填时的附件 ID 快照，编辑时未变化就不提交 params.attachmentIds，避免覆盖已有附件
+			formAttachmentIds: [],
+			// 行级「附件管理」弹窗状态
+			attachmentDialog: { visible: false, loading: false, saving: false, rowId: null },
 			rules: {
 				orderId: [{ required: true, message: '请选择订单', trigger: 'change' }],
 				manufacturerCompensationAmount: [{ validator: optionalAmountValidator, trigger: 'blur' }],
@@ -236,16 +264,14 @@ export default {
 	},
 	computed: {
 		remainingProfit() {
-			return Number(this.form.comprehensiveProfit || 0) + Number(this.form.manufacturerCompensationAmount || 0) - Number(this.form.customerCompensationAmount || 0);
+			return calcRemainingProfit(this.form);
 		}
 	},
 	methods: {
 		parseTime,
 		listWithFullDetail,
 		formatAmount(value) {
-			if (value === null || value === undefined || value === '') return '—';
-			const number = Number(value);
-			return Number.isFinite(number) ? number.toFixed(2) : '—';
+			return formatAmountText(value);
 		},
 		formatDate(value) {
 			return value ? parseTime(value, '{y}-{m}-{d}') : '—';
@@ -253,9 +279,20 @@ export default {
 		formatDateTime(value) {
 			return value ? parseTime(value, '{y}-{m}-{d} {h}:{i}:{s}') : '—';
 		},
+		/**
+		 * 输入过程中清洗金额：剔除千分位、全角字符与非法字符，从源头避免 NaN
+		 * @param {string} field - 表单字段
+		 * @param {string} value - 输入框原始内容
+		 */
+		handleAmountInput(field, value) {
+			this.$set(this.form, field, sanitizeAmountInput(value));
+		},
+		/**
+		 * 失焦回显：合法金额补两位小数，非法或为空一律置空，绝不写入 NaN
+		 * @param {string} field - 表单字段
+		 */
 		formatAmountField(field) {
-			if (this.form[field] === '' || this.form[field] === undefined) this.$set(this.form, field, null);
-			if (this.form[field] !== null) this.$set(this.form, field, Number(this.form[field]).toFixed(2));
+			this.$set(this.form, field, normalizeAmountField(this.form[field]));
 		},
 		applyDateRangeParams(target) {
 			[
@@ -300,6 +337,8 @@ export default {
 				qualityIssueDescription: null,
 				remark: null
 			};
+			this.attachmentDraft = [];
+			this.formAttachmentIds = [];
 			this.queryGoodsOrder = '';
 			if (this.$refs.form) this.resetForm('form');
 		},
@@ -337,7 +376,11 @@ export default {
 			if (!id) return;
 			this.reset();
 			getSalesReward(id).then(response => {
-				this.form = { ...this.form, ...(response.data || {}), incentiveType: INCENTIVE_TYPE };
+				const detail = response.data || {};
+				this.form = { ...this.form, ...detail, incentiveType: INCENTIVE_TYPE };
+				const attachments = Array.isArray(detail.attachmentList) ? [...detail.attachmentList] : [];
+				this.attachmentDraft = attachments;
+				this.formAttachmentIds = normalizeAttachmentIds(attachments);
 				this.open = true;
 				this.title = '修改质量赔偿';
 			});
@@ -364,6 +407,56 @@ export default {
 				if (response.data) this.openDialog(GOODS_ORDER, '订单信息', '100%', { needToShowInfo: response.data }, false);
 			});
 		},
+		/**
+		 * 操作列附件数量提示
+		 * @param {Object} row - 表格行
+		 * @returns {string} 形如「（2）」的提示，无附件时为空
+		 */
+		attachmentCountText(row) {
+			const count = row && Array.isArray(row.attachmentList) ? row.attachmentList.length : 0;
+			return count > 0 ? `（${count}）` : '';
+		},
+		/**
+		 * 打开行级附件管理：先取详情保证拿到最新 attachmentList，避免用空列表覆盖已有附件
+		 * @param {Object} row - 表格行
+		 */
+		handleAttachmentManage(row) {
+			if (!row || row.id === null || row.id === undefined) return;
+			this.rowAttachmentDraft = [];
+			this.attachmentDialog = { visible: true, loading: true, saving: false, rowId: row.id };
+			getSalesReward(row.id)
+				.then(response => {
+					if (this.attachmentDialog.rowId !== row.id) return;
+					const detail = (response && response.data) || {};
+					const attachments = Array.isArray(detail.attachmentList) ? [...detail.attachmentList] : Array.isArray(row.attachmentList) ? [...row.attachmentList] : [];
+					this.rowAttachmentDraft = attachments;
+					this.$set(row, 'attachmentList', attachments);
+				})
+				.catch(() => {})
+				.finally(() => {
+					this.attachmentDialog.loading = false;
+				});
+		},
+		/**
+		 * 保存行级附件：每次提交全部要保留的附件 ID，移除传剩余 ID，清空传 []
+		 */
+		submitAttachments() {
+			const { rowId } = this.attachmentDialog;
+			if (rowId === null || rowId === undefined) return;
+			this.attachmentDialog.saving = true;
+			updateSalesRewardAttachments({ salesRewardId: rowId, attachmentIds: normalizeAttachmentIds(this.rowAttachmentDraft) })
+				.then(response => {
+					const latest = resolveAttachmentList(response, this.rowAttachmentDraft);
+					const row = this.salesRewardList.find(item => item && item.id === rowId);
+					if (row) this.$set(row, 'attachmentList', latest);
+					this.rowAttachmentDraft = [...latest];
+					this.attachmentDialog.visible = false;
+					this.$modal.msgSuccess('附件已保存');
+				})
+				.finally(() => {
+					this.attachmentDialog.saving = false;
+				});
+		},
 		handleAudit(row, approved) {
 			const action = approved ? '审核通过' : '取消审核';
 			this.$modal
@@ -375,19 +468,17 @@ export default {
 				})
 				.catch(() => {});
 		},
+		/**
+		 * 组装提交载荷；新增或附件发生变化时才带 params.attachmentIds，编辑未改动则保留已有附件
+		 * @returns {Object} 提交载荷
+		 */
 		toPayload() {
-			const payload = {
-				id: this.form.id,
-				incentiveType: INCENTIVE_TYPE,
-				orderId: this.form.orderId,
-				manufacturerCompensationAmount: this.form.manufacturerCompensationAmount === '' ? null : this.form.manufacturerCompensationAmount,
-				manufacturerCompensationDate: this.form.manufacturerCompensationDate || null,
-				customerCompensationAmount: this.form.customerCompensationAmount === '' ? null : this.form.customerCompensationAmount,
-				customerCompensationDate: this.form.customerCompensationDate || null,
-				qualityIssueDescription: this.form.qualityIssueDescription ? String(this.form.qualityIssueDescription).trim() : null,
-				remark: this.form.remark ? String(this.form.remark).trim() : null
-			};
-			if (payload.id == null) delete payload.id;
+			const payload = buildQualityCompensationPayload(this.form);
+			const attachmentIds = normalizeAttachmentIds(this.attachmentDraft);
+			const isEdit = payload.id !== undefined;
+			if (!isEdit || !isSameAttachmentIds(attachmentIds, this.formAttachmentIds)) {
+				payload.params = { attachmentIds };
+			}
 			return payload;
 		},
 		submitForm() {
@@ -430,12 +521,20 @@ export default {
 			const sums = columns.map(() => '');
 			const first = columns.findIndex(column => column.property);
 			if (first >= 0) sums[first] = '合计';
-			['orderProfit', 'manufacturerRebateDiscountAmount', 'customerManufacturerCommissionAmount', 'comprehensiveProfit', 'manufacturerCompensationAmount', 'customerCompensationAmount', 'remainingProfit'].forEach(prop => {
+			SUM_PROPS.forEach(prop => {
 				const index = columns.findIndex(column => column.property === prop);
-				if (index >= 0) sums[index] = data.reduce((total, row) => total + Number(row[prop] || 0), 0).toFixed(2);
+				if (index >= 0) sums[index] = sumAmount(data, prop).toFixed(2);
 			});
 			return sums;
 		}
 	}
 };
 </script>
+
+<style scoped lang="scss">
+.attachment-dialog {
+	.attachment-manager {
+		margin-top: 12px;
+	}
+}
+</style>

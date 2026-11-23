@@ -209,6 +209,27 @@ export function auditSalesReward(id, approved) {
 	});
 }
 
+// ==================== 附件相关 ====================
+
+/**
+ * 替换销售奖励附件
+ * 客户确认审核后仍可追加、替换、移除和清空附件；每次提交全部要保留的附件 ID，移除一个就传剩余 ID，清空传空数组
+ * @param {Object} data - 附件替换数据
+ * @param {number} data.salesRewardId - 当前销售奖励（质量赔偿）行 id，必填
+ * @param {Array<number>} data.attachmentIds - 需要保留的附件 ID 全量列表，可为空数组
+ * @returns {Promise<Object>} 返回统一响应对象
+ * @returns {number} returns.code - 响应码（200表示成功）
+ * @returns {string} returns.msg - 响应消息
+ * @returns {Array<Object>} returns.data - 保存成功后的最新附件列表
+ */
+export function updateSalesRewardAttachments(data) {
+	return request({
+		url: '/system/salesReward/attachments',
+		method: 'put',
+		data: data
+	});
+}
+
 // ==================== 订单奖励相关 ====================
 
 /**
