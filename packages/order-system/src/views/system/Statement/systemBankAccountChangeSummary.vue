@@ -1,4 +1,3 @@
-<!-- 用户需求：选好搜索日期后，切换界面回来要保留搜索时间，而不是重置为默认的当天。实际改动：把搜索过的日期存 sessionStorage，进入页面时优先恢复。 -->
 <template>
 	<div class="app-container">
 		<el-row style="background-color: #e6e6e6">
@@ -59,7 +58,6 @@ import { parseTime } from '../../../utils/ruoyi';
 import { fix } from '../../../api/tool/format';
 import { getTodayBankAccountChangeSummary } from '../../../api/system/statement';
 import { buildAmountSummaries } from '@/utils/tableSummary';
-import { resolveInitialEndTime, saveEndTime } from './bankAccountChangeSummary.query';
 
 export default {
 	name: 'SystemBankAccountChangeSummary',
@@ -69,8 +67,7 @@ export default {
 			total: 0,
 			tableData: [],
 			queryParams: {
-				// 优先使用上次搜索过的日期，没有记录时才用默认当天
-				endTime: resolveInitialEndTime(this.getQueryStorage(), parseTime(new Date(), '{y}-{m}-{d}'))
+				endTime: parseTime(new Date(), '{y}-{m}-{d}')
 			},
 			columns: [
 				{ key: 0, label: '序号', visible: true },
@@ -90,17 +87,6 @@ export default {
 	},
 	methods: {
 		fix,
-		/**
-		 * 取得保存搜索条件用的 storage（抽成方法便于测试/降级）
-		 * @returns {Storage|null}
-		 */
-		getQueryStorage() {
-			try {
-				return typeof sessionStorage === 'undefined' ? null : sessionStorage;
-			} catch (error) {
-				return null;
-			}
-		},
 		/**
 		 * 计算本日余额（接口未返回时兜底）
 		 * @param {Object} row - 行数据
@@ -159,10 +145,9 @@ export default {
 			});
 		},
 		/**
-		 * 按日期搜索（记住本次搜索的日期，切回来时保留）
+		 * 按日期搜索
 		 */
 		handleQuery() {
-			saveEndTime(this.getQueryStorage(), this.queryParams.endTime);
 			this.getList();
 		},
 		/**
